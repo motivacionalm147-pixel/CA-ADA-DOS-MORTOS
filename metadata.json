@@ -1,0 +1,8 @@
+{
+  "name": "MANIACO NO SUBMUNDO",
+  "description": "Um shooter imersivo top-down infinito num cenário xadrez preto e branco, onde você controla um personagem armado livremente.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

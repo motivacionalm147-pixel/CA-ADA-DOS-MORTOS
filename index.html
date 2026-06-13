@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      // Redefine window.fetch to be fully writable and configurable, avoiding crashes in 3rd party scripts
+      (function() {
+        var originalFetch = window.fetch;
+        function setup(target) {
+          try {
+            delete target.fetch;
+          } catch (e) {}
+          Object.defineProperty(target, 'fetch', {
+            get: function() { return originalFetch; },
+            set: function(val) { originalFetch = val; },
+            configurable: true,
+            enumerable: true
+          });
+        }
+        try {
+          setup(window);
+        } catch (e) {
+          try {
+            setup(Window.prototype);
+          } catch (err) {}
+        }
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Google AI Studio App</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
