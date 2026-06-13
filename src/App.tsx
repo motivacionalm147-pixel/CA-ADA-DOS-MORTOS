@@ -2,6 +2,54 @@ import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Backpack, Settings, Eye, Sliders, X } from "lucide-react";
 
+const MenuTypewriter = ({ text }: { text: string }) => {
+  const [displayedText, setDisplayedText] = useState("");
+  const timerRef = useRef<any>(null);
+
+  useEffect(() => {
+    setDisplayedText("");
+    if (!text) return;
+
+    let index = 0;
+    const playTick = () => {
+      try {
+        const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(800 + Math.random() * 150, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.02);
+        gain.gain.setValueAtTime(0.015, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.02);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.02);
+      } catch (e) {}
+    };
+
+    timerRef.current = setInterval(() => {
+      if (index < text.length) {
+        setDisplayedText((prev) => prev + text.charAt(index));
+        playTick();
+        index++;
+      } else {
+        clearInterval(timerRef.current);
+      }
+    }, 20);
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [text]);
+
+  return (
+    <div className="text-[10px] md:text-[11px] font-mono text-amber-500/95 tracking-[0.15em] font-extrabold uppercase min-h-[40px] max-w-[340px] text-center border-t border-white/10 pt-3.5 w-full leading-normal">
+      {displayedText}
+    </div>
+  );
+};
+
 declare global {
   interface Window {
     respawnTriggered: boolean;
@@ -1011,6 +1059,7 @@ export default function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const blurOverlayRef = useRef<HTMLDivElement>(null);
   const [gameState, setGameState] = useState<"MENU" | "PLAYING">("MENU");
+  const [hoveredDesc, setHoveredDesc] = useState<string | null>(null);
   useEffect(() => {
     const handleError = (msg: any, url: any, line: any, col: any, error: any) => {
       const errDiv = document.createElement("div");
@@ -7444,9 +7493,8 @@ export default function App() {
 
           {/* Clean minimal title header */}
           <div className="relative mb-12 text-center select-none z-20 animate-in fade-in zoom-in-95 duration-500">
-            <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tight flex justify-center gap-4">
-              <span className="menu-title-stencil">MANÍACO</span>
-              <span className="menu-title-survival">SURVIVAL</span>
+            <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tight flex justify-center gap-4">
+              <span className="menu-title-survival">A LENDA</span>
             </h1>
             <p className="text-[12px] font-mono tracking-[0.35em] text-red-600/90 font-bold uppercase mt-2.5">
               COMBAT SIMULATOR
@@ -9032,76 +9080,86 @@ export default function App() {
       {/* Mobile Controls Overlay */}
       {gameState === "PLAYING" && (isMobile || showMobileControls) && (
         <div className="absolute inset-0 z-30 pointer-events-none select-none">
-          {/* Movement Joystick Area (Left Side) */}
+          {/* Movement Joystick Area (Left Side - Shifted down and scaled) */}
           <div 
-            className="absolute bottom-12 left-12 w-36 h-36 bg-black/40 border-2 border-white/10 rounded-full flex items-center justify-center pointer-events-auto backdrop-blur-md relative shadow-[0_0_20px_rgba(255,255,255,0.05)]"
+            className="absolute bottom-4 left-4 w-28 h-28 bg-black/40 border border-white/10 rounded-full flex items-center justify-center pointer-events-auto backdrop-blur-md relative shadow-[0_0_20px_rgba(255,255,255,0.05)]"
             onTouchStart={handleJoystickStart}
             onTouchMove={handleJoystickMove}
             onTouchEnd={handleJoystickEnd}
           >
             {/* Tactical Crosshair Tick Marks */}
-            <div className="absolute top-1 w-0.5 h-2 bg-white/20" />
-            <div className="absolute bottom-1 w-0.5 h-2 bg-white/20" />
-            <div className="absolute left-1 h-0.5 w-2 bg-white/20" />
-            <div className="absolute right-1 h-0.5 w-2 bg-white/20" />
-            <div className="absolute w-28 h-28 border border-white/5 rounded-full pointer-events-none" />
+            <div className="absolute top-1 w-0.5 h-1.5 bg-white/20" />
+            <div className="absolute bottom-1 w-0.5 h-1.5 bg-white/20" />
+            <div className="absolute left-1 h-0.5 w-1.5 bg-white/20" />
+            <div className="absolute right-1 h-0.5 w-1.5 bg-white/20" />
+            <div className="absolute w-22 h-22 border border-white/5 rounded-full pointer-events-none" />
 
             {joystickStart && (
               <div 
-                className="absolute w-16 h-16 bg-zinc-900/80 border-2 border-white/30 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(255,255,255,0.15)] pointer-events-none"
+                className="absolute w-12 h-12 bg-zinc-900/80 border-2 border-white/30 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(255,255,255,0.15)] pointer-events-none"
                 style={{
-                  transform: `translate(${Math.min(45, Math.max(-45, (joystickCurrent?.x ?? 0) - joystickStart.x))}px, ${Math.min(45, Math.max(-45, (joystickCurrent?.y ?? 0) - joystickStart.y))}px)`
+                  transform: `translate(${Math.min(30, Math.max(-30, (joystickCurrent?.x ?? 0) - joystickStart.x))}px, ${Math.min(30, Math.max(-30, (joystickCurrent?.y ?? 0) - joystickStart.y))}px)`
                 }}
               >
-                <div className="w-4 h-4 bg-white/80 rounded-full shadow-[0_0_8px_white]" />
+                <div className="w-3.5 h-3.5 bg-white/80 rounded-full shadow-[0_0_8px_white]" />
               </div>
             )}
             {!joystickStart && (
-              <div className="w-12 h-12 border border-white/10 rounded-full flex items-center justify-center relative">
+              <div className="w-10 h-10 border border-white/10 rounded-full flex items-center justify-center relative">
                 <div className="w-2 h-2 bg-white/25 rounded-full animate-pulse" />
               </div>
             )}
           </div>
 
-          {/* Action Buttons Area (Right Side) */}
-          <div className="absolute bottom-12 right-12 flex flex-col gap-5 items-end pointer-events-auto">
+          {/* Action Buttons Area (Right Side - Compact and tactical) */}
+          <div className="absolute bottom-4 right-4 flex flex-col gap-3.5 items-end pointer-events-auto">
             {/* Dodge/Roll Button */}
             <button
               onTouchStart={() => {
                 (window as any).mobileRollTrigger = true;
               }}
-              className="w-16 h-16 rounded-full bg-blue-950/40 border-2 border-blue-500/40 text-blue-400 font-mono text-xs font-black shadow-[0_0_15px_rgba(59,130,246,0.15)] flex items-center justify-center backdrop-blur-md active:scale-90 active:bg-blue-900/40 transition-all uppercase tracking-wider select-none pointer-events-auto"
+              className="w-14 h-14 rounded-full bg-blue-950/40 border border-blue-500/40 text-blue-400 font-mono text-xs font-black shadow-[0_0_15px_rgba(59,130,246,0.15)] flex flex-col items-center justify-center gap-0.5 backdrop-blur-md active:scale-90 active:bg-blue-900/40 transition-all uppercase tracking-wider select-none pointer-events-auto"
             >
-              ROLL
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                <path d="M20 20A10 10 0 1 0 4 20" />
+                <path d="M20 13V20H13" />
+              </svg>
+              <span className="text-[7px] font-bold">ROLL</span>
             </button>
 
-            <div className="flex gap-4 items-end">
+            <div className="flex gap-3 items-end">
               {/* Aim/ADS Joystick Button */}
               <div
                 onTouchStart={handleAdsJoystickStart}
                 onTouchMove={handleAdsJoystickMove}
                 onTouchEnd={handleAdsJoystickEnd}
-                className="w-20 h-20 rounded-full bg-amber-950/40 border-2 border-amber-500/40 flex items-center justify-center relative shadow-[0_0_20px_rgba(245,158,11,0.15)] active:scale-95 transition-all pointer-events-auto cursor-crosshair select-none backdrop-blur-md"
+                className="w-18 h-18 rounded-full bg-amber-950/40 border border-amber-500/40 flex flex-col items-center justify-center relative shadow-[0_0_20px_rgba(245,158,11,0.15)] active:scale-95 transition-all pointer-events-auto cursor-crosshair select-none backdrop-blur-md"
               >
                 {/* Tactical Reticle Marks */}
                 <div className="absolute top-1 w-0.5 h-1.5 bg-amber-500/30" />
                 <div className="absolute bottom-1 w-0.5 h-1.5 bg-amber-500/30" />
                 <div className="absolute left-1 h-0.5 w-1.5 bg-amber-500/30" />
                 <div className="absolute right-1 h-0.5 w-1.5 bg-amber-500/30" />
-                <div className="absolute w-16 h-16 border border-amber-500/5 rounded-full pointer-events-none" />
 
                 {adsJoystickStart && (
                   <div
-                    className="absolute w-10 h-10 bg-amber-950 border-2 border-amber-500 rounded-full flex items-center justify-center shadow-[0_0_10px_rgba(245,158,11,0.3)] pointer-events-none"
+                    className="absolute w-9 h-9 bg-amber-950 border border-amber-500 rounded-full flex items-center justify-center shadow-[0_0_10px_rgba(245,158,11,0.3)] pointer-events-none"
                     style={{
-                      transform: `translate(${Math.min(30, Math.max(-30, (adsJoystickCurrent?.x ?? 0) - adsJoystickStart.x))}px, ${Math.min(30, Math.max(-30, (adsJoystickCurrent?.y ?? 0) - adsJoystickStart.y))}px)`
+                      transform: `translate(${Math.min(22, Math.max(-22, (adsJoystickCurrent?.x ?? 0) - adsJoystickStart.x))}px, ${Math.min(22, Math.max(-22, (adsJoystickCurrent?.y ?? 0) - adsJoystickStart.y))}px)`
                     }}
                   >
-                    <div className="w-2.5 h-2.5 bg-amber-500 rounded-full animate-pulse" />
+                    <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
                   </div>
                 )}
                 {!adsJoystickStart && (
-                  <span className="text-[10px] font-mono font-black text-amber-500/70 tracking-widest uppercase pointer-events-none">AIM</span>
+                  <>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-amber-500/80 mb-0.5">
+                      <circle cx="12" cy="12" r="10" />
+                      <circle cx="12" cy="12" r="4" />
+                      <path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
+                    </svg>
+                    <span className="text-[7.5px] font-mono font-black text-amber-500/70 tracking-widest uppercase pointer-events-none">AIM</span>
+                  </>
                 )}
               </div>
 
@@ -9110,27 +9168,31 @@ export default function App() {
                 onTouchStart={handleAimStart}
                 onTouchMove={handleAimMove}
                 onTouchEnd={handleAimEnd}
-                className="w-22 h-22 rounded-full bg-red-950/40 border-2 border-red-500/40 flex items-center justify-center relative shadow-[0_0_20px_rgba(239,68,68,0.15)] active:scale-95 transition-all pointer-events-auto cursor-crosshair select-none backdrop-blur-md"
+                className="w-20 h-20 rounded-full bg-red-950/40 border border-red-500/40 flex flex-col items-center justify-center relative shadow-[0_0_20px_rgba(239,68,68,0.15)] active:scale-95 transition-all pointer-events-auto cursor-crosshair select-none backdrop-blur-md"
               >
                 {/* Tactical Reticle Marks */}
                 <div className="absolute top-1 w-0.5 h-1.5 bg-red-500/30" />
                 <div className="absolute bottom-1 w-0.5 h-1.5 bg-red-500/30" />
                 <div className="absolute left-1 h-0.5 w-1.5 bg-red-500/30" />
                 <div className="absolute right-1 h-0.5 w-1.5 bg-red-500/30" />
-                <div className="absolute w-18 h-18 border border-red-500/5 rounded-full pointer-events-none" />
 
                 {aimJoystickStart && (
                   <div
-                    className="absolute w-11 h-11 bg-red-950 border-2 border-red-500 rounded-full flex items-center justify-center shadow-[0_0_10px_rgba(239,68,68,0.3)] pointer-events-none"
+                    className="absolute w-10 h-10 bg-red-950 border border-red-500 rounded-full flex items-center justify-center shadow-[0_0_10px_rgba(239,68,68,0.3)] pointer-events-none"
                     style={{
-                      transform: `translate(${Math.min(30, Math.max(-30, (aimJoystickCurrent?.x ?? 0) - aimJoystickStart.x))}px, ${Math.min(30, Math.max(-30, (aimJoystickCurrent?.y ?? 0) - aimJoystickStart.y))}px)`
+                      transform: `translate(${Math.min(25, Math.max(-25, (aimJoystickCurrent?.x ?? 0) - aimJoystickStart.x))}px, ${Math.min(25, Math.max(-25, (aimJoystickCurrent?.y ?? 0) - aimJoystickStart.y))}px)`
                     }}
                   >
-                    <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
+                    <div className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse" />
                   </div>
                 )}
                 {!aimJoystickStart && (
-                  <span className="text-[11px] font-mono font-black text-red-500/80 tracking-widest uppercase pointer-events-none">FIRE</span>
+                  <>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-red-500/80 mb-0.5">
+                      <path d="M12 2v20M9 8c0-3 3-5 3-5s3 2 3 5v8H9V8Z" />
+                    </svg>
+                    <span className="text-[8px] font-mono font-black text-red-500/80 tracking-widest uppercase pointer-events-none">FIRE</span>
+                  </>
                 )}
               </div>
             </div>
