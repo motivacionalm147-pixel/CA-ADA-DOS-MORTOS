@@ -1100,16 +1100,25 @@ export default function App() {
 
   const [joystickStart, setJoystickStart] = useState<{ x: number; y: number } | null>(null);
   const [joystickCurrent, setJoystickCurrent] = useState<{ x: number; y: number } | null>(null);
+  const moveTouchIdRef = useRef<number | null>(null);
 
   const handleJoystickStart = (e: React.TouchEvent) => {
-    const touch = e.touches[0];
+    const touch = e.changedTouches[0];
+    moveTouchIdRef.current = touch.identifier;
     setJoystickStart({ x: touch.clientX, y: touch.clientY });
     setJoystickCurrent({ x: touch.clientX, y: touch.clientY });
   };
 
   const handleJoystickMove = (e: React.TouchEvent) => {
-    if (!joystickStart) return;
-    const touch = e.touches[0];
+    if (moveTouchIdRef.current === null || !joystickStart) return;
+    let touch = null;
+    for (let i = 0; i < e.touches.length; i++) {
+      if (e.touches[i].identifier === moveTouchIdRef.current) {
+        touch = e.touches[i];
+        break;
+      }
+    }
+    if (!touch) return;
     setJoystickCurrent({ x: touch.clientX, y: touch.clientY });
 
     const dx = touch.clientX - joystickStart.x;
@@ -1125,25 +1134,45 @@ export default function App() {
     };
   };
 
-  const handleJoystickEnd = () => {
-    setJoystickStart(null);
-    setJoystickCurrent(null);
-    (window as any).mobileJoystick = { dx: 0, dy: 0 };
+  const handleJoystickEnd = (e: React.TouchEvent) => {
+    if (moveTouchIdRef.current === null) return;
+    let ended = false;
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      if (e.changedTouches[i].identifier === moveTouchIdRef.current) {
+        ended = true;
+        break;
+      }
+    }
+    if (ended) {
+      moveTouchIdRef.current = null;
+      setJoystickStart(null);
+      setJoystickCurrent(null);
+      (window as any).mobileJoystick = { dx: 0, dy: 0 };
+    }
   };
 
   const [aimJoystickStart, setAimJoystickStart] = useState<{ x: number; y: number } | null>(null);
   const [aimJoystickCurrent, setAimJoystickCurrent] = useState<{ x: number; y: number } | null>(null);
+  const fireTouchIdRef = useRef<number | null>(null);
 
   const handleAimStart = (e: React.TouchEvent) => {
-    const touch = e.touches[0];
+    const touch = e.changedTouches[0];
+    fireTouchIdRef.current = touch.identifier;
     setAimJoystickStart({ x: touch.clientX, y: touch.clientY });
     setAimJoystickCurrent({ x: touch.clientX, y: touch.clientY });
     (window as any).mobileShootActive = true;
   };
 
   const handleAimMove = (e: React.TouchEvent) => {
-    if (!aimJoystickStart) return;
-    const touch = e.touches[0];
+    if (fireTouchIdRef.current === null || !aimJoystickStart) return;
+    let touch = null;
+    for (let i = 0; i < e.touches.length; i++) {
+      if (e.touches[i].identifier === fireTouchIdRef.current) {
+        touch = e.touches[i];
+        break;
+      }
+    }
+    if (!touch) return;
     setAimJoystickCurrent({ x: touch.clientX, y: touch.clientY });
 
     const dx = touch.clientX - aimJoystickStart.x;
@@ -1154,11 +1183,72 @@ export default function App() {
     }
   };
 
-  const handleAimEnd = () => {
-    setAimJoystickStart(null);
-    setAimJoystickCurrent(null);
-    (window as any).mobileShootActive = false;
-    (window as any).mobileAimJoystickAngle = null;
+  const handleAimEnd = (e: React.TouchEvent) => {
+    if (fireTouchIdRef.current === null) return;
+    let ended = false;
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      if (e.changedTouches[i].identifier === fireTouchIdRef.current) {
+        ended = true;
+        break;
+      }
+    }
+    if (ended) {
+      fireTouchIdRef.current = null;
+      setAimJoystickStart(null);
+      setAimJoystickCurrent(null);
+      (window as any).mobileShootActive = false;
+      (window as any).mobileAimJoystickAngle = null;
+    }
+  };
+
+  const [adsJoystickStart, setAdsJoystickStart] = useState<{ x: number; y: number } | null>(null);
+  const [adsJoystickCurrent, setAdsJoystickCurrent] = useState<{ x: number; y: number } | null>(null);
+  const adsTouchIdRef = useRef<number | null>(null);
+
+  const handleAdsJoystickStart = (e: React.TouchEvent) => {
+    const touch = e.changedTouches[0];
+    adsTouchIdRef.current = touch.identifier;
+    setAdsJoystickStart({ x: touch.clientX, y: touch.clientY });
+    setAdsJoystickCurrent({ x: touch.clientX, y: touch.clientY });
+    (window as any).mobileAimActive = true;
+  };
+
+  const handleAdsJoystickMove = (e: React.TouchEvent) => {
+    if (adsTouchIdRef.current === null || !adsJoystickStart) return;
+    let touch = null;
+    for (let i = 0; i < e.touches.length; i++) {
+      if (e.touches[i].identifier === adsTouchIdRef.current) {
+        touch = e.touches[i];
+        break;
+      }
+    }
+    if (!touch) return;
+    setAdsJoystickCurrent({ x: touch.clientX, y: touch.clientY });
+
+    const dx = touch.clientX - adsJoystickStart.x;
+    const dy = touch.clientY - adsJoystickStart.y;
+    if (Math.hypot(dx, dy) > 5) {
+      const angle = Math.atan2(dy, dx);
+      (window as any).mobileAimJoystickAngle = angle;
+    }
+  };
+
+  const handleAdsJoystickEnd = (e: React.TouchEvent) => {
+    if (adsTouchIdRef.current === null) return;
+    let ended = false;
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      if (e.changedTouches[i].identifier === adsTouchIdRef.current) {
+        ended = true;
+        break;
+      }
+    }
+    if (ended) {
+      adsTouchIdRef.current = null;
+      setAdsJoystickStart(null);
+      setAdsJoystickCurrent(null);
+      (window as any).mobileAimActive = false;
+      (window as any).mobileAimJoystickAngle = null;
+    }
   };
 
   // Player weapon-specific upgrades levels state
@@ -2030,7 +2120,13 @@ export default function App() {
           const t = e.touches[i];
           const isLeftJoystickZone = t.clientX < 280 && t.clientY > window.innerHeight - 280;
           const isRightButtonZone = t.clientX > window.innerWidth - 280 && t.clientY > window.innerHeight - 280;
-          if (isLeftJoystickZone || isRightButtonZone) {
+          
+          const dx = t.clientX - window.innerWidth / 2;
+          const dy = t.clientY - window.innerHeight / 2;
+          const distToPlayer = Math.hypot(dx, dy);
+          const isNearPlayer = distToPlayer < 300;
+
+          if (isLeftJoystickZone || isRightButtonZone || !isNearPlayer) {
             initialTouchDist = 0;
             return;
           }
@@ -2049,7 +2145,13 @@ export default function App() {
           const t = e.touches[i];
           const isLeftJoystickZone = t.clientX < 280 && t.clientY > window.innerHeight - 280;
           const isRightButtonZone = t.clientX > window.innerWidth - 280 && t.clientY > window.innerHeight - 280;
-          if (isLeftJoystickZone || isRightButtonZone) {
+          
+          const dx = t.clientX - window.innerWidth / 2;
+          const dy = t.clientY - window.innerHeight / 2;
+          const distToPlayer = Math.hypot(dx, dy);
+          const isNearPlayer = distToPlayer < 300;
+
+          if (isLeftJoystickZone || isRightButtonZone || !isNearPlayer) {
             return;
           }
         }
@@ -2385,7 +2487,7 @@ export default function App() {
         }
       }
 
-      if (!player.isDead && !player.isRolling && keys.space && player.rollCooldown <= 0 && (dx !== 0 || dy !== 0) && player.stamina > 20 && !player.staminaExhausted) {
+      if (!player.isDead && !player.isRolling && keys.space && player.rollCooldown <= 0 && player.stamina > 20 && !player.staminaExhausted) {
         player.isRolling = true;
         player.stamina -= 25; // Cost of dodge roll
         if (player.stamina <= 0) {
@@ -2397,9 +2499,15 @@ export default function App() {
         player.rollTimer = player.rollDuration;
         player.rollCooldown = 2.0; 
         
-        const len = Math.hypot(dx, dy);
-        player.rollDirectionX = dx / len;
-        player.rollDirectionY = dy / len;
+        let rdx = dx;
+        let rdy = dy;
+        if (rdx === 0 && rdy === 0) {
+          rdx = Math.cos(player.angle);
+          rdy = Math.sin(player.angle);
+        }
+        const len = Math.hypot(rdx, rdy);
+        player.rollDirectionX = rdx / len;
+        player.rollDirectionY = rdy / len;
         
         player.rollSpeed = player.isRunning ? PLAYER_SPEED * 3.7 : PLAYER_SPEED * 2.6;
         
@@ -2783,7 +2891,7 @@ export default function App() {
       ) {
         let aimed = false;
         const mobAimAngle = (window as any).mobileAimJoystickAngle;
-        if (mobShoot && mobAimAngle !== undefined && mobAimAngle !== null) {
+        if ((mobShoot || mobAim) && mobAimAngle !== undefined && mobAimAngle !== null) {
           player.angle = mobAimAngle;
           // Sync virtualMouse position relative to player
           virtualMouseX = playerScreenX + Math.cos(mobAimAngle) * 300;
@@ -7251,7 +7359,7 @@ export default function App() {
   const uiColor = skinRef.current?.colorMain || "#dc2626";
 
   return (
-    <div className={`fixed inset-0 w-full h-full bg-black overflow-hidden font-['Helvetica_Neue',Arial,sans-serif] text-white ${isAnyMenuOpen ? 'cursor-default' : 'cursor-none'}`}>
+    <div style={{ touchAction: "none", userSelect: "none" }} className={`fixed inset-0 w-full h-full bg-black overflow-hidden font-['Helvetica_Neue',Arial,sans-serif] text-white ${isAnyMenuOpen ? 'cursor-default' : 'cursor-none'}`}>
       <canvas
         ref={canvasRef}
         className="block absolute inset-0 z-0 h-full w-full"
@@ -8954,18 +9062,23 @@ export default function App() {
             </button>
 
             <div className="flex gap-4">
-              {/* Aim/ADS Toggle Button */}
-              <button
-                onTouchStart={() => {
-                  (window as any).mobileAimActive = true;
-                }}
-                onTouchEnd={() => {
-                  (window as any).mobileAimActive = false;
-                }}
-                className="w-16 h-16 rounded-full bg-amber-950/70 border border-amber-500/30 text-amber-400 font-mono text-xs font-black shadow-lg active:scale-90 active:bg-amber-900/65 flex items-center justify-center transition-all uppercase tracking-wider select-none pointer-events-auto"
+              {/* Aim/ADS Joystick Button */}
+              <div
+                onTouchStart={handleAdsJoystickStart}
+                onTouchMove={handleAdsJoystickMove}
+                onTouchEnd={handleAdsJoystickEnd}
+                className="w-20 h-20 rounded-full bg-amber-950/80 border border-amber-500/40 flex items-center justify-center relative shadow-[0_0_20px_rgba(245,158,11,0.2)] active:scale-95 transition-all pointer-events-auto cursor-crosshair select-none"
               >
-                AIM
-              </button>
+                {adsJoystickStart && (
+                  <div
+                    className="absolute w-10 h-10 bg-amber-500/40 border border-amber-500/80 rounded-full flex items-center justify-center shadow-lg pointer-events-none"
+                    style={{
+                      transform: `translate(${Math.min(30, Math.max(-30, (adsJoystickCurrent?.x ?? 0) - adsJoystickStart.x))}px, ${Math.min(30, Math.max(-30, (adsJoystickCurrent?.y ?? 0) - adsJoystickStart.y))}px)`
+                    }}
+                  />
+                )}
+                <span className="text-[11px] font-mono font-black text-amber-500 tracking-widest uppercase pointer-events-none">AIM</span>
+              </div>
 
               {/* Fire/Shoot Joystick Button */}
               <div
