@@ -1327,6 +1327,7 @@ export default function App() {
     setWaveIntervalTime(0);
     setWaveRemainingZombies(15);
 
+    setIsWaveMode(true);
     setGameState("PLAYING");
   };
 
@@ -1941,6 +1942,38 @@ export default function App() {
       if (camera.baseZoom > 2.0) camera.baseZoom = 2.0;
     };
 
+    let initialTouchDist = 0;
+    let initialZoom = 1;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 2) {
+        initialTouchDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        initialZoom = camera.baseZoom;
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 2 && initialTouchDist > 0) {
+        const dist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        const factor = dist / initialTouchDist;
+        camera.baseZoom = initialZoom * factor;
+        if (camera.baseZoom < 0.3) camera.baseZoom = 0.3;
+        if (camera.baseZoom > 2.0) camera.baseZoom = 2.0;
+      }
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (e.touches.length < 2) {
+        initialTouchDist = 0;
+      }
+    };
+
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
     window.addEventListener("blur", handleBlur);
@@ -1948,6 +1981,9 @@ export default function App() {
     window.addEventListener("mousedown", handleMouseDown);
     window.addEventListener("mouseup", handleMouseUp);
     window.addEventListener("wheel", handleWheel, { passive: true });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: true });
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
 
     let lastShotTime = 0;
     const FIRE_RATE = 0.12; // slightly slower for punchier feel
@@ -2139,6 +2175,7 @@ export default function App() {
             if (waveRef.current.current >= 10) {
               setGameState("MENU");
               waveRef.current.mode = false;
+              setIsWaveMode(false);
               alert("PARABÉNS! VOCÊ SOBREVIVEU ÀS 10 ONDAS!");
             } else {
               waveRef.current.current++;
@@ -2193,6 +2230,16 @@ export default function App() {
       const zombieVolume = Math.min(0.7, zombieSum * 12);
       SoundManager.setZombieVolume(zombieVolume);
 
+      // Sync mobile input overrides
+      const mobShoot = (window as any).mobileShootActive;
+      const mobAim = (window as any).mobileAimActive;
+      if (mobShoot !== undefined) {
+        mouse.down = mobShoot;
+      }
+      if (mobAim !== undefined) {
+        mouse.rightDown = mobAim;
+      }
+
       // 0. Smoothly interpolate virtualMouse towards the true mouse based on sensitivity
       if (virtualMouseX === 0 && virtualMouseY === 0) {
         virtualMouseX = mouse.x;
@@ -2222,6 +2269,13 @@ export default function App() {
         if (keys.s) dy += 1;
         if (keys.a) dx -= 1;
         if (keys.d) dx += 1;
+
+        // Mobile joystick integration
+        const mobJoy = (window as any).mobileJoystick;
+        if (mobJoy && (mobJoy.dx !== 0 || mobJoy.dy !== 0)) {
+          dx = mobJoy.dx;
+          dy = mobJoy.dy;
+        }
       }
 
       if (!player.isDead && !player.isRolling && keys.space && player.rollCooldown <= 0 && (dx !== 0 || dy !== 0) && player.stamina > 20 && !player.staminaExhausted) {
@@ -2594,6 +2648,13 @@ export default function App() {
 
       player.recoil = Math.max(0, player.recoil - recoilRecoveryAmount);
 
+      // Smooth dynamic offset leaning towards the player's aiming/facing angle
+      if (!player.isDead && !isShopOpenRef.current) {
+        const leanOffset = activeWeapon === "rifle" ? 100 : 50;
+        targetCamX += Math.cos(player.angle) * leanOffset;
+        targetCamY += Math.sin(player.angle) * leanOffset;
+      }
+
       const camLerpSpeed = cinematicModeRef.current ? 2.2 : 5.0;
       camera.x += (targetCamX - camera.x) * camLerpSpeed * dt;
       camera.y += (targetCamY - camera.y) * camLerpSpeed * dt;
@@ -2606,16 +2667,86 @@ export default function App() {
       const playerScreenX = screenCenterX + (player.x - camera.x) * camera.zoom;
       const playerScreenY = screenCenterY + (player.y - camera.y) * camera.zoom;
 
+      // Track if mobile touch is active
+      useEffect(() => {
+        const checkTouch = () => {
+          const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+          setIsMobile(isTouch);
+        };
+        checkTouch();
+        window.addEventListener("resize", checkTouch);
+        return () => window.removeEventListener("resize", checkTouch);
+      }, []);
+
+      const [joystickStart, setJoystickStart] = useState<{ x: number; y: number } | null>(null);
+      const [joystickCurrent, setJoystickCurrent] = useState<{ x: number; y: number } | null>(null);
+
+      const handleJoystickStart = (e: React.TouchEvent) => {
+        const touch = e.touches[0];
+        setJoystickStart({ x: touch.clientX, y: touch.clientY });
+        setJoystickCurrent({ x: touch.clientX, y: touch.clientY });
+      };
+
+      const handleJoystickMove = (e: React.TouchEvent) => {
+        if (!joystickStart) return;
+        const touch = e.touches[0];
+        setJoystickCurrent({ x: touch.clientX, y: touch.clientY });
+
+        const dx = touch.clientX - joystickStart.x;
+        const dy = touch.clientY - joystickStart.y;
+        const dist = Math.hypot(dx, dy);
+        const maxDist = 50; 
+        const angle = Math.atan2(dy, dx);
+        const intensity = Math.min(dist / maxDist, 1.0);
+
+        (window as any).mobileJoystick = {
+          dx: Math.cos(angle) * intensity,
+          dy: Math.sin(angle) * intensity
+        };
+      };
+
+      const handleJoystickEnd = () => {
+        setJoystickStart(null);
+        setJoystickCurrent(null);
+        (window as any).mobileJoystick = { dx: 0, dy: 0 };
+      };
+
+      const isMobileDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
       if (
         mouse.down ||
         (mouse.rightDown && isAimEnabledRef.current) ||
         muzzleFlash > 0 ||
         player.isReloading
       ) {
-        player.angle = Math.atan2(
-          virtualMouseY - playerScreenY,
-          virtualMouseX - playerScreenX,
-        );
+        let aimed = false;
+        if (isMobileDevice || mobShoot || mobAim) {
+          let closestZ = null;
+          let closestDist = 800; // auto-aim range
+          for (const m of mannequins) {
+            if (m.hp > 0) {
+              const d = Math.hypot(m.x - player.x, m.y - player.y);
+              if (d < closestDist) {
+                closestDist = d;
+                closestZ = m;
+              }
+            }
+          }
+          if (closestZ) {
+            player.angle = Math.atan2(closestZ.y - player.y, closestZ.x - player.x);
+            // Sync virtualMouse position
+            const mScreenX = screenCenterX + (closestZ.x - camera.x) * camera.zoom;
+            const mScreenY = screenCenterY + (closestZ.y - camera.y) * camera.zoom;
+            virtualMouseX = mScreenX;
+            virtualMouseY = mScreenY;
+            aimed = true;
+          }
+        }
+        if (!aimed) {
+          player.angle = Math.atan2(
+            virtualMouseY - playerScreenY,
+            virtualMouseX - playerScreenX,
+          );
+        }
       } else {
         if (dx !== 0 || dy !== 0) {
           const targetAngle = Math.atan2(dy, dx);
@@ -4447,16 +4578,16 @@ export default function App() {
 
       screenShakeStr =
         wType === "basuca"
-          ? 65
+          ? 95
           : wType === "rifle"
-            ? 35
+            ? 55
             : wType === "magnum"
-              ? 20
+              ? 35
               : wType === "doze"
-                ? 22
+                ? 38
                 : wType === "gun"
-                  ? 10
-                  : 6;
+                  ? 14
+                  : 10;
     };
 
     const draw = (dt: number, time: number) => {
@@ -7040,6 +7171,9 @@ export default function App() {
       window.removeEventListener("mousedown", handleMouseDown);
       window.removeEventListener("mouseup", handleMouseUp);
       window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
       cancelAnimationFrame(animationFrameId);
     };
   }, [gameState]);
@@ -7164,6 +7298,7 @@ export default function App() {
                   vanTargetY = -350;
 
                   waveRef.current.mode = false;
+                  setIsWaveMode(false);
                   (window as any).clearZombiesOnStart = true;
                   (window as any).freeModeSpawningEnabled = false;
                   setGameState("PLAYING");
@@ -7368,122 +7503,182 @@ export default function App() {
         {/* Top Header Tactical Element */}
         <div className="flex justify-between items-start opacity-90 w-full">
           <div className="flex gap-2 md:gap-3 pointer-events-none items-stretch">
-            {/* Player Info Top Left */}
-            <div
-              id="ui-player-main-box"
-              className="flex items-stretch gap-3 bg-black/80 backdrop-blur-md p-2 pr-4 md:pr-6 border-l-[4px] rounded-br-xl relative overflow-hidden transition-all duration-300"
-              style={{ borderColor: uiColor, boxShadow: `0 0 20px ${uiColor}30`, backgroundImage: `linear-gradient(to right, ${uiColor}40, transparent)` }}
-            >
-              {/* Scanline overlay */}
-              <div className="absolute inset-0 pointer-events-none opacity-20 bg-[repeating-linear-gradient(transparent,transparent_2px,#000_2px,#000_4px)]" />
-              <div
-                id="ui-profile-box"
-                className="relative w-10 h-10 md:w-12 md:h-12 bg-black border flex-shrink-0 grid place-items-center overflow-hidden"
-                style={{ borderColor: `${uiColor}50` }}
-              >
-                {skinRef.current?.imgUrl ? (
-                  <img src={skinRef.current.imgUrl} className="w-full h-full object-cover filter saturate-150 contrast-125" alt="profile" style={{ imageRendering: "pixelated" }} />
-                ) : (
-                  <span
-                    id="ui-profile-letter"
-                    className="text-xl md:text-2xl font-bold font-mono opacity-80 mix-blend-screen tracking-tighter"
-                    style={{ color: uiColor }}
+            {/* Left Stack for Vitals + Ammo HUD */}
+            <div className="flex flex-col gap-1.5 items-start">
+              <div className="flex gap-2 md:gap-3 items-stretch">
+                {/* Player Info Top Left */}
+                <div
+                  id="ui-player-main-box"
+                  className="flex items-stretch gap-3 bg-black/80 backdrop-blur-md p-2 pr-4 md:pr-6 border-l-[4px] rounded-br-xl relative overflow-hidden transition-all duration-300"
+                  style={{ borderColor: uiColor, boxShadow: `0 0 20px ${uiColor}30`, backgroundImage: `linear-gradient(to right, ${uiColor}40, transparent)` }}
+                >
+                  {/* Scanline overlay */}
+                  <div className="absolute inset-0 pointer-events-none opacity-20 bg-[repeating-linear-gradient(transparent,transparent_2px,#000_2px,#000_4px)]" />
+                  <div
+                    id="ui-profile-box"
+                    className="relative w-10 h-10 md:w-12 md:h-12 bg-black border flex-shrink-0 grid place-items-center overflow-hidden"
+                    style={{ borderColor: `${uiColor}50` }}
                   >
-                    K
+                    {skinRef.current?.imgUrl ? (
+                      <img src={skinRef.current.imgUrl} className="w-full h-full object-cover filter saturate-150 contrast-125" alt="profile" style={{ imageRendering: "pixelated" }} />
+                    ) : (
+                      <span
+                        id="ui-profile-letter"
+                        className="text-xl md:text-2xl font-bold font-mono opacity-80 mix-blend-screen tracking-tighter"
+                        style={{ color: uiColor }}
+                      >
+                        K
+                      </span>
+                    )}
+                    <div className="absolute inset-0 pointer-events-none border" style={{ borderColor: `${uiColor}20` }} />
+                  </div>
+
+                  <div className="flex flex-col flex-1 min-w-[140px] md:min-w-[180px] justify-center relative z-10">
+                    <div className="flex justify-between items-end mb-1">
+                      <span className="text-[9px] md:text-[10px] tracking-[0.2em] font-bold text-white uppercase drop-shadow">
+                        CMDR KELVIN
+                      </span>
+                      <span className="text-[8px] md:text-[9px] font-mono text-white/50 tracking-wider">
+                        VITALS:{" "}
+                        <span
+                          id="ui-player-hp-text"
+                          className="font-bold ml-1 drop-shadow-md"
+                          style={{ color: uiColor }}
+                        >
+                          100/100
+                        </span>
+                      </span>
+                    </div>
+
+                    <div className="h-1.5 md:h-2 w-full bg-black/80 skew-x-[-15deg] overflow-hidden p-[1px] mb-1 shadow-inner relative border" style={{ borderColor: `${uiColor}40` }}>
+                      <div className="absolute inset-0" style={{ backgroundColor: `${uiColor}30` }} />
+                      <div
+                        id="ui-player-hp-fill"
+                        className="relative h-full transition-all duration-300 border-r"
+                        style={{ width: "100%", backgroundColor: uiColor, borderColor: uiColor, boxShadow: `0 0 8px ${uiColor}` }}
+                      />
+                    </div>
+
+                    <div className="flex gap-2 items-center">
+                      <span className="text-[8px] text-white/40 tracking-[0.3em] uppercase">
+                        FURY
+                      </span>
+                      <div
+                        id="ui-fury-container"
+                        className="h-1 md:h-1.5 flex-1 bg-black/80 border border-white/10 skew-x-[-15deg] overflow-visible"
+                        title="Fury Meter relative"
+                      >
+                        <div
+                          id="ui-fury-fill"
+                          className="h-full bg-amber-500 transition-all duration-300 relative"
+                          style={{ width: "0%" }}
+                        >
+                          <div
+                            id="ui-fury-glow"
+                            className="absolute top-0 right-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent opacity-0 transition-opacity"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 items-center mt-1">
+                      <span className="text-[8px] text-white/40 tracking-[0.3em] uppercase">
+                        DODGE
+                      </span>
+                      <div className="h-1 md:h-1.5 flex-1 bg-black/80 border border-white/10 skew-x-[-15deg] overflow-hidden">
+                         <div
+                            id="ui-player-roll-fill"
+                            className="h-full transition-all duration-100"
+                            style={{ width: "100%", backgroundColor: "rgba(255,255,255,0.8)" }}
+                         />
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 items-center mt-1">
+                      <span className="text-[8px] text-white/40 tracking-[0.3em] uppercase">
+                        STMN
+                      </span>
+                      <div className="h-1 md:h-1.5 flex-1 bg-black/80 border border-white/10 skew-x-[-15deg] overflow-hidden">
+                         <div
+                            id="ui-player-stamina-fill"
+                            className="h-full transition-all duration-100"
+                            style={{ width: "100%", backgroundColor: "rgba(60,200,100,0.8)" }}
+                         />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tactical Kill Counter */}
+                <div className="flex flex-col justify-center items-center bg-black/80 backdrop-blur-md border border-white/10 border-b-[3px] rounded-br-xl p-1.5 px-3 md:px-4 shadow-lg" style={{ borderBottomColor: `${uiColor}90` }}>
+                  <span className="text-[7px] tracking-[0.2em] font-bold text-white/30 uppercase mb-0.5">
+                    KILLS
                   </span>
-                )}
-                <div className="absolute inset-0 pointer-events-none border" style={{ borderColor: `${uiColor}20` }} />
+                  <div className="flex items-baseline gap-1">
+                    <span
+                      id="ui-kill-count"
+                      className="text-xl md:text-2xl font-mono font-bold leading-none"
+                      style={{ color: uiColor, filter: `drop-shadow(0 0 6px ${uiColor})` }}
+                    >
+                      0
+                    </span>
+                  </div>
+                </div>
               </div>
 
-              <div className="flex flex-col flex-1 min-w-[140px] md:min-w-[180px] justify-center relative z-10">
-                <div className="flex justify-between items-end mb-1">
-                  <span className="text-[9px] md:text-[10px] tracking-[0.2em] font-bold text-white uppercase drop-shadow">
-                    CMDR KELVIN
-                  </span>
-                  <span className="text-[8px] md:text-[9px] font-mono text-white/50 tracking-wider">
-                    VITALS:{" "}
-                    <span
-                      id="ui-player-hp-text"
-                      className="font-bold ml-1 drop-shadow-md"
-                      style={{ color: uiColor }}
-                    >
-                      100/100
-                    </span>
-                  </span>
-                </div>
-
-                <div className="h-1.5 md:h-2 w-full bg-black/80 skew-x-[-15deg] overflow-hidden p-[1px] mb-1 shadow-inner relative border" style={{ borderColor: `${uiColor}40` }}>
-                  <div className="absolute inset-0" style={{ backgroundColor: `${uiColor}30` }} />
-                  <div
-                    id="ui-player-hp-fill"
-                    className="relative h-full transition-all duration-300 border-r"
-                    style={{ width: "100%", backgroundColor: uiColor, borderColor: uiColor, boxShadow: `0 0 8px ${uiColor}` }}
-                  />
-                </div>
-
-                <div className="flex gap-2 items-center">
-                  <span className="text-[8px] text-white/40 tracking-[0.3em] uppercase">
-                    FURY
-                  </span>
-                  <div
-                    id="ui-fury-container"
-                    className="h-1 md:h-1.5 flex-1 bg-black/80 border border-white/10 skew-x-[-15deg] overflow-visible"
-                    title="Fury Meter relative"
-                  >
-                    <div
-                      id="ui-fury-fill"
-                      className="h-full bg-amber-500 transition-all duration-300 relative"
-                      style={{ width: "0%" }}
-                    >
+              {/* Active Weapon & Ammo Panel (Moved under vitals) */}
+              <div
+                id="ui-ammo-panel"
+                className="flex items-center gap-3 pointer-events-none select-none z-45 transition-opacity duration-200 bg-black/80 backdrop-blur-md p-1.5 px-3 border border-white/10 border-l-[3px] rounded-r-xl shadow-lg mt-1"
+                style={{ borderColor: uiColor }}
+              >
+                <div className="relative w-20 h-8 flex items-center justify-center">
+                  {[
+                    { id: "pistola" },
+                    { id: "gun" },
+                    { id: "uzi" },
+                    { id: "doze" },
+                    { id: "basuca" },
+                    { id: "rifle" },
+                    { id: "magnum" }
+                  ].map((w) => {
+                    const themeColor = WEAPONS_DETAILS[w.id]?.color || "#fff";
+                    return (
                       <div
-                        id="ui-fury-glow"
-                        className="absolute top-0 right-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent opacity-0 transition-opacity"
+                        key={w.id}
+                        id={`ui-ammo-weapon-${w.id}`}
+                        style={{ display: "none" }}
+                        className="transition-all duration-75 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
+                      >
+                        <RenderWeaponIcon type={w.id} color={themeColor} isHudLarge={true} />
+                      </div>
+                    );
+                  })}
+
+                  {/* Reloading Overlay with Progress Bar */}
+                  <div 
+                    id="ui-ammo-reload-overlay"
+                    style={{ opacity: 0 }}
+                    className="absolute inset-0 flex flex-col items-center justify-center bg-black/85 backdrop-blur-[1px] rounded border border-amber-500/20 px-2 transition-opacity duration-200"
+                  >
+                    <span className="text-[6.5px] font-mono font-bold text-amber-500 tracking-[0.1em] uppercase mb-0.5">RECARREGANDO</span>
+                    <div className="w-full h-0.5 bg-zinc-900 border border-zinc-800 rounded-full overflow-hidden">
+                      <div 
+                        id="ui-ammo-reload-fill"
+                        className="h-full bg-amber-500"
+                        style={{ width: "0%" }}
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="flex gap-2 items-center mt-1">
-                  <span className="text-[8px] text-white/40 tracking-[0.3em] uppercase">
-                    DODGE
-                  </span>
-                  <div className="h-1 md:h-1.5 flex-1 bg-black/80 border border-white/10 skew-x-[-15deg] overflow-hidden">
-                     <div
-                        id="ui-player-roll-fill"
-                        className="h-full transition-all duration-100"
-                        style={{ width: "100%", backgroundColor: "rgba(255,255,255,0.8)" }}
-                     />
-                  </div>
-                </div>
+                <div className="w-[1px] h-6 bg-white/10" />
 
-                <div className="flex gap-2 items-center mt-1">
-                  <span className="text-[8px] text-white/40 tracking-[0.3em] uppercase">
-                    STMN
-                  </span>
-                  <div className="h-1 md:h-1.5 flex-1 bg-black/80 border border-white/10 skew-x-[-15deg] overflow-hidden">
-                     <div
-                        id="ui-player-stamina-fill"
-                        className="h-full transition-all duration-100"
-                        style={{ width: "100%", backgroundColor: "rgba(60,200,100,0.8)" }}
-                     />
-                  </div>
+                <div className="text-2xl font-black font-mono tracking-tighter flex items-baseline text-white">
+                  <span id="ui-ammo-count" className="text-white">200</span>
+                  <span className="text-sm text-white/30 font-light mx-0.5 transform rotate-[15deg]">/</span>
+                  <span id="ui-ammo-max" className="text-xs text-white/40 font-bold">200</span>
                 </div>
-              </div>
-            </div>
-
-            {/* Tactical Kill Counter */}
-            <div className="flex flex-col justify-center items-center bg-black/80 backdrop-blur-md border border-white/10 border-b-[3px] rounded-br-xl p-1.5 px-3 md:px-4 shadow-lg" style={{ borderBottomColor: `${uiColor}90` }}>
-              <span className="text-[7px] tracking-[0.2em] font-bold text-white/30 uppercase mb-0.5">
-                KILLS
-              </span>
-              <div className="flex items-baseline gap-1">
-                <span
-                  id="ui-kill-count"
-                  className="text-xl md:text-2xl font-mono font-bold leading-none"
-                  style={{ color: uiColor, filter: `drop-shadow(0 0 6px ${uiColor})` }}
-                >
-                  0
-                </span>
               </div>
             </div>
 
@@ -8319,7 +8514,7 @@ export default function App() {
 
         <div
           id="ui-hotbar"
-          className="absolute bottom-6 left-6 z-40 pointer-events-auto transition-opacity duration-300"
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 pointer-events-auto transition-opacity duration-300"
         >
           <div className="flex gap-2">
             {inventoryRef.current.hotbar.map((item, i) => {
@@ -8535,6 +8730,30 @@ export default function App() {
                   </button>
                 </div>
 
+                {/* Mobile Controls Toggle */}
+                <div className="flex justify-between items-center bg-white/[0.02] border border-white/5 p-2.5 rounded-lg hover:border-white/10 transition-colors">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[10px] font-mono font-bold tracking-wide text-white uppercase">
+                      CONTROLES VIRTUAIS
+                    </span>
+                    <span className="text-[8px] font-mono text-white/30 lowercase">
+                      exibe controles para dispositivos móveis
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => setShowMobileControls(!showMobileControls)}
+                    className={`w-10 h-5.5 rounded-full p-0.5 transition-colors duration-300 focus:outline-none flex items-center relative ${
+                      showMobileControls ? "bg-emerald-500" : "bg-zinc-800"
+                    }`}
+                  >
+                    <motion.div
+                      layout
+                      className="w-4.5 h-4.5 bg-white rounded-full shadow-md"
+                      animate={{ x: showMobileControls ? 18 : 0 }}
+                    />
+                  </button>
+                </div>
+
                 {/* Advanced Settings Divider */}
                 <div className="flex items-center gap-2 border-t border-white/5 pt-2 mt-1">
                   <span className="text-[9px] font-mono font-black tracking-[0.2em] text-white/40 uppercase">
@@ -8625,65 +8844,78 @@ export default function App() {
           )}
         </AnimatePresence>
 
-        {/* Bottom Panel Tactical UI */}
-        {gameState === "PLAYING" &&
-        <div className="absolute inset-0 z-20 pointer-events-none p-4 sm:p-6 md:p-8 flex flex-col justify-end">
-          <div className="flex justify-end items-end w-full pointer-events-none">
-          <div
-            id="ui-ammo-panel"
-            className="flex flex-col items-end justify-end absolute bottom-6 right-6 pointer-events-none select-none z-45 transition-opacity duration-200"
+      {/* Mobile Controls Overlay */}
+      {gameState === "PLAYING" && (isMobile || showMobileControls) && (
+        <div className="absolute inset-0 z-30 pointer-events-none select-none">
+          {/* Movement Joystick Area (Left Side) */}
+          <div 
+            className="absolute bottom-12 left-12 w-40 h-40 bg-zinc-950/20 border border-white/5 rounded-full flex items-center justify-center pointer-events-auto"
+            onTouchStart={handleJoystickStart}
+            onTouchMove={handleJoystickMove}
+            onTouchEnd={handleJoystickEnd}
           >
-            {/* Ammo Counter Numbers */}
-            <div className="text-5xl font-black font-mono tracking-tighter flex items-baseline text-white mb-2 drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
-              <span id="ui-ammo-count" className="text-white">200</span>
-              <span className="text-2xl text-white/30 font-light mx-1 transform rotate-[15deg]">/</span>
-              <span id="ui-ammo-max" className="text-xl text-white/40 font-bold">200</span>
-            </div>
-
-            {/* Active Weapon Image & Reload Overlay */}
-            <div className="relative w-40 h-16 flex items-center justify-end">
-              {[
-                { id: "pistola" },
-                { id: "gun" },
-                { id: "uzi" },
-                { id: "doze" },
-                { id: "basuca" },
-                { id: "rifle" },
-                { id: "magnum" }
-              ].map((w) => {
-                const themeColor = WEAPONS_DETAILS[w.id]?.color || "#fff";
-                return (
-                  <div
-                    key={w.id}
-                    id={`ui-ammo-weapon-${w.id}`}
-                    style={{ display: "none" }}
-                    className="transition-all duration-75 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
-                  >
-                    <RenderWeaponIcon type={w.id} color={themeColor} isHudLarge={true} />
-                  </div>
-                );
-              })}
-
-              {/* Reloading Overlay with Progress Bar */}
+            {joystickStart && (
               <div 
-                id="ui-ammo-reload-overlay"
-                style={{ opacity: 0 }}
-                className="absolute inset-0 flex flex-col items-center justify-center bg-black/65 backdrop-blur-[1px] rounded border border-amber-500/20 px-2 transition-opacity duration-200"
+                className="absolute w-20 h-20 bg-white/10 border border-white/30 rounded-full flex items-center justify-center shadow-lg"
+                style={{
+                  transform: `translate(${Math.min(50, Math.max(-50, (joystickCurrent?.x ?? 0) - joystickStart.x))}px, ${Math.min(50, Math.max(-50, (joystickCurrent?.y ?? 0) - joystickStart.y))}px)`
+                }}
               >
-                <span className="text-[7.5px] font-mono font-bold text-amber-500 tracking-[0.2em] uppercase mb-1">RECARREGANDO</span>
-                <div className="w-full h-1 bg-zinc-900 border border-zinc-800 rounded-full overflow-hidden">
-                  <div 
-                    id="ui-ammo-reload-fill"
-                    className="h-full bg-amber-500 shadow-[0_0_6px_rgba(245,158,11,0.6)]"
-                    style={{ width: "0%" }}
-                  />
-                </div>
+                <div className="w-8 h-8 bg-red-500/30 border border-red-500/60 rounded-full" />
               </div>
+            )}
+            {!joystickStart && (
+              <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-full flex items-center justify-center">
+                <span className="text-[9px] font-mono text-white/30 tracking-widest uppercase">MOVE</span>
+              </div>
+            )}
+          </div>
+
+          {/* Action Buttons Area (Right Side) */}
+          <div className="absolute bottom-12 right-12 flex flex-col gap-4 items-end pointer-events-auto">
+            {/* Dodge/Roll Button */}
+            <button
+              onTouchStart={() => {
+                keys.space = true;
+              }}
+              onTouchEnd={() => {
+                keys.space = false;
+              }}
+              className="w-16 h-16 rounded-full bg-blue-950/70 border border-blue-500/30 text-blue-400 font-mono text-xs font-black shadow-lg active:scale-90 active:bg-blue-900/65 flex items-center justify-center transition-all uppercase tracking-wider"
+            >
+              ROLL
+            </button>
+
+            <div className="flex gap-4">
+              {/* Aim/ADS Toggle Button */}
+              <button
+                onTouchStart={() => {
+                  (window as any).mobileAimActive = true;
+                }}
+                onTouchEnd={() => {
+                  (window as any).mobileAimActive = false;
+                }}
+                className="w-16 h-16 rounded-full bg-amber-950/70 border border-amber-500/30 text-amber-400 font-mono text-xs font-black shadow-lg active:scale-90 active:bg-amber-900/65 flex items-center justify-center transition-all uppercase tracking-wider"
+              >
+                AIM
+              </button>
+
+              {/* Fire/Shoot Button */}
+              <button
+                onTouchStart={() => {
+                  (window as any).mobileShootActive = true;
+                }}
+                onTouchEnd={() => {
+                  (window as any).mobileShootActive = false;
+                }}
+                className="w-20 h-20 rounded-full bg-red-950/80 border border-red-500/40 text-red-500 font-mono text-sm font-black shadow-[0_0_20px_rgba(220,38,38,0.2)] active:scale-95 active:bg-red-900/70 flex items-center justify-center transition-all uppercase tracking-widest"
+              >
+                FIRE
+              </button>
             </div>
           </div>
         </div>
-      </div>
-      }
+      )}
     </div>
   );
 }
