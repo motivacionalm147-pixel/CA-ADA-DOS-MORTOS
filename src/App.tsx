@@ -1398,6 +1398,8 @@ export default function App() {
   const isAimEnabledRef = useRef(true);
   const isCrosshairEnabledRef = useRef(true);
   const aimSensitivityRef = useRef(1.0);
+  const showMobileControlsRef = useRef(true);
+  const isMobileRef = useRef(false);
 
   useEffect(() => {
     isAimEnabledRef.current = isAimEnabled;
@@ -1410,6 +1412,14 @@ export default function App() {
   useEffect(() => {
     aimSensitivityRef.current = aimSensitivity;
   }, [aimSensitivity]);
+
+  useEffect(() => {
+    showMobileControlsRef.current = showMobileControls;
+  }, [showMobileControls]);
+
+  useEffect(() => {
+    isMobileRef.current = isMobile;
+  }, [isMobile]);
 
   useEffect(() => {
     const skin = availableSkins.find((s) => s.id === selectedSkinId);
@@ -2014,7 +2024,8 @@ export default function App() {
 
     // ----- Resize Handling -----
     const resizeCanvas = () => {
-      const dpr = window.devicePixelRatio || 1;
+      const isMobileDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+      const dpr = isMobileDevice ? Math.min(1.8, window.devicePixelRatio || 1) : (window.devicePixelRatio || 1);
       canvas.width = window.innerWidth * dpr;
       canvas.height = window.innerHeight * dpr;
     };
@@ -2218,7 +2229,7 @@ export default function App() {
     };
 
     const update = (dt: number, time: number) => {
-      const dpr = window.devicePixelRatio || 1;
+      const dpr = canvas.width / window.innerWidth;
       const logicalWidth = canvas.width / dpr;
       const logicalHeight = canvas.height / dpr;
 
@@ -4783,7 +4794,7 @@ export default function App() {
       ctx.save(); // Save baseline clean state
 
       // High-DPI support: scale the rendering context and define logical dimensions
-      const dpr = window.devicePixelRatio || 1;
+      const dpr = canvas.width / window.innerWidth;
       ctx.scale(dpr, dpr);
       const logicalWidth = canvas.width / dpr;
       const logicalHeight = canvas.height / dpr;
@@ -5864,6 +5875,38 @@ export default function App() {
         ctx.save();
         ctx.translate(player.x, player.y);
         ctx.rotate(player.angle);
+
+        // Draw Mobile Aim Arrow
+        const isAimingOrShooting = (window as any).mobileAimActive || (window as any).mobileShootActive;
+        if ((isMobileRef.current || showMobileControlsRef.current) && isAimingOrShooting) {
+          ctx.save();
+          ctx.translate(65, 0);
+          
+          const pulse = 1.0 + Math.sin(Date.now() * 0.015) * 0.12;
+          ctx.scale(pulse, pulse);
+          
+          ctx.shadowColor = "rgba(239, 68, 68, 0.95)";
+          ctx.shadowBlur = 10;
+          
+          ctx.strokeStyle = "rgba(239, 68, 68, 0.95)";
+          ctx.lineWidth = 2.8;
+          ctx.lineCap = "round";
+          ctx.lineJoin = "round";
+          
+          ctx.beginPath();
+          ctx.moveTo(-8, -6);
+          ctx.lineTo(2, 0);
+          ctx.lineTo(-8, 6);
+          ctx.stroke();
+          
+          ctx.beginPath();
+          ctx.moveTo(-2, -6);
+          ctx.lineTo(8, 0);
+          ctx.lineTo(-2, 6);
+          ctx.stroke();
+          
+          ctx.restore();
+        }
 
         const activeWeapon =
           inventoryRef.current.hotbar[inventoryRef.current.activeSlot];
@@ -9027,57 +9070,75 @@ export default function App() {
         <div className="absolute inset-0 z-30 pointer-events-none select-none">
           {/* Movement Joystick Area (Left Side) */}
           <div 
-            className="absolute bottom-12 left-12 w-40 h-40 bg-zinc-950/20 border border-white/5 rounded-full flex items-center justify-center pointer-events-auto"
+            className="absolute bottom-12 left-12 w-36 h-36 bg-black/40 border-2 border-white/10 rounded-full flex items-center justify-center pointer-events-auto backdrop-blur-md relative shadow-[0_0_20px_rgba(255,255,255,0.05)]"
             onTouchStart={handleJoystickStart}
             onTouchMove={handleJoystickMove}
             onTouchEnd={handleJoystickEnd}
           >
+            {/* Tactical Crosshair Tick Marks */}
+            <div className="absolute top-1 w-0.5 h-2 bg-white/20" />
+            <div className="absolute bottom-1 w-0.5 h-2 bg-white/20" />
+            <div className="absolute left-1 h-0.5 w-2 bg-white/20" />
+            <div className="absolute right-1 h-0.5 w-2 bg-white/20" />
+            <div className="absolute w-28 h-28 border border-white/5 rounded-full pointer-events-none" />
+
             {joystickStart && (
               <div 
-                className="absolute w-20 h-20 bg-white/10 border border-white/30 rounded-full flex items-center justify-center shadow-lg"
+                className="absolute w-16 h-16 bg-zinc-900/80 border-2 border-white/30 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(255,255,255,0.15)] pointer-events-none"
                 style={{
-                  transform: `translate(${Math.min(50, Math.max(-50, (joystickCurrent?.x ?? 0) - joystickStart.x))}px, ${Math.min(50, Math.max(-50, (joystickCurrent?.y ?? 0) - joystickStart.y))}px)`
+                  transform: `translate(${Math.min(45, Math.max(-45, (joystickCurrent?.x ?? 0) - joystickStart.x))}px, ${Math.min(45, Math.max(-45, (joystickCurrent?.y ?? 0) - joystickStart.y))}px)`
                 }}
               >
-                <div className="w-8 h-8 bg-red-500/30 border border-red-500/60 rounded-full" />
+                <div className="w-4 h-4 bg-white/80 rounded-full shadow-[0_0_8px_white]" />
               </div>
             )}
             {!joystickStart && (
-              <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-full flex items-center justify-center">
-                <span className="text-[9px] font-mono text-white/30 tracking-widest uppercase">MOVE</span>
+              <div className="w-12 h-12 border border-white/10 rounded-full flex items-center justify-center relative">
+                <div className="w-2 h-2 bg-white/25 rounded-full animate-pulse" />
               </div>
             )}
           </div>
 
           {/* Action Buttons Area (Right Side) */}
-          <div className="absolute bottom-12 right-12 flex flex-col gap-4 items-end pointer-events-auto">
+          <div className="absolute bottom-12 right-12 flex flex-col gap-5 items-end pointer-events-auto">
             {/* Dodge/Roll Button */}
             <button
               onTouchStart={() => {
                 (window as any).mobileRollTrigger = true;
               }}
-              className="w-16 h-16 rounded-full bg-blue-950/70 border border-blue-500/30 text-blue-400 font-mono text-xs font-black shadow-lg active:scale-90 active:bg-blue-900/65 flex items-center justify-center transition-all uppercase tracking-wider select-none pointer-events-auto"
+              className="w-16 h-16 rounded-full bg-blue-950/40 border-2 border-blue-500/40 text-blue-400 font-mono text-xs font-black shadow-[0_0_15px_rgba(59,130,246,0.15)] flex items-center justify-center backdrop-blur-md active:scale-90 active:bg-blue-900/40 transition-all uppercase tracking-wider select-none pointer-events-auto"
             >
               ROLL
             </button>
 
-            <div className="flex gap-4">
+            <div className="flex gap-4 items-end">
               {/* Aim/ADS Joystick Button */}
               <div
                 onTouchStart={handleAdsJoystickStart}
                 onTouchMove={handleAdsJoystickMove}
                 onTouchEnd={handleAdsJoystickEnd}
-                className="w-20 h-20 rounded-full bg-amber-950/80 border border-amber-500/40 flex items-center justify-center relative shadow-[0_0_20px_rgba(245,158,11,0.2)] active:scale-95 transition-all pointer-events-auto cursor-crosshair select-none"
+                className="w-20 h-20 rounded-full bg-amber-950/40 border-2 border-amber-500/40 flex items-center justify-center relative shadow-[0_0_20px_rgba(245,158,11,0.15)] active:scale-95 transition-all pointer-events-auto cursor-crosshair select-none backdrop-blur-md"
               >
+                {/* Tactical Reticle Marks */}
+                <div className="absolute top-1 w-0.5 h-1.5 bg-amber-500/30" />
+                <div className="absolute bottom-1 w-0.5 h-1.5 bg-amber-500/30" />
+                <div className="absolute left-1 h-0.5 w-1.5 bg-amber-500/30" />
+                <div className="absolute right-1 h-0.5 w-1.5 bg-amber-500/30" />
+                <div className="absolute w-16 h-16 border border-amber-500/5 rounded-full pointer-events-none" />
+
                 {adsJoystickStart && (
                   <div
-                    className="absolute w-10 h-10 bg-amber-500/40 border border-amber-500/80 rounded-full flex items-center justify-center shadow-lg pointer-events-none"
+                    className="absolute w-10 h-10 bg-amber-950 border-2 border-amber-500 rounded-full flex items-center justify-center shadow-[0_0_10px_rgba(245,158,11,0.3)] pointer-events-none"
                     style={{
                       transform: `translate(${Math.min(30, Math.max(-30, (adsJoystickCurrent?.x ?? 0) - adsJoystickStart.x))}px, ${Math.min(30, Math.max(-30, (adsJoystickCurrent?.y ?? 0) - adsJoystickStart.y))}px)`
                     }}
-                  />
+                  >
+                    <div className="w-2.5 h-2.5 bg-amber-500 rounded-full animate-pulse" />
+                  </div>
                 )}
-                <span className="text-[11px] font-mono font-black text-amber-500 tracking-widest uppercase pointer-events-none">AIM</span>
+                {!adsJoystickStart && (
+                  <span className="text-[10px] font-mono font-black text-amber-500/70 tracking-widest uppercase pointer-events-none">AIM</span>
+                )}
               </div>
 
               {/* Fire/Shoot Joystick Button */}
@@ -9085,17 +9146,28 @@ export default function App() {
                 onTouchStart={handleAimStart}
                 onTouchMove={handleAimMove}
                 onTouchEnd={handleAimEnd}
-                className="w-20 h-20 rounded-full bg-red-950/80 border border-red-500/40 flex items-center justify-center relative shadow-[0_0_20px_rgba(220,38,38,0.2)] active:scale-95 transition-all pointer-events-auto cursor-crosshair select-none"
+                className="w-22 h-22 rounded-full bg-red-950/40 border-2 border-red-500/40 flex items-center justify-center relative shadow-[0_0_20px_rgba(239,68,68,0.15)] active:scale-95 transition-all pointer-events-auto cursor-crosshair select-none backdrop-blur-md"
               >
+                {/* Tactical Reticle Marks */}
+                <div className="absolute top-1 w-0.5 h-1.5 bg-red-500/30" />
+                <div className="absolute bottom-1 w-0.5 h-1.5 bg-red-500/30" />
+                <div className="absolute left-1 h-0.5 w-1.5 bg-red-500/30" />
+                <div className="absolute right-1 h-0.5 w-1.5 bg-red-500/30" />
+                <div className="absolute w-18 h-18 border border-red-500/5 rounded-full pointer-events-none" />
+
                 {aimJoystickStart && (
                   <div
-                    className="absolute w-10 h-10 bg-red-500/40 border border-red-500/80 rounded-full flex items-center justify-center shadow-lg pointer-events-none"
+                    className="absolute w-11 h-11 bg-red-950 border-2 border-red-500 rounded-full flex items-center justify-center shadow-[0_0_10px_rgba(239,68,68,0.3)] pointer-events-none"
                     style={{
                       transform: `translate(${Math.min(30, Math.max(-30, (aimJoystickCurrent?.x ?? 0) - aimJoystickStart.x))}px, ${Math.min(30, Math.max(-30, (aimJoystickCurrent?.y ?? 0) - aimJoystickStart.y))}px)`
                     }}
-                  />
+                  >
+                    <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
+                  </div>
                 )}
-                <span className="text-[11px] font-mono font-black text-red-500 tracking-widest uppercase pointer-events-none">FIRE</span>
+                {!aimJoystickStart && (
+                  <span className="text-[11px] font-mono font-black text-red-500/80 tracking-widest uppercase pointer-events-none">FIRE</span>
+                )}
               </div>
             </div>
           </div>
