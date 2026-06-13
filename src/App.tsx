@@ -2716,50 +2716,6 @@ export default function App() {
       const playerScreenX = screenCenterX + (player.x - camera.x) * camera.zoom;
       const playerScreenY = screenCenterY + (player.y - camera.y) * camera.zoom;
 
-      // Track if mobile touch is active
-      useEffect(() => {
-        const checkTouch = () => {
-          const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-          setIsMobile(isTouch);
-        };
-        checkTouch();
-        window.addEventListener("resize", checkTouch);
-        return () => window.removeEventListener("resize", checkTouch);
-      }, []);
-
-      const [joystickStart, setJoystickStart] = useState<{ x: number; y: number } | null>(null);
-      const [joystickCurrent, setJoystickCurrent] = useState<{ x: number; y: number } | null>(null);
-
-      const handleJoystickStart = (e: React.TouchEvent) => {
-        const touch = e.touches[0];
-        setJoystickStart({ x: touch.clientX, y: touch.clientY });
-        setJoystickCurrent({ x: touch.clientX, y: touch.clientY });
-      };
-
-      const handleJoystickMove = (e: React.TouchEvent) => {
-        if (!joystickStart) return;
-        const touch = e.touches[0];
-        setJoystickCurrent({ x: touch.clientX, y: touch.clientY });
-
-        const dx = touch.clientX - joystickStart.x;
-        const dy = touch.clientY - joystickStart.y;
-        const dist = Math.hypot(dx, dy);
-        const maxDist = 50; 
-        const angle = Math.atan2(dy, dx);
-        const intensity = Math.min(dist / maxDist, 1.0);
-
-        (window as any).mobileJoystick = {
-          dx: Math.cos(angle) * intensity,
-          dy: Math.sin(angle) * intensity
-        };
-      };
-
-      const handleJoystickEnd = () => {
-        setJoystickStart(null);
-        setJoystickCurrent(null);
-        (window as any).mobileJoystick = { dx: 0, dy: 0 };
-      };
-
       const isMobileDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
       if (
         mouse.down ||
