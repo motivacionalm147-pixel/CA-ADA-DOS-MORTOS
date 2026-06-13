@@ -1131,6 +1131,36 @@ export default function App() {
     (window as any).mobileJoystick = { dx: 0, dy: 0 };
   };
 
+  const [aimJoystickStart, setAimJoystickStart] = useState<{ x: number; y: number } | null>(null);
+  const [aimJoystickCurrent, setAimJoystickCurrent] = useState<{ x: number; y: number } | null>(null);
+
+  const handleAimStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    setAimJoystickStart({ x: touch.clientX, y: touch.clientY });
+    setAimJoystickCurrent({ x: touch.clientX, y: touch.clientY });
+    (window as any).mobileShootActive = true;
+  };
+
+  const handleAimMove = (e: React.TouchEvent) => {
+    if (!aimJoystickStart) return;
+    const touch = e.touches[0];
+    setAimJoystickCurrent({ x: touch.clientX, y: touch.clientY });
+
+    const dx = touch.clientX - aimJoystickStart.x;
+    const dy = touch.clientY - aimJoystickStart.y;
+    if (Math.hypot(dx, dy) > 5) {
+      const angle = Math.atan2(dy, dx);
+      (window as any).mobileAimJoystickAngle = angle;
+    }
+  };
+
+  const handleAimEnd = () => {
+    setAimJoystickStart(null);
+    setAimJoystickCurrent(null);
+    (window as any).mobileShootActive = false;
+    (window as any).mobileAimJoystickAngle = null;
+  };
+
   // Player weapon-specific upgrades levels state
   const freshWeaponUpgrades = () => ({
     damage: 0,
@@ -1996,6 +2026,15 @@ export default function App() {
 
     const handleTouchStart = (e: TouchEvent) => {
       if (e.touches.length === 2) {
+        for (let i = 0; i < e.touches.length; i++) {
+          const t = e.touches[i];
+          const isLeftJoystickZone = t.clientX < 280 && t.clientY > window.innerHeight - 280;
+          const isRightButtonZone = t.clientX > window.innerWidth - 280 && t.clientY > window.innerHeight - 280;
+          if (isLeftJoystickZone || isRightButtonZone) {
+            initialTouchDist = 0;
+            return;
+          }
+        }
         initialTouchDist = Math.hypot(
           e.touches[0].clientX - e.touches[1].clientX,
           e.touches[0].clientY - e.touches[1].clientY
@@ -2006,6 +2045,14 @@ export default function App() {
 
     const handleTouchMove = (e: TouchEvent) => {
       if (e.touches.length === 2 && initialTouchDist > 0) {
+        for (let i = 0; i < e.touches.length; i++) {
+          const t = e.touches[i];
+          const isLeftJoystickZone = t.clientX < 280 && t.clientY > window.innerHeight - 280;
+          const isRightButtonZone = t.clientX > window.innerWidth - 280 && t.clientY > window.innerHeight - 280;
+          if (isLeftJoystickZone || isRightButtonZone) {
+            return;
+          }
+        }
         const dist = Math.hypot(
           e.touches[0].clientX - e.touches[1].clientX,
           e.touches[0].clientY - e.touches[1].clientY
@@ -2309,6 +2356,17 @@ export default function App() {
       if (!player.isRunning && !player.isRolling) {
         player.stamina = Math.min(player.staminaMax, player.stamina + dt * 15);
         if (player.stamina > 20) player.staminaExhausted = false;
+      }
+
+      // Read mobile roll trigger
+      if ((window as any).mobileRollTrigger) {
+        keys.space = true;
+        (window as any).mobileRollTrigger = false;
+      } else {
+        const isMobileDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        if (isMobileDevice) {
+          keys.space = false;
+        }
       }
 
       let dx = 0;
@@ -2724,7 +2782,14 @@ export default function App() {
         player.isReloading
       ) {
         let aimed = false;
-        if (isMobileDevice || mobShoot || mobAim) {
+        const mobAimAngle = (window as any).mobileAimJoystickAngle;
+        if (mobShoot && mobAimAngle !== undefined && mobAimAngle !== null) {
+          player.angle = mobAimAngle;
+          // Sync virtualMouse position relative to player
+          virtualMouseX = playerScreenX + Math.cos(mobAimAngle) * 300;
+          virtualMouseY = playerScreenY + Math.sin(mobAimAngle) * 300;
+          aimed = true;
+        } else if (isMobileDevice || mobShoot || mobAim) {
           let closestZ = null;
           let closestDist = 800; // auto-aim range
           for (const m of mannequins) {
@@ -8881,12 +8946,9 @@ export default function App() {
             {/* Dodge/Roll Button */}
             <button
               onTouchStart={() => {
-                keys.space = true;
+                (window as any).mobileRollTrigger = true;
               }}
-              onTouchEnd={() => {
-                keys.space = false;
-              }}
-              className="w-16 h-16 rounded-full bg-blue-950/70 border border-blue-500/30 text-blue-400 font-mono text-xs font-black shadow-lg active:scale-90 active:bg-blue-900/65 flex items-center justify-center transition-all uppercase tracking-wider"
+              className="w-16 h-16 rounded-full bg-blue-950/70 border border-blue-500/30 text-blue-400 font-mono text-xs font-black shadow-lg active:scale-90 active:bg-blue-900/65 flex items-center justify-center transition-all uppercase tracking-wider select-none pointer-events-auto"
             >
               ROLL
             </button>
@@ -8900,23 +8962,28 @@ export default function App() {
                 onTouchEnd={() => {
                   (window as any).mobileAimActive = false;
                 }}
-                className="w-16 h-16 rounded-full bg-amber-950/70 border border-amber-500/30 text-amber-400 font-mono text-xs font-black shadow-lg active:scale-90 active:bg-amber-900/65 flex items-center justify-center transition-all uppercase tracking-wider"
+                className="w-16 h-16 rounded-full bg-amber-950/70 border border-amber-500/30 text-amber-400 font-mono text-xs font-black shadow-lg active:scale-90 active:bg-amber-900/65 flex items-center justify-center transition-all uppercase tracking-wider select-none pointer-events-auto"
               >
                 AIM
               </button>
 
-              {/* Fire/Shoot Button */}
-              <button
-                onTouchStart={() => {
-                  (window as any).mobileShootActive = true;
-                }}
-                onTouchEnd={() => {
-                  (window as any).mobileShootActive = false;
-                }}
-                className="w-20 h-20 rounded-full bg-red-950/80 border border-red-500/40 text-red-500 font-mono text-sm font-black shadow-[0_0_20px_rgba(220,38,38,0.2)] active:scale-95 active:bg-red-900/70 flex items-center justify-center transition-all uppercase tracking-widest"
+              {/* Fire/Shoot Joystick Button */}
+              <div
+                onTouchStart={handleAimStart}
+                onTouchMove={handleAimMove}
+                onTouchEnd={handleAimEnd}
+                className="w-20 h-20 rounded-full bg-red-950/80 border border-red-500/40 flex items-center justify-center relative shadow-[0_0_20px_rgba(220,38,38,0.2)] active:scale-95 transition-all pointer-events-auto cursor-crosshair select-none"
               >
-                FIRE
-              </button>
+                {aimJoystickStart && (
+                  <div
+                    className="absolute w-10 h-10 bg-red-500/40 border border-red-500/80 rounded-full flex items-center justify-center shadow-lg pointer-events-none"
+                    style={{
+                      transform: `translate(${Math.min(30, Math.max(-30, (aimJoystickCurrent?.x ?? 0) - aimJoystickStart.x))}px, ${Math.min(30, Math.max(-30, (aimJoystickCurrent?.y ?? 0) - aimJoystickStart.y))}px)`
+                    }}
+                  />
+                )}
+                <span className="text-[11px] font-mono font-black text-red-500 tracking-widest uppercase pointer-events-none">FIRE</span>
+              </div>
             </div>
           </div>
         </div>
