@@ -1,4 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Stardos+Stencil:wght@700&family=Oswald:wght@900&display=swap');
 @import "tailwindcss";
+
+.menu-brick-bg {
+  background-image: radial-gradient(circle, transparent 20%, rgba(0, 0, 0, 0.9) 95%), url('https://images.unsplash.com/photo-1524439188326-e47322d1cef2?auto=format&fit=crop&w=1200&q=80');
+  background-size: cover;
+  background-position: center;
+}
+
+.menu-title-stencil {
+  font-family: 'Oswald', sans-serif;
+  letter-spacing: 2px;
+  color: #111;
+  text-shadow: 1px 1px 0px #fff, -1px -1px 0px #fff, 1px -1px 0px #fff, -1px 1px 0px #fff, 0px 4px 15px rgba(0,0,0,0.9);
+}
+
+.menu-title-survival {
+  font-family: 'Oswald', sans-serif;
+  letter-spacing: 2px;
+  color: #a80f0f;
+  text-shadow: 1px 1px 0px #fff, -1px -1px 0px #fff, 1px -1px 0px #fff, -1px 1px 0px #fff, 0px 4px 15px rgba(168,15,15,0.4);
+}
+
+.menu-btn-concrete {
+  background: linear-gradient(135deg, #dcdcdc 0%, #b8b8b8 100%);
+  border: 4px solid #5a0a0a;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+  font-family: 'Oswald', sans-serif;
+  color: #111;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menu-btn-concrete:hover {
+  transform: scale(1.03);
+  background: linear-gradient(135deg, #ebebeb 0%, #cccccc 100%);
+  box-shadow: 0 10px 20px rgba(168,15,15,0.3);
+  border-color: #a80f0f;
+}
 
 .vignette {
   position: absolute;

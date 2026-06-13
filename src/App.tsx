@@ -7438,49 +7438,26 @@ export default function App() {
       </div>
 
       {gameState === "MENU" && (
-        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black pointer-events-auto overflow-hidden">
-          {/* Animated Tactical Cyber Grid Background */}
-          <div className="absolute inset-0 opacity-15 pointer-events-none" style={{
-            backgroundImage: "linear-gradient(rgba(220, 38, 38, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(220, 38, 38, 0.1) 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
-            backgroundPosition: "center",
-          }} />
-          
-          {/* Scanline overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-red-900/5 to-transparent pointer-events-none z-10 w-full h-[300%] animate-scan" style={{ mixBlendMode: "overlay" }} />
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center menu-brick-bg pointer-events-auto overflow-hidden">
+          {/* Subtle dark vignette overlay */}
+          <div className="absolute inset-0 bg-black/40 pointer-events-none z-10" />
 
-          {/* Corner Telemetries / Crosshairs (Simplified & Clean) */}
-          <div className="absolute top-6 left-6 font-mono text-[9px] tracking-[0.2em] text-red-500/60 pointer-events-none select-none">
-            [SYS_STATE // ONLINE]
-          </div>
-          
-          <div className="absolute top-6 right-6 font-mono text-[9px] tracking-[0.2em] text-red-500/60 text-right pointer-events-none select-none">
-            [ALERT // HIGH INFESTATION]
-          </div>
-
-          {/* Interactive Hologram Center Crosshair */}
-          <div className="relative z-10 mb-4 opacity-70 flex items-center justify-center">
-            <div className="w-16 h-16 border border-dashed border-red-700/40 rounded-full animate-spin" style={{ animationDuration: "20s" }} />
-            <div className="absolute w-2 h-2 bg-red-600 rounded-full animate-ping" />
-          </div>
-
-          {/* Dynamic Header */}
-          <div className="relative mb-10 text-center select-none z-10">
-            <h1 className="text-6xl md:text-8xl font-black text-red-700 tracking-tighter uppercase drop-shadow-[0_0_30px_rgba(220,38,38,0.7)] relative">
-              <span className="absolute -left-4 -top-2 text-[8px] font-mono font-bold tracking-[0.3em] text-red-500/50">[SYS_ACTIVE]</span>
-              MANÍACO
+          {/* Clean minimal title header */}
+          <div className="relative mb-12 text-center select-none z-20 animate-in fade-in zoom-in-95 duration-500">
+            <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tight flex justify-center gap-4">
+              <span className="menu-title-stencil">MANÍACO</span>
+              <span className="menu-title-survival">SURVIVAL</span>
             </h1>
-            <p className="text-[10px] font-mono tracking-[0.4em] text-red-500/80 font-bold uppercase mt-2">
-              SURVIVAL COMBAT SIMULATOR
+            <p className="text-[12px] font-mono tracking-[0.35em] text-red-600/90 font-bold uppercase mt-2.5">
+              COMBAT SIMULATOR
             </p>
           </div>
 
-          {/* Redesigned Monospaced Tactical Buttons */}
-          <div className="flex flex-col gap-4 w-full max-w-sm relative z-10 px-6">
+          {/* Simple concrete buttons list */}
+          <div className="flex flex-col gap-4.5 w-full max-w-[420px] relative z-20 px-8">
              {/* Sandbox Mode Button */}
              <button
                 onClick={() => {
-                  // Reset upgrades to fresh values
                   upgradesRef.current = {
                     pistola: freshWeaponUpgrades(),
                     gun: freshWeaponUpgrades(),
@@ -7492,7 +7469,6 @@ export default function App() {
                   };
                   setUpgrades(JSON.parse(JSON.stringify(upgradesRef.current)));
 
-                  // Reset inventory
                   inventoryRef.current = {
                     hotbar: ["gun", null, null, null, null],
                     hotbarAmmo: [200, 0, 0, 0, 0],
@@ -7503,15 +7479,11 @@ export default function App() {
                     purchasedSkins: [],
                   };
 
-                  // Clean overlays/menus
                   setIsShopOpen(false);
                   setIsInventoryOpen(false);
                   setIsOutfitsOpen(false);
-
-                  // Infinite credits for Free Mode (Cenário Livre)
                   setCredits(999999999);
 
-                  // Reset Van (Combi) position
                   vanState = "PARKED";
                   VAN_X = 0;
                   VAN_Y = -350;
@@ -7525,20 +7497,18 @@ export default function App() {
                   setGameState("PLAYING");
                   SoundManager.playSound("click", 1.0);
                 }}
-                className="group relative py-3 bg-red-950/40 border border-red-800 text-white hover:bg-red-900/30 transition-all cursor-pointer rounded overflow-hidden flex flex-col items-center justify-center gap-0.5 shadow-[0_0_15px_rgba(220,38,38,0.15)]"
+                className="menu-btn-concrete w-full py-4.5 px-6 rounded-lg flex items-center gap-6 cursor-pointer"
              >
-                {/* Decorative corner ticks */}
-                <span className="absolute top-0 left-0 w-2 h-2 border-t border-l border-red-500 group-hover:scale-110 transition-transform" />
-                <span className="absolute top-0 right-0 w-2 h-2 border-t border-r border-red-500 group-hover:scale-110 transition-transform" />
-                <span className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-red-500 group-hover:scale-110 transition-transform" />
-                <span className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-red-500 group-hover:scale-110 transition-transform" />
-                
-                <span className="font-mono text-xs font-bold tracking-[0.25em] uppercase text-red-400 group-hover:text-white transition-colors">
-                  [ 01 ] MODO LIVRE
-                </span>
-                <span className="text-[8px] font-mono text-red-500/50 tracking-wider">
-                  CRÉDITOS INFINITOS // COMBATE LIVRE
-                </span>
+                <div className="w-12 h-12 rounded-full border-2 border-black/30 flex items-center justify-center bg-black/5 flex-shrink-0">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-black/80">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M12 2v20M2 12h20M12 12m-3 0a3 3 0 1 1 6 0 3 3 0 1 1-6 0" />
+                  </svg>
+                </div>
+                <div className="flex flex-col items-start leading-tight">
+                  <span className="text-xl font-black uppercase tracking-wider text-neutral-900">MODO LIVRE</span>
+                  <span className="text-[10px] text-neutral-800 font-bold opacity-75">TREINO E CRÉDITOS ILIMITADOS</span>
+                </div>
              </button>
 
              {/* Weapon Shop Button */}
@@ -7548,20 +7518,17 @@ export default function App() {
                   setIsOutfitsOpen(false);
                   SoundManager.playSound("click", 1.0);
                 }}
-                className="group relative py-3 bg-zinc-950/50 border border-zinc-700 text-white hover:bg-zinc-800/40 transition-all cursor-pointer rounded overflow-hidden flex flex-col items-center justify-center gap-0.5"
+                className="menu-btn-concrete w-full py-4.5 px-6 rounded-lg flex items-center gap-6 cursor-pointer"
              >
-                {/* Decorative corner ticks */}
-                <span className="absolute top-0 left-0 w-2 h-2 border-t border-l border-zinc-400" />
-                <span className="absolute top-0 right-0 w-2 h-2 border-t border-r border-zinc-400" />
-                <span className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-zinc-400" />
-                <span className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-zinc-400" />
-                
-                <span className="font-mono text-xs font-bold tracking-[0.25em] uppercase text-zinc-300 group-hover:text-white transition-colors">
-                  [ 02 ] LOJA DE COMBATE
-                </span>
-                <span className="text-[8px] font-mono text-zinc-500 tracking-wider">
-                  COMPRAR ARMAS, UPGRADES & SKINS
-                </span>
+                <div className="w-12 h-12 rounded-full border-2 border-black/30 flex items-center justify-center bg-black/5 flex-shrink-0">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-black/80">
+                    <path d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                  </svg>
+                </div>
+                <div className="flex flex-col items-start leading-tight">
+                  <span className="text-xl font-black uppercase tracking-wider text-neutral-900">LOJA</span>
+                  <span className="text-[10px] text-neutral-800 font-bold opacity-75">ARMAS, UPGRADES E SKINS</span>
+                </div>
              </button>
 
              {/* Outfits Button */}
@@ -7571,20 +7538,18 @@ export default function App() {
                   setIsShopOpen(false);
                   SoundManager.playSound("click", 1.0);
                 }}
-                className="group relative py-3 bg-zinc-950/50 border border-zinc-700 text-white hover:bg-zinc-800/40 transition-all cursor-pointer rounded overflow-hidden flex flex-col items-center justify-center gap-0.5"
+                className="menu-btn-concrete w-full py-4.5 px-6 rounded-lg flex items-center gap-6 cursor-pointer"
              >
-                {/* Decorative corner ticks */}
-                <span className="absolute top-0 left-0 w-2 h-2 border-t border-l border-zinc-400" />
-                <span className="absolute top-0 right-0 w-2 h-2 border-t border-r border-zinc-400" />
-                <span className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-zinc-400" />
-                <span className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-zinc-400" />
-                
-                <span className="font-mono text-xs font-bold tracking-[0.25em] uppercase text-zinc-300 group-hover:text-white transition-colors">
-                  [ 03 ] TRAJES TÁTICOS
-                </span>
-                <span className="text-[8px] font-mono text-zinc-500 tracking-wider">
-                  ESCOLHER APARÊNCIA DE AGENTE
-                </span>
+                <div className="w-12 h-12 rounded-full border-2 border-black/30 flex items-center justify-center bg-black/5 flex-shrink-0">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-black/80">
+                    <path d="M15 2H9L7 5H4v4h3v11h10V9h3V5h-3z" />
+                    <path d="M12 2v3m-3-1a3 3 0 0 0 6 0" />
+                  </svg>
+                </div>
+                <div className="flex flex-col items-start leading-tight">
+                  <span className="text-xl font-black uppercase tracking-wider text-neutral-900">TRAJES</span>
+                  <span className="text-[10px] text-neutral-800 font-bold opacity-75">SELECIONAR APARÊNCIA</span>
+                </div>
              </button>
 
              {/* Waves Mode Button */}
@@ -7593,20 +7558,19 @@ export default function App() {
                   startWavesMode();
                   SoundManager.playSound("click", 1.0);
                 }}
-                className="group relative py-3.5 bg-amber-950/30 border border-amber-600 text-amber-200 hover:bg-amber-800/20 hover:text-white transition-all cursor-pointer rounded overflow-hidden flex flex-col items-center justify-center gap-0.5 shadow-[0_0_15px_rgba(245,158,11,0.1)]"
+                className="menu-btn-concrete w-full py-4.5 px-6 rounded-lg flex items-center gap-6 cursor-pointer shadow-[0_4px_15px_rgba(168,15,15,0.4)]"
              >
-                {/* Decorative corner ticks */}
-                <span className="absolute top-0 left-0 w-2 h-2 border-t border-l border-amber-500 group-hover:scale-110 transition-transform" />
-                <span className="absolute top-0 right-0 w-2 h-2 border-t border-r border-amber-500 group-hover:scale-110 transition-transform" />
-                <span className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-amber-500 group-hover:scale-110 transition-transform" />
-                <span className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-amber-500 group-hover:scale-110 transition-transform" />
-                
-                <span className="font-mono text-xs font-bold tracking-[0.25em] uppercase text-amber-400 group-hover:text-amber-200 transition-colors">
-                  [ 04 ] MODO ONDAS
-                </span>
-                <span className="text-[8px] font-mono text-amber-500/70 tracking-wider">
-                  CAMPANHA DE SOBREVIVÊNCIA GRADUAL
-                </span>
+                <div className="w-12 h-12 rounded-full border-2 border-black/30 flex items-center justify-center bg-black/5 flex-shrink-0">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-black/80">
+                    <path d="M12 18v-9m-3 9v-7.5m6 7.5V11m-9 7V13m12 5V14.5" />
+                    <path d="M6 11.5a2 2 0 0 1 4 0M9 10.5a2 2 0 0 1 4 0M12 9a2 2 0 0 1 4 0M15 11a2 2 0 0 1 4 0" />
+                    <path d="M4 21c2.5-1.5 5.5-1.5 8 0s5.5 1.5 8 0" />
+                  </svg>
+                </div>
+                <div className="flex flex-col items-start leading-tight">
+                  <span className="text-xl font-black uppercase tracking-wider text-neutral-900">ONDA DE ZUMBIS</span>
+                  <span className="text-[10px] text-neutral-800 font-bold opacity-75">MODO CAMPANHA SOBREVIVÊNCIA</span>
+                </div>
              </button>
           </div>
         </div>
