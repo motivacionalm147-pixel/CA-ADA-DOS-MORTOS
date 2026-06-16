@@ -59,57 +59,168 @@ declare global {
   }
 }
 
+const CAMPFIRE_BIOS: Record<string, {
+  name: string;
+  role: string;
+  lore: string;
+  history: string;
+  preferredWeapon: string;
+  resistencia: string;
+  velocidade: string;
+  dano: string;
+  colorClass: string;
+  skinId: string;
+  statWidths: { res: string; vel: string; dmg: string };
+  imgScale: string;
+  imgTranslateY: string;
+}> = {
+  red: {
+    name: "Líder Brank",
+    role: "Veterano & Estrategista",
+    lore: "Assumiu a liderança do grupo após o colapso mundial. Mantém a ordem com punho de ferro e táticas precisas de combate urbano.",
+    history: "Sobreviveu a três cercos em metrópoles destruídas. Sua blindagem vermelha foi forjada de placas de blindagem militar. Seu lema é: 'Nenhum sobrevivente fica para trás'.",
+    preferredWeapon: "Pistola Pesada (Dano de Fogo +25%)",
+    resistencia: "-20% de Dano Recebido",
+    velocidade: "1.00x Velocidade padrão",
+    dano: "+25% Dano de Pistola",
+    colorClass: "text-red-500",
+    skinId: "red",
+    statWidths: { res: "80%", vel: "75%", dmg: "80%" },
+    imgScale: "135%",
+    imgTranslateY: "25px"
+  },
+  purple: {
+    name: "Sniper Mexicano",
+    role: "Atirador de Elite Fantasma",
+    lore: "Silencioso e letal nas regiões áridas. Ele consegue se mover rapidamente pelo terreno sem ser notado por hordas.",
+    history: "Conhecido como 'El Espectro'. Ele limpou caminhos inteiros abrindo espaço de cobertura para sobreviventes com disparos precisos a longa distância.",
+    preferredWeapon: "Rifle de Assalto / Precisão (+30%)",
+    resistencia: "Dano padrão",
+    velocidade: "1.15x Velocidade aumentada",
+    dano: "+30% Dano de Rifle",
+    colorClass: "text-purple-500",
+    skinId: "purple",
+    statWidths: { res: "50%", vel: "90%", dmg: "85%" },
+    imgScale: "185%",
+    imgTranslateY: "82px"
+  },
+  orange: {
+    name: "Nier o Bazuqueiro",
+    role: "Especialista em Demolições",
+    lore: "Equipado com traje selado pesado. Acredita que a melhor defesa é uma explosão colossal para limpar o perímetro.",
+    history: "Ex-engenheiro de escavação, ele adaptou lançadores de foguetes para conter grandes aglomerações e mutações gigantes de zumbis.",
+    preferredWeapon: "Lança-Foguetes / Bazuca (+50%)",
+    resistencia: "-40% de Dano Recebido (Pesado)",
+    velocidade: "0.85x Velocidade reduzida",
+    dano: "+50% Dano de Bazuca",
+    colorClass: "text-amber-500",
+    skinId: "orange",
+    statWidths: { res: "100%", vel: "60%", dmg: "100%" },
+    imgScale: "140%",
+    imgTranslateY: "32px"
+  },
+  blue: {
+    name: "Bluer Louco",
+    role: "Combatente Ágil e Veloz",
+    lore: "Reflexos sobre-humanos e impulsivo. Limpa corredores apertados e escapa de cercos inimigos em frações de segundos.",
+    history: "Piloto de fuga de elite. Quando a infecção estourou, converteu sua coordenação motora para desviar de zumbis com rajadas rápidas de Uzi.",
+    preferredWeapon: "Uzi / Submetralhadora (+20%)",
+    resistencia: "-10% de Dano Recebido",
+    velocidade: "1.25x Velocidade máxima",
+    dano: "+20% Dano de Uzi",
+    colorClass: "text-sky-500",
+    skinId: "blue",
+    statWidths: { res: "70%", vel: "100%", dmg: "70%" },
+    imgScale: "140%",
+    imgTranslateY: "38px"
+  }
+};
+
 const availableSkins = [
   {
     id: "red",
     colorMain: "#dc2626",
     colorDark: "#991b1b",
     colorSkin: "#fca5a5",
-    name: "Vermelho",
-    desc: "Soldado Raivoso",
-    imgUrl: "/8-bit_pixel_art_profile_picture_202606090141 (1).jpeg"
+    name: "Líder Brank",
+    desc: "Comandante implacável da linha de frente. Liderança forte e precisão militar.",
+    arma: "M4 ASSAULT RIFLE",
+    resistencia: "-20% Dano Recebido",
+    velocidade: "1.00x (Padrão)",
+    dano: "+25% Dano com Fuzil de Assalto",
+    imgUrl: "/lendas/personagens/lider brank.jpeg",
+    stats: { resistance: 0.8, speed: 1.0, damage: 1.25, preferredWeapon: "gun" }
   },
   {
     id: "purple",
     colorMain: "#9333ea",
     colorDark: "#6b21a8",
     colorSkin: "#e9d5ff",
-    name: "Aria",
-    desc: "Ágil e letal (Mulher)",
-    imgUrl: "/8-bit_pixel_art_profile_picture_202606090141 (3).jpeg"
+    name: "Sniper Mexicano",
+    desc: "Atirador de elite fantasma. Frio, preciso e extremamente furtivo.",
+    arma: "HEAVY SNIPER RIFLE",
+    resistencia: "1.00x (Padrão)",
+    velocidade: "1.15x (+15% Rápido)",
+    dano: "+30% Dano com Sniper Rifle",
+    imgUrl: "/lendas/personagens/Sniper mexicano.jpeg",
+    stats: { resistance: 1.0, speed: 1.15, damage: 1.30, preferredWeapon: "rifle" }
   },
   {
     id: "orange",
     colorMain: "#f97316",
     colorDark: "#c2410c",
     colorSkin: "#fdba74",
-    name: "Ignis",
-    desc: "Especialista Explosivo",
-    imgUrl: "/8-bit_pixel_art_profile_picture_202606090141 (2).jpeg"
+    name: "Nier o Bazuqueiro",
+    desc: "Demolidor tático pesado. Armadura impenetrável e destruição massiva.",
+    arma: "ROCKET LAUNCHER",
+    resistencia: "-40% Dano Recebido",
+    velocidade: "0.85x (-15% Lento)",
+    dano: "+50% Dano com Bazuca",
+    imgUrl: "/lendas/personagens/nier o bazuqueiro.jpeg",
+    stats: { resistance: 0.6, speed: 0.85, damage: 1.50, preferredWeapon: "basuca" }
   },
   {
     id: "blue",
     colorMain: "#2563eb",
     colorDark: "#1d4ed8",
     colorSkin: "#bfdbfe",
-    name: "Sentinela",
-    desc: "Veterano Tático",
-    imgUrl: "/8-bit_pixel_art_profile_picture_202606090141.jpeg"
+    name: "Bluer Louco",
+    desc: "Especialista ágil em combate de curta distância. Velocidade de reação absurda.",
+    arma: "DUAL UZIS",
+    resistencia: "-10% Dano Recebido",
+    velocidade: "1.25x (+25% Rápido)",
+    dano: "+20% Dano com Uzi",
+    imgUrl: "/lendas/personagens/bluer louco.jpeg",
+    stats: { resistance: 0.9, speed: 1.25, damage: 1.20, preferredWeapon: "uzi" }
   },
 ];
 
 class SoundManagerClass {
   private ctx: AudioContext | null = null;
   private music: HTMLAudioElement | null = null;
+  public menuMusic: HTMLAudioElement | null = null;
+  public gameplayMusic: HTMLAudioElement | null = null;
   private zombies: HTMLAudioElement | null = null;
   private motor: HTMLAudioElement | null = null;
   private sounds: Record<string, HTMLAudioElement> = {};
+  private activeMusicType: "NONE" | "MENU" | "GAMEPLAY" = "NONE";
+  private fadeIntervals: Set<any> = new Set();
+  private menuMusicSource: MediaElementAudioSourceNode | null = null;
+  private gameplayMusicSource: MediaElementAudioSourceNode | null = null;
+  private musicFilter: BiquadFilterNode | null = null;
 
   constructor() {
     if (typeof window !== "undefined") {
-      this.music = new Audio("/sounds/musica fundo.mp3");
-      this.music.loop = true;
-      this.music.volume = 0.25;
+      this.menuMusic = new Audio("/sounds/musica_menu.mp3");
+      this.menuMusic.loop = true;
+      this.menuMusic.volume = 0.35;
+
+      this.gameplayMusic = new Audio("/sounds/musica fundo.mp3");
+      this.gameplayMusic.loop = true;
+      this.gameplayMusic.volume = 0.25;
+
+      // Keep this.music pointing to gameplayMusic so fallback methods work
+      this.music = this.gameplayMusic;
 
       this.zombies = new Audio("/sounds/somde zumbis.mp3");
       this.zombies.loop = true;
@@ -144,15 +255,190 @@ class SoundManagerClass {
     if (this.ctx && this.ctx.state === "suspended") {
       this.ctx.resume();
     }
+    
+    // Set up persistent music filters to avoid browser audio graph crashes
+    if (this.ctx && !this.musicFilter) {
+      try {
+        this.musicFilter = this.ctx.createBiquadFilter();
+        this.musicFilter.type = "lowpass";
+        this.musicFilter.frequency.setValueAtTime(
+          (window as any).cinematicModeActive ? 850 : 22000,
+          this.ctx.currentTime
+        );
+        this.musicFilter.connect(this.ctx.destination);
+        
+        if (this.menuMusic) {
+          this.menuMusicSource = this.ctx.createMediaElementSource(this.menuMusic);
+          this.menuMusicSource.connect(this.musicFilter);
+        }
+        if (this.gameplayMusic) {
+          this.gameplayMusicSource = this.ctx.createMediaElementSource(this.gameplayMusic);
+          this.gameplayMusicSource.connect(this.musicFilter);
+        }
+      } catch (e) {
+        console.warn("Could not route music through AudioContext filters:", e);
+      }
+    }
+    
     return this.ctx;
   }
 
-  public playSound(name: string, volume: number = 0.5) {
+  public playTypewriterSound() {
+    const ctx = this.initContext();
+    if (!ctx) return;
+    const time = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(1450, time);
+    osc.frequency.exponentialRampToValueAtTime(550, time + 0.025);
+    
+    gain.gain.setValueAtTime(0.08, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.025);
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    
+    osc.start(time);
+    osc.stop(time + 0.03);
+  }
+
+  public playClickSound(volume: number = 0.5) {
+    const ctx = this.initContext();
+    if (!ctx) return;
+    const time = ctx.currentTime;
+    
+    // Robust, heavy mechanical click / radio key chirp:
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.type = "sine";
+    osc1.frequency.setValueAtTime(1000, time);
+    osc1.frequency.exponentialRampToValueAtTime(350, time + 0.04);
+    
+    gain1.gain.setValueAtTime(volume * 0.2, time);
+    gain1.gain.exponentialRampToValueAtTime(0.001, time + 0.04);
+    
+    osc1.connect(gain1);
+    gain1.connect(ctx.destination);
+    osc1.start(time);
+    osc1.stop(time + 0.05);
+    
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.type = "triangle";
+    osc2.frequency.setValueAtTime(150, time);
+    osc2.frequency.exponentialRampToValueAtTime(60, time + 0.08);
+    
+    gain2.gain.setValueAtTime(volume * 0.45, time);
+    gain2.gain.exponentialRampToValueAtTime(0.001, time + 0.08);
+    
+    osc2.connect(gain2);
+    gain2.connect(ctx.destination);
+    osc2.start(time);
+    osc2.stop(time + 0.09);
+  }
+
+  public playMenuMusic() {
     this.initContext();
+    if (this.activeMusicType === "MENU") return;
+    this.activeMusicType = "MENU";
+    
+    this.clearAllFades();
+
+    if (this.gameplayMusic) {
+      this.fadeAudioOut(this.gameplayMusic, 1200);
+    }
+    if (this.menuMusic) {
+      this.menuMusic.volume = 0.01;
+      this.menuMusic.play().then(() => {
+        this.fadeAudioIn(this.menuMusic, 0.35, 1200);
+      }).catch(e => console.log("Menu music failed", e));
+    }
+  }
+
+  public playGameplayMusic() {
+    this.initContext();
+    if (this.activeMusicType === "GAMEPLAY") return;
+    this.activeMusicType = "GAMEPLAY";
+    
+    this.clearAllFades();
+
+    if (this.menuMusic) {
+      this.fadeAudioOut(this.menuMusic, 1200);
+    }
+    if (this.gameplayMusic) {
+      this.gameplayMusic.volume = 0.01;
+      this.gameplayMusic.play().then(() => {
+        this.fadeAudioIn(this.gameplayMusic, 0.25, 1200);
+      }).catch(e => console.log("Gameplay music failed", e));
+    }
+  }
+
+  private clearAllFades() {
+    this.fadeIntervals.forEach(interval => clearInterval(interval));
+    this.fadeIntervals.clear();
+  }
+
+  public fadeAudioIn(audio: HTMLAudioElement, targetVol: number, durationMs: number) {
+    const steps = 25;
+    const stepTime = durationMs / steps;
+    let currentStep = 0;
+    const interval = setInterval(() => {
+      currentStep++;
+      const ratio = currentStep / steps;
+      audio.volume = ratio * targetVol;
+      if (currentStep >= steps) {
+        audio.volume = targetVol;
+        clearInterval(interval);
+        this.fadeIntervals.delete(interval);
+      }
+    }, stepTime);
+    this.fadeIntervals.add(interval);
+  }
+
+  public fadeAudioOut(audio: HTMLAudioElement, durationMs: number) {
+    const steps = 25;
+    const stepTime = durationMs / steps;
+    const startVol = audio.volume;
+    let currentStep = 0;
+    const interval = setInterval(() => {
+      currentStep++;
+      const ratio = 1 - currentStep / steps;
+      audio.volume = Math.max(0, ratio * startVol);
+      if (currentStep >= steps) {
+        audio.volume = 0;
+        audio.pause();
+        clearInterval(interval);
+        this.fadeIntervals.delete(interval);
+      }
+    }, stepTime);
+    this.fadeIntervals.add(interval);
+  }
+
+  public updateCinematicFilter(active: boolean) {
+    this.initContext();
+    if (this.ctx && this.musicFilter) {
+      const targetFreq = active ? 800 : 22000;
+      this.musicFilter.frequency.setTargetAtTime(targetFreq, this.ctx.currentTime, 0.3);
+    }
+  }
+
+  public playSound(name: string, volume: number = 0.5) {
+    const ctx = this.initContext();
+    if (name === "click") {
+      if (ctx && (window as any).cinematicModeActive) {
+        this.playClickSound(volume * 0.7);
+      } else {
+        this.playClickSound(volume);
+      }
+      return;
+    }
     const original = this.sounds[name];
     if (original) {
       const clone = original.cloneNode() as HTMLAudioElement;
-      clone.volume = volume;
+      clone.volume = (window as any).cinematicModeActive ? volume * 0.65 : volume; // muffled volume in cinematic mode
+      
       clone.play().catch(e => console.log("Audio play failed", e));
       clone.onended = () => {
         clone.remove();
@@ -160,11 +446,185 @@ class SoundManagerClass {
     }
   }
 
+  public playUpgradeCollectSound() {
+    const ctx = this.initContext();
+    if (!ctx) return;
+    const time = ctx.currentTime;
+    
+    // Lowpass filter if cinematic mode is active to muffle it
+    let filterNode: BiquadFilterNode | null = null;
+    if ((window as any).cinematicModeActive) {
+      filterNode = ctx.createBiquadFilter();
+      filterNode.type = "lowpass";
+      filterNode.frequency.setValueAtTime(1200, time);
+      filterNode.connect(ctx.destination);
+    }
+
+    // Satisfying sci-fi synthesizer collect chime arpeggio: C5 -> E5 -> G5 -> C6
+    const freqs = [523.25, 659.25, 783.99, 1046.50];
+    freqs.forEach((freq, idx) => {
+      const noteTime = time + idx * 0.06;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, noteTime);
+      // slight pitch slide up for sci-fi feel
+      osc.frequency.exponentialRampToValueAtTime(freq * 1.05, noteTime + 0.15);
+      
+      gain.gain.setValueAtTime(0, time);
+      gain.gain.setValueAtTime(0.12, noteTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, noteTime + 0.25);
+      
+      osc.connect(gain);
+      if (filterNode) {
+        gain.connect(filterNode);
+      } else {
+        gain.connect(ctx.destination);
+      }
+      
+      osc.start(noteTime);
+      osc.stop(noteTime + 0.3);
+    });
+  }
+
+  public playFootstepSound(volume: number = 0.08) {
+    const ctx = this.initContext();
+    if (!ctx) return;
+    const time = ctx.currentTime;
+    
+    // Softer, premium acoustic/organic shoe footstep:
+    // We combine a very soft low frequency sine pop (sole impact) with a tiny noise rustle (sand shift)
+    const osc = ctx.createOscillator();
+    const oscGain = ctx.createGain();
+    
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(65, time); // Low thud frequency
+    osc.frequency.exponentialRampToValueAtTime(30, time + 0.09);
+    
+    oscGain.gain.setValueAtTime(volume * 0.45, time);
+    oscGain.gain.exponentialRampToValueAtTime(0.001, time + 0.09);
+    
+    osc.connect(oscGain);
+    
+    // Noise component for texture
+    const bufferSize = ctx.sampleRate * 0.08;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+    
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+    
+    const bandpass = ctx.createBiquadFilter();
+    bandpass.type = "bandpass";
+    bandpass.frequency.setValueAtTime(180, time);
+    bandpass.Q.setValueAtTime(2.0, time);
+    
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(volume * 0.28, time);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, time + 0.07);
+    
+    noise.connect(bandpass);
+    bandpass.connect(noiseGain);
+    
+    // Lowpass filter destination to keep it incredibly soft and dynamic
+    const lowpass = ctx.createBiquadFilter();
+    lowpass.type = "lowpass";
+    lowpass.frequency.setValueAtTime((window as any).cinematicModeActive ? 350 : 550, time);
+    lowpass.connect(ctx.destination);
+    
+    oscGain.connect(lowpass);
+    noiseGain.connect(lowpass);
+    
+    osc.start(time);
+    osc.stop(time + 0.1);
+    noise.start(time);
+    noise.stop(time + 0.08);
+  }
+
+  public playCasingDropSound(isBazooka: boolean = false, volume: number = 0.5) {
+    const ctx = this.initContext();
+    if (!ctx) return;
+    const time = ctx.currentTime;
+    
+    // Create filter for cinematic mode if active
+    let filterNode: BiquadFilterNode | null = null;
+    if ((window as any).cinematicModeActive) {
+      filterNode = ctx.createBiquadFilter();
+      filterNode.type = "lowpass";
+      filterNode.frequency.setValueAtTime(1200, time);
+      filterNode.connect(ctx.destination);
+    }
+
+    const playBounce = (delay: number, bounceVol: number, pitchShift: number) => {
+      const noteTime = time + delay;
+      const finalVolume = bounceVol * volume;
+      
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      
+      osc.type = "sine";
+      const baseFreq = isBazooka ? 650 * pitchShift : 3300 * pitchShift;
+      osc.frequency.setValueAtTime(baseFreq, noteTime);
+      osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.9, noteTime + 0.08);
+      
+      gain.gain.setValueAtTime(0, noteTime);
+      gain.gain.linearRampToValueAtTime(finalVolume * (isBazooka ? 0.09 : 0.05), noteTime + 0.002);
+      gain.gain.exponentialRampToValueAtTime(0.001, noteTime + 0.08);
+      
+      osc.connect(gain);
+      if (filterNode) {
+        gain.connect(filterNode);
+      } else {
+        gain.connect(ctx.destination);
+      }
+      
+      osc.start(noteTime);
+      osc.stop(noteTime + 0.08);
+
+      // Add a subtle high-pass noise burst for metal-concrete impact click
+      const bufferSize = ctx.sampleRate * 0.015;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+      
+      const noise = ctx.createBufferSource();
+      noise.buffer = buffer;
+      const noiseGain = ctx.createGain();
+      
+      const filter = ctx.createBiquadFilter();
+      filter.type = "highpass";
+      filter.frequency.setValueAtTime(4200, noteTime);
+      
+      noiseGain.gain.setValueAtTime(finalVolume * (isBazooka ? 0.045 : 0.038), noteTime);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, noteTime + 0.015);
+      
+      noise.connect(filter);
+      filter.connect(noiseGain);
+      if (filterNode) {
+        noiseGain.connect(filterNode);
+      } else {
+        noiseGain.connect(ctx.destination);
+      }
+      
+      noise.start(noteTime);
+      noise.stop(noteTime + 0.02);
+    };
+
+    // Impact + 2 bounces
+    playBounce(0, 1.0, 1.0);
+    playBounce(0.055 + Math.random() * 0.015, 0.42, 0.95);
+    playBounce(0.11 + Math.random() * 0.015, 0.18, 0.9);
+  }
+
   public startBGMusic() {
     this.initContext();
-    if (this.music) {
-      this.music.play().catch(e => console.log("Music failed", e));
-    }
+    this.playGameplayMusic();
     if (this.zombies) {
       this.zombies.play().catch(e => console.log("Zombie ambient failed", e));
     }
@@ -174,7 +634,10 @@ class SoundManagerClass {
   }
 
   public stopBGMusic() {
-    if (this.music) this.music.pause();
+    this.clearAllFades();
+    this.activeMusicType = "NONE";
+    if (this.menuMusic) this.menuMusic.pause();
+    if (this.gameplayMusic) this.gameplayMusic.pause();
     if (this.zombies) this.zombies.pause();
     if (this.motor) this.motor.pause();
   }
@@ -207,8 +670,34 @@ class SoundManagerClass {
     compressor.attack.setValueAtTime(0.001, time);
     compressor.release.setValueAtTime(0.08, time);
 
-    masterGain.connect(compressor);
+    if ((window as any).cinematicModeActive) {
+      // Abafado bem dinâmico e encorpado: lowpass de 1800Hz com leve ganho nas frequências médias/baixas para manter o impacto
+      const lowpass = ctx.createBiquadFilter();
+      lowpass.type = "lowpass";
+      lowpass.frequency.setValueAtTime(1800, time);
+      lowpass.Q.setValueAtTime(1.5, time); // Adds resonance peak to keep it punchy and bass-heavy
+      
+      masterGain.connect(lowpass);
+      lowpass.connect(compressor);
+    } else {
+      masterGain.connect(compressor);
+    }
     compressor.connect(ctx.destination);
+
+    // Cinematic Environment Reverb Tail (simulates world reflections)
+    const reverbDelay = ctx.createDelay();
+    reverbDelay.delayTime.setValueAtTime(0.08, time);
+    const reverbFeedback = ctx.createGain();
+    reverbFeedback.gain.setValueAtTime(0.32, time);
+    const reverbFilter = ctx.createBiquadFilter();
+    reverbFilter.type = "lowpass";
+    reverbFilter.frequency.setValueAtTime(1200, time);
+
+    masterGain.connect(reverbDelay);
+    reverbDelay.connect(reverbFilter);
+    reverbFilter.connect(reverbFeedback);
+    reverbFeedback.connect(reverbDelay);
+    reverbFeedback.connect(compressor);
 
     const playNoise = (duration: number, bandpassFreq: number, q: number, gainVal: number, filterType: "bandpass" | "lowpass" | "highpass" = "bandpass") => {
       const bufferSize = ctx.sampleRate * duration;
@@ -331,6 +820,15 @@ class SoundManagerClass {
         playThump(250, 45, 0.22, 1.4);
         playRing(1600, 0.4, 0.15); // metallic chamber resonance
         this.playCasing(ctx, time + 0.25, 1600);
+        break;
+
+      case "minigun":
+        // M134 Minigun: Ultra high-speed, mechanical buzz combined with heavy gas bursts
+        playNoise(0.08, 900, 2.5, 0.75); // rapid burst noise
+        playNoise(0.04, 3200, 1.5, 0.45, "highpass"); // mechanical click/snap
+        playThump(180, 75, 0.06, 0.95); // bass punch
+        playRing(1400, 0.08, 0.04); // high metallic ring
+        this.playCasing(ctx, time + 0.05, 3100);
         break;
 
       default:
@@ -539,7 +1037,38 @@ class SoundManagerClass {
     noiseGain.connect(masterGain);
 
     noiseNode.start(time);
-    noiseNode.stop(time + 1.5);
+  }
+
+  public playLaserToggle(on: boolean) {
+    const ctx = this.initContext();
+    if (!ctx) return;
+    const time = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = "sine";
+    if (on) {
+      osc.frequency.setValueAtTime(600, time);
+      osc.frequency.exponentialRampToValueAtTime(1400, time + 0.12);
+      gain.gain.setValueAtTime(0.25, time);
+      gain.gain.exponentialRampToValueAtTime(0.001, time + 0.15);
+    } else {
+      osc.frequency.setValueAtTime(1000, time);
+      osc.frequency.exponentialRampToValueAtTime(300, time + 0.12);
+      gain.gain.setValueAtTime(0.2, time);
+      gain.gain.exponentialRampToValueAtTime(0.001, time + 0.15);
+    }
+
+    // Connect audio routing (handle low-pass cinematic filter if active)
+    let outputNode: AudioNode = ctx.destination;
+    if ((window as any).cinematicFilter) {
+      outputNode = (window as any).cinematicFilter;
+    }
+
+    osc.connect(gain);
+    gain.connect(outputNode);
+    osc.start(time);
+    osc.stop(time + 0.16);
   }
 }
 
@@ -581,14 +1110,14 @@ export const WEAPONS_DETAILS: Record<
     range: 3.0,
     handed: "two",
     spread: 0.08,
-    cost: 0,
+    cost: 320,
     color: "#34d399",
   },
   pistola: {
     id: "pistola",
     name: "TACTICAL PISTOL",
     desc: "Pistola semi-automática de alta precisão armada com uma única mão.",
-    damage: 38,
+    damage: 22,
     fireRate: 0.22,
     ammoMax: 15,
     reloadTime: 1.2,
@@ -599,7 +1128,7 @@ export const WEAPONS_DETAILS: Record<
     range: 2.8,
     handed: "one",
     spread: 0.03,
-    cost: 15,
+    cost: 35,
     color: "#60a5fa",
   },
   uzi: {
@@ -617,7 +1146,7 @@ export const WEAPONS_DETAILS: Record<
     range: 2.5,
     handed: "one",
     spread: 0.15,
-    cost: 30,
+    cost: 95,
     color: "#ec4899",
   },
   doze: {
@@ -635,7 +1164,7 @@ export const WEAPONS_DETAILS: Record<
     range: 1.5,
     handed: "two",
     spread: 0.22,
-    cost: 50,
+    cost: 280,
     color: "#f97316",
   },
   basuca: {
@@ -653,7 +1182,7 @@ export const WEAPONS_DETAILS: Record<
     range: 4.5,
     handed: "two",
     spread: 0.01,
-    cost: 90,
+    cost: 950,
     color: "#f87171",
   },
   rifle: {
@@ -671,7 +1200,7 @@ export const WEAPONS_DETAILS: Record<
     range: 8.5,
     handed: "two",
     spread: 0.002,
-    cost: 75,
+    cost: 500,
     color: "#a855f7",
   },
   magnum: {
@@ -689,8 +1218,26 @@ export const WEAPONS_DETAILS: Record<
     range: 3.0,
     handed: "one",
     spread: 0.02,
-    cost: 45,
+    cost: 160,
     color: "#e2e8f0",
+  },
+  minigun: {
+    id: "minigun",
+    name: "M134 MINIGUN",
+    desc: "Metralhadora giratória de supressão absoluta. Fogo contínuo extremamente denso, causando grande penalidade na velocidade de movimento do operador.",
+    damage: 16,
+    fireRate: 0.04, // Extremely fast!
+    ammoMax: 800,
+    reloadTime: 4.5,
+    bulletSpeed: 1400,
+    recoil: 0.05,
+    maxRecoil: 0.35,
+    kickback: 3,
+    range: 3.5,
+    handed: "two",
+    spread: 0.15,
+    cost: 1500,
+    color: "#facc15",
   },
 };
 
@@ -701,6 +1248,7 @@ export const getBarrelTip = (wType: string) => {
   if (wType === "doze") return { x: 94, y: -6 };
   if (wType === "basuca") return { x: 125, y: -12 };
   if (wType === "rifle") return { x: 131, y: -10 };
+  if (wType === "minigun") return { x: 110, y: -8 };
   return { x: 100, y: -9 }; // gun
 };
 
@@ -712,23 +1260,45 @@ const weaponImageUrls: Record<string, string> = {
   basuca: "/bazuka.png",
   magnum: "/magnum cromada.png",
   doze: "/dose padrao.png",
+  minigun: "/weapons/minigun_base.png",
 };
 
 export const WEAPON_SKINS = [
-  { id: "m4_azulao", weapon: "gun", name: "Azulão", url: "/skins/sem-fundo-m4 azulao.png", themeColor: "#3b82f6" },
-  { id: "m4_dourada", weapon: "gun", name: "Dourada", url: "/skins/sem-fundo-m4 dourada.png", themeColor: "#d4af37" },
-  { id: "m4_roxada", weapon: "gun", name: "Roxada", url: "/skins/sem-fundo-m4 roxada.png", themeColor: "#a855f7" },
-  { id: "m4_vermelhada", weapon: "gun", name: "Vermelhada", url: "/skins/sem-fundo-m4 vermelhada.png", themeColor: "#ef4444" },
-  { id: "sniper_8bit", weapon: "rifle", name: "8-Bit", url: "/skins/sem-fundo-8-bit_2D_pixel_art_sniper_202606082343 (1).png", themeColor: "#22d3ee" },
-  { id: "sniper_congelada", weapon: "rifle", name: "Congelada", url: "/skins/sem-fundo-sniper congelada.png", themeColor: "#60a5fa" },
-  { id: "sniper_eradoouro", weapon: "rifle", name: "Era de Ouro", url: "/skins/sem-fundo-sniper era de ouro.png", themeColor: "#fbbf24" },
-  { id: "sniper_lava", weapon: "rifle", name: "Lava", url: "/skins/sem-fundo-sniper lava.png", themeColor: "#f97316" },
-  { id: "sniper_roxada", weapon: "rifle", name: "Roxada", url: "/skins/sem-fundo-sniper roxada.png", themeColor: "#9333ea" },
-  { id: "doze_padrao", weapon: "doze", name: "Dose Padrão", url: "/dose padrao.png", themeColor: "#fcd34d" },
-  { id: "doze_cromada", weapon: "doze", name: "Dose Cromada", url: "/dose cromada.png", themeColor: "#fbbf24" },
-  { id: "doze_platinado", weapon: "doze", name: "Dose Platinado", url: "/dose platinado.png", themeColor: "#e2e8f0" },
-  { id: "doze_roxada", weapon: "doze", name: "Dose Roxada", url: "/dose roxado.png", themeColor: "#a855f7" },
-  { id: "doze_magman", weapon: "doze", name: "Dose Magman", url: "/dose magman (2).png", themeColor: "#ef4444" },
+  // M4 skins
+  { id: "m4_azulao", weapon: "gun", name: "Azulão", url: "/skins/sem-fundo-m4 azulao.png", themeColor: "#3b82f6", cost: 120 },
+  { id: "m4_dourada", weapon: "gun", name: "Dourada", url: "/skins/sem-fundo-m4 dourada.png", themeColor: "#d4af37", cost: 200 },
+  { id: "m4_roxada", weapon: "gun", name: "Roxada", url: "/skins/sem-fundo-m4 roxada.png", themeColor: "#a855f7", cost: 150 },
+  { id: "m4_vermelhada", weapon: "gun", name: "Vermelhada", url: "/skins/sem-fundo-m4 vermelhada.png", themeColor: "#ef4444", cost: 150 },
+  { id: "m4_8bit", weapon: "gun", name: "8-Bit Rifle", url: "/skins/sem-fundo-8-bit_pixel_art_rifle_202606151117.png", themeColor: "#22d3ee", cost: 180 },
+  // Sniper skins
+  { id: "sniper_8bit", weapon: "rifle", name: "8-Bit", url: "/skins/sem-fundo-8-bit_2D_pixel_art_sniper_202606082343 (1).png", themeColor: "#22d3ee", cost: 180 },
+  { id: "sniper_congelada", weapon: "rifle", name: "Congelada", url: "/skins/sem-fundo-sniper congelada.png", themeColor: "#60a5fa", cost: 160 },
+  { id: "sniper_eradoouro", weapon: "rifle", name: "Era de Ouro", url: "/skins/sem-fundo-sniper era de ouro.png", themeColor: "#fbbf24", cost: 250 },
+  { id: "sniper_lava", weapon: "rifle", name: "Lava", url: "/skins/sem-fundo-sniper lava.png", themeColor: "#f97316", cost: 200 },
+  { id: "sniper_roxada", weapon: "rifle", name: "Roxada", url: "/skins/sem-fundo-sniper roxada.png", themeColor: "#9333ea", cost: 150 },
+  { id: "sniper_acid", weapon: "rifle", name: "Acid Accents", url: "/skins/sem-fundo-8-bit_sniper_rifle_acid_accents_202606151117.png", themeColor: "#84cc16", cost: 220 },
+  { id: "sniper_rusted", weapon: "rifle", name: "Rusted", url: "/skins/sem-fundo-8-bit_sniper_rifle_rusted_skin_202606151117.png", themeColor: "#a16207", cost: 140 },
+  { id: "sniper_whitegold", weapon: "rifle", name: "White Gold", url: "/skins/sem-fundo-8-bit_sniper_rifle_white_gold_202606151117.png", themeColor: "#fef3c7", cost: 300 },
+  // Doze skins
+  { id: "doze_padrao", weapon: "doze", name: "Dose Padrão", url: "/dose padrao.png", themeColor: "#fcd34d", cost: 80 },
+  { id: "doze_cromada", weapon: "doze", name: "Dose Cromada", url: "/dose cromada.png", themeColor: "#fbbf24", cost: 120 },
+  { id: "doze_platinado", weapon: "doze", name: "Dose Platinado", url: "/dose platinado.png", themeColor: "#e2e8f0", cost: 160 },
+  { id: "doze_roxada", weapon: "doze", name: "Dose Roxada", url: "/dose roxado.png", themeColor: "#a855f7", cost: 150 },
+  { id: "doze_magman", weapon: "doze", name: "Dose Magman", url: "/dose magman (2).png", themeColor: "#ef4444", cost: 180 },
+  { id: "doze_obsidian", weapon: "doze", name: "Obsidian Lava", url: "/skins/sem-fundo-Tactical_shotgun_obsidian_lava_skin_202606151117.png", themeColor: "#f97316", cost: 250 },
+  // Uzi skins
+  { id: "uzi_8bit", weapon: "uzi", name: "8-Bit SMG", url: "/skins/sem-fundo-8-bit_pixel_art_submachine_gun_202606151117.png", themeColor: "#22d3ee", cost: 160 },
+  { id: "uzi_graffiti", weapon: "uzi", name: "Graffiti", url: "/skins/sem-fundo-Pixel_art_submachine_gun_graffiti_202606151117.png", themeColor: "#f472b6", cost: 200 },
+  // Basuca skins
+  { id: "basuca_hazard", weapon: "basuca", name: "Hazard", url: "/skins/sem-fundo-8-bit_rocket_launcher_hazard_skin_202606151117.png", themeColor: "#eab308", cost: 280 },
+  { id: "basuca_navy", weapon: "basuca", name: "Navy Chrome", url: "/skins/sem-fundo-8-bit_rocket_launcher_navy_chrome_202606151117.png", themeColor: "#60a5fa", cost: 320 },
+  { id: "basuca_olive", weapon: "basuca", name: "Olive Drab", url: "/skins/sem-fundo-8-bit_rocket_launcher_olive_drab_202606151117.png", themeColor: "#65a30d", cost: 250 },
+  // Minigun skins
+  { id: "minigun_gold", weapon: "minigun", name: "Ouro Maciço", url: "/weapons/minigun_gold.png", themeColor: "#fbbf24", cost: 450 },
+  { id: "minigun_lava", weapon: "minigun", name: "Lava Obsidiana", url: "/weapons/minigun_lava.png", themeColor: "#ef4444", cost: 500 },
+  { id: "minigun_purple", weapon: "minigun", name: "Ameaça Roxa", url: "/weapons/minigun_purple.png", themeColor: "#a855f7", cost: 400 },
+  { id: "minigun_silver", weapon: "minigun", name: "Prata Cromada", url: "/weapons/minigun_silver.png", themeColor: "#e4e4e7", cost: 350 },
+  { id: "minigun_toxic", weapon: "minigun", name: "Slime Tóxico", url: "/weapons/minigun_toxic.png", themeColor: "#84cc16", cost: 400 },
 ];
 
 const loadedWeaponImages: Record<string, HTMLImageElement> = {};
@@ -768,12 +1338,13 @@ const WEAPON_RENDER_CONFIG: Record<
   }
 > = {
   gun: { width: 100, height: 36, x: 0, y: -9, rotation: 0 },
-  pistola: { width: 44, height: 24, x: 4, y: -6, rotation: 0 },
+  pistola: { width: 44, height: 24, x: 42, y: 4, rotation: Math.PI },
   uzi: { width: 56, height: 28, x: 0, y: -7, rotation: 0 },
   doze: { width: 96, height: 24, x: -2, y: -6, rotation: 0 },
   basuca: { width: 140, height: 48, x: -15, y: -12, rotation: 0 },
   rifle: { width: 136, height: 40, x: -5, y: -10, rotation: 0 },
   magnum: { width: 48, height: 26, x: 4, y: -6, rotation: 0 },
+  minigun: { width: 120, height: 38, x: -8, y: -6, rotation: 0 },
 };
 
 export const RenderWeaponIcon = ({
@@ -1055,6 +1626,29 @@ export const RenderWeaponBlueprint = ({
   return null;
 };
 
+const GAMEPLAY_TIPS = [
+  {
+    title: "ONDAS DE ZUMBIS",
+    text: "Sobreviva a ondas progressivas de zumbis. A cada onda superada, novos inimigos mais fortes, velozes e resistentes surgirão para te caçar."
+  },
+  {
+    title: "LOJA DE EQUIPAMENTOS",
+    text: "Durante a partida, aproxime-se da Kombi verde estacionada no centro do mapa e aperte [E] para abrir a loja. Compre fuzis, escopetas, bazucas e munição."
+  },
+  {
+    title: "APRIMORAMENTOS PERMANENTES",
+    text: "Na aba 'Aprimoramentos' do menu de Personagem, use os créditos recebidos nas ondas para aprimorar vida máxima, velocidade, munição e dano permanentemente."
+  },
+  {
+    title: "ATRIBUTOS DE OPERADORES",
+    text: "Cada skin tem atributos reais: Líder Brank tem resistência e dano de pistola, Sniper Mexicano corre mais rápido, Nier é blindado e Bluer tem velocidade pura."
+  },
+  {
+    title: "CONTROLE E ESQUIVA",
+    text: "Pressione [Shift] ou [Espaço] para dar uma rolada tática. Isso te concede aceleração temporária e permite escapar de cercos mortais de zumbis."
+  }
+];
+
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const blurOverlayRef = useRef<HTMLDivElement>(null);
@@ -1085,9 +1679,13 @@ export default function App() {
     window.onerror = handleError;
     
     if (gameState === "PLAYING") {
-      SoundManager.startBGMusic();
+      if (cutsceneRef.current.active) {
+        SoundManager.playMenuMusic();
+      } else {
+        SoundManager.playGameplayMusic();
+      }
     } else {
-      SoundManager.stopBGMusic();
+      SoundManager.playMenuMusic();
     }
     return () => {
       window.onerror = null;
@@ -1107,8 +1705,166 @@ export default function App() {
   }, [isShopOpen]);
   const [inspectingItem, setInspectingItem] = useState<{type: "weapon" | "skin", id: string} | null>(null);
   const [isOutfitsOpen, setIsOutfitsOpen] = useState(false);
+  const [isBestiaryOpen, setIsBestiaryOpen] = useState(false);
+  const [selectedBestiaryZombie, setSelectedBestiaryZombie] = useState<string | null>(null);
+  const [viewingSkin, setViewingSkin] = useState<any | null>(null);
+  const [hoveredSkin, setHoveredSkin] = useState<any | null>(null);
   const [shopTab, setShopTab] = useState<"weapons" | "upgrades" | "skins">("weapons");
   const [selectedUpgradeId, setSelectedUpgradeId] = useState<string>("damage");
+
+  const [gameplayTipsOpen, setGameplayTipsOpen] = useState(false);
+  const [showInitialTips, setShowInitialTips] = useState(true);
+  const [currentTipIndex, setCurrentTipIndex] = useState(0);
+  const [isTypingActive, setIsTypingActive] = useState(false);
+  const [typingText, setTypingText] = useState("");
+  const [typingTextFade, setTypingTextFade] = useState(false);
+  const [typingScreenFade, setTypingScreenFade] = useState(false);
+  const [hoveredCampfireChar, setHoveredCampfireChar] = useState<string | null>(null);
+  const [viewingCampfireChar, setViewingCampfireChar] = useState<string>("red");
+  const [introFadeOut, setIntroFadeOut] = useState(false);
+
+  // Dark intro fade - starts dark, fades to reveal menu after 1.5s
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIntroFadeOut(true);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!showInitialTips) return;
+    const timer = setInterval(() => {
+      setCurrentTipIndex((prev) => (prev + 1) % GAMEPLAY_TIPS.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [showInitialTips]);
+
+  const skipTypewriter = () => {
+    setIsTypingActive(false);
+    setTypingText("");
+    setTypingTextFade(false);
+    setTypingScreenFade(false);
+    setShowInitialTips(false);
+    SoundManager.playMenuMusic();
+  };
+
+  const startTypewriterTransition = () => {
+    // Stop the menu music immediately to leave typewriter in absolute, tense silence
+    SoundManager.stopBGMusic();
+    
+    setIsTypingActive(true);
+    setTypingText("");
+    setTypingTextFade(false);
+    setTypingScreenFade(false);
+    
+    const targetText = "ANO 2049. APENAS 4 LENDAS VIVAS RESTARAM PARA CONTAR HISTÓRIA...";
+    let index = 0;
+    
+    setTimeout(() => {
+      const typeNextChar = () => {
+        if (index < targetText.length) {
+          setTypingText((prev) => prev + targetText[index]);
+          SoundManager.playTypewriterSound();
+          index++;
+          // A bit faster typing speed for readability of longer text
+          setTimeout(typeNextChar, 60 + Math.random() * 45);
+        } else {
+          // Pause 2.2s after finishing typing so player can read
+          setTimeout(() => {
+            setTypingTextFade(true); // Fade out typing text
+            
+            // Screen stays pitch-black for 1s
+            setTimeout(() => {
+              setShowInitialTips(false);
+              SoundManager.playMenuMusic(); // Start menu music smoothly
+              setTypingScreenFade(true); // Fade out black screen overlay
+              
+              setTimeout(() => {
+                setIsTypingActive(false);
+                setTypingText("");
+                setTypingTextFade(false);
+                setTypingScreenFade(false);
+              }, 1500);
+            }, 1000);
+          }, 2200);
+        }
+      };
+      typeNextChar();
+    }, 400);
+  };
+
+  // Simulated ad states
+  const [activeAd, setActiveAd] = useState<{
+    type: "upgrade" | "revive";
+    weaponId?: string;
+    upgradeKey?: string;
+    cost?: number;
+    onComplete: () => void;
+  } | null>(null);
+  const [adTimer, setAdTimer] = useState(4);
+  const [adFinished, setAdFinished] = useState(false);
+  const [fakeAdIndex, setFakeAdIndex] = useState(0);
+  const [adAlertOpen, setAdAlertOpen] = useState(false);
+  const [isWavePanelMinimized, setIsWavePanelMinimized] = useState(false);
+
+  // Fake Ads Database
+  const FAKE_ADS = [
+    {
+      title: "MANÍACO DO PIX 💸",
+      tagline: "Ganhos automáticos clicando em zumbis!",
+      desc: "Cadastre-se hoje e receba um bônus de 500 rodadas grátis no cassino do submundo! Dinheiro rápido e fácil!",
+      action: "BAIXAR E GANHAR PIX",
+      bgColor: "from-emerald-950 via-zinc-950 to-zinc-950",
+      glowColor: "#10b981",
+    },
+    {
+      title: "SUPER ANTIVÍRUS PRO MAX 🛡️",
+      tagline: "Aviso: Seu celular possui 43 ameaças!",
+      desc: "Limpeza profunda de RAM e resfriador de CPU em 3 segundos. Remova infecções digitais antes que seja tarde!",
+      action: "LIMPAR APARELHO AGORA",
+      bgColor: "from-blue-950 via-zinc-950 to-zinc-950",
+      glowColor: "#3b82f6",
+    },
+    {
+      title: "TIGRINHO DO SUBMUNDO 🐯",
+      tagline: "O tigre está solto pagando muito!",
+      desc: "Deposite 1 Cr e retire 1000 Cr na hora! Nova plataforma pagando no modo apocalipse. Jogue com moderação.",
+      action: "SOLTAR O TIGRINHO",
+      bgColor: "from-amber-950 via-zinc-950 to-zinc-950",
+      glowColor: "#f59e0b",
+    }
+  ];
+
+  // Ad timer effect
+  useEffect(() => {
+    if (!activeAd) return;
+    setAdTimer(4);
+    setAdFinished(false);
+    setFakeAdIndex(Math.floor(Math.random() * FAKE_ADS.length));
+    
+    const interval = setInterval(() => {
+      setAdTimer(prev => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          setAdFinished(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, [activeAd]);
+
+  // Handle window-level revive trigger
+  useEffect(() => {
+    (window as any).triggerAdRevive = () => {
+      setAdAlertOpen(true);
+    };
+    return () => {
+      delete (window as any).triggerAdRevive;
+    };
+  }, []);
 
   // Advanced settings
   const [goreLevel, setGoreLevel] = useState<"full" | "reduced" | "off">("full");
@@ -1121,7 +1877,21 @@ export default function App() {
 
   const [cinematicMode, setCinematicMode] = useState<boolean>(false);
   const cinematicModeRef = useRef<boolean>(false);
-  useEffect(() => { cinematicModeRef.current = cinematicMode; }, [cinematicMode]);
+  useEffect(() => {
+    cinematicModeRef.current = cinematicMode;
+    (window as any).cinematicModeActive = cinematicMode;
+    SoundManager.updateCinematicFilter(cinematicMode);
+  }, [cinematicMode]);
+
+  const [isHudHidden, setIsHudHidden] = useState<boolean>(false);
+  useEffect(() => { (window as any).isHudHiddenActive = isHudHidden; }, [isHudHidden]);
+
+  const [inTrainingMode, setInTrainingMode] = useState<boolean>(false);
+  useEffect(() => {
+    (window as any).setInTrainingModeReact = (val: boolean) => {
+      setInTrainingMode(val);
+    };
+  }, []);
 
 
   // Wave state for React HUD rendering
@@ -1130,6 +1900,19 @@ export default function App() {
   const [waveRemainingZombies, setWaveRemainingZombies] = useState(0);
   const [waveIntervalTime, setWaveIntervalTime] = useState(0);
   const [waveIntroText, setWaveIntroText] = useState<string | null>(null);
+
+  // Handle wave completion panel auto-minimize after 3.5 seconds
+  useEffect(() => {
+    if (waveIntervalTime > 0) {
+      setIsWavePanelMinimized(false);
+      const timer = setTimeout(() => {
+        setIsWavePanelMinimized(true);
+      }, 3500);
+      return () => clearTimeout(timer);
+    } else {
+      setIsWavePanelMinimized(false);
+    }
+  }, [waveIntervalTime > 0]);
 
   // New states for mobile and wave mode
   const [isWaveMode, setIsWaveMode] = useState(false);
@@ -1309,6 +2092,7 @@ export default function App() {
     capacity: 0,
     reloadSpeed: 0,
     range: 0,
+    scopeVision: 0,
   });
 
   const [upgrades, setUpgrades] = useState<Record<string, Record<string, number>>>({
@@ -1363,18 +2147,177 @@ export default function App() {
     magnum: freshWeaponUpgrades(),
   });
 
-  const [credits, setCredits] = useState(150);
+  const initialCharUpgrades = () => ({
+    maxHp: 0,
+    staminaMax: 0,
+    speed: 0,
+  });
+  const [charUpgrades, setCharUpgrades] = useState(initialCharUpgrades());
+  const charUpgradesRef = useRef(initialCharUpgrades());
+  const dustRef = useRef<{x: number, y: number, size: number, speed: number, alpha: number}[]>([]);
+
+  const [credits, setCredits] = useState(() => {
+    try { const s = localStorage.getItem('mns_globalCredits'); return s ? parseInt(s) : 0; } catch { return 0; }
+  });
+  const [globalCredits, setGlobalCredits] = useState(() => {
+    try { const s = localStorage.getItem('mns_globalCredits'); return s ? parseInt(s) : 0; } catch { return 0; }
+  });
+  const [globalPurchasedSkins, setGlobalPurchasedSkins] = useState<string[]>(() => {
+    try { const s = localStorage.getItem('mns_purchasedSkins'); return s ? JSON.parse(s) : []; } catch { return []; }
+  });
+  const saveGlobalCredits = (val: number) => {
+    setGlobalCredits(val);
+    try { localStorage.setItem('mns_globalCredits', String(val)); } catch {}
+  };
+  const saveGlobalSkins = (skins: string[]) => {
+    setGlobalPurchasedSkins(skins);
+    try { localStorage.setItem('mns_purchasedSkins', JSON.stringify(skins)); } catch {}
+  };
   const [purchasedWeaponIds, setPurchasedWeaponIds] = useState<string[]>([
-    "gun",
+    "pistola",
   ]);
   const [selectedShopWeaponId, setSelectedShopWeaponId] = useState<string>("pistola");
   const [selectedShopSkinId, setSelectedShopSkinId] = useState<string | null>(null);
+  const [selectedShopSkinIndex, setSelectedShopSkinIndex] = useState(0);
+  const [shopZoomed, setShopZoomed] = useState(false);
+  useEffect(() => {
+    setSelectedShopSkinIndex(0);
+    setShopZoomed(false); // Reset zoom when changing weapons
+  }, [selectedShopWeaponId]);
   const [weaponInfoActive, setWeaponInfoActive] = useState<number>(0);
   const [selectedBackpackSlot, setSelectedBackpackSlot] = useState<
     number | null
   >(null);
   const [selectedSkinId, setSelectedSkinId] = useState("red");
   const skinRef = useRef(availableSkins[0]);
+
+  const menuWallpapers = [
+    "/lendas/Four_soldiers_walking_towards_ex._202606160159.jpeg",
+    "/lendas/Soldiers_in_desert_sandstorm_202606160200.jpeg",
+    "/lendas/Squad_crossing_snowy_ridge_blizzard_202606160200.jpeg",
+    "/lendas/Soldier_fires_at_zombies_202606141856.jpeg",
+    "/lendas/Soldier_aiming_sniper_rifle_prone_202606141901.jpeg",
+    "/lendas/Soldier_dual-wielding_Uzis_firing_202606141903.jpeg",
+    "/lendas/Soldier_firing_bazooka_smoke_trail_202606141904.jpeg",
+    "/lendas/Soldier_firing_heavy_sniper_rifle_202606141906.jpeg",
+    "/lendas/Soldier_jumping_firing_dual_Uzis_202606141901.jpeg",
+    "/lendas/Soldier_rappelling_down_wall_firing_202606141909 (1).jpeg"
+  ];
+  const [currentBgIndex, setCurrentBgIndex] = useState(0);
+  const [prevBgIndex, setPrevBgIndex] = useState(-1);
+  const [cutscene, setCutscene] = useState({
+    active: false,
+    phase: "NONE" as "NONE" | "INTRO_FADE" | "KOMBI_ARRIVING" | "PLAYER_JUMPING" | "KOMBI_LEAVING",
+    timer: 0,
+    playerJumpProgress: 0,
+    overlayAlpha: 0,
+  });
+  const cutsceneRef = useRef({
+    active: false,
+    phase: "NONE" as "NONE" | "INTRO_FADE" | "KOMBI_ARRIVING" | "PLAYER_JUMPING" | "KOMBI_LEAVING",
+    timer: 0,
+    playerJumpProgress: 0,
+    overlayAlpha: 0,
+  });
+
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [loadingText, setLoadingText] = useState("");
+
+  const startLoadingScreen = () => {
+    setGameState("LOADING");
+    setLoadingProgress(0);
+    setLoadingText("PREPARANDO VEÍCULO DE INSERÇÃO...");
+    
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += Math.floor(Math.random() * 12) + 5;
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(interval);
+        setLoadingProgress(100);
+        setLoadingText("INSERÇÃO AUTORIZADA!");
+        setTimeout(() => {
+          triggerCinematicCutscene();
+        }, 800);
+      } else {
+        setLoadingProgress(progress);
+        const texts = [
+          "PREPARANDO VEÍCULO DE INSERÇÃO...",
+          "SINCRONIZANDO EQUIPAMENTO TÁTICO...",
+          "CONECTANDO VIA SATÉLITE...",
+          "MAPEANDO COORDENADAS DO DESERTO...",
+          "INICIALIZANDO MOTOR DA KOMBI...",
+          "AVALIANDO ATIVIDADE ZUMBI...",
+          "INSERÇÃO IMINENTE..."
+        ];
+        const textIdx = Math.min(texts.length - 1, Math.floor(progress / 15));
+        setLoadingText(texts[textIdx]);
+      }
+    }, 150);
+  };
+
+  const triggerCinematicCutscene = () => {
+    cutsceneRef.current = {
+      active: true,
+      phase: "INTRO_FADE",
+      timer: 1.5,
+      playerJumpProgress: 0,
+      overlayAlpha: 1.0,
+    };
+    setCutscene({ ...cutsceneRef.current });
+    
+    setGameState("PLAYING");
+    
+    vanState = "ENTERING";
+    VAN_X = -1500;
+    VAN_Y = -350;
+    vanTargetX = 0;
+    vanTargetY = -350;
+    vanAngle = 0;
+    
+    const wRef = waveRef.current;
+    wRef.mode = true;
+    wRef.current = 1;
+    wRef.active = false;
+    wRef.zombiesKilled = 0;
+    wRef.zombiesSpawned = 0;
+    wRef.zombiesTotal = 15;
+    wRef.intervalTimer = 0;
+    wRef.introTimer = 0;
+    wRef.waveTime = 0;
+    wRef.waveDamage = 0;
+    wRef.lastWaveTime = 0;
+    wRef.lastWaveDamage = 0;
+
+    setCredits(45);
+    purchasedWeaponIds.length = 0;
+    purchasedWeaponIds.push("pistola");
+    inventoryRef.current = {
+      hotbar: ["pistola", null, null, null, null],
+      hotbarAmmo: [WEAPONS_DETAILS.pistola.ammoMax, 0, 0, 0, 0],
+      backpack: Array(16).fill(null),
+      activeSlot: 0,
+      selectedItem: null,
+      purchasedSkins: [...globalPurchasedSkins],
+      equippedSkins: {}
+    } as any;
+
+    setWave(1);
+    setWaveActive(false);
+    setWaveIntervalTime(0);
+    setWaveRemainingZombies(15);
+    setIsWaveMode(true);
+    
+    (window as any).clearZombiesOnStart = true;
+  };
+  useEffect(() => {
+    if (gameState !== "MENU") return;
+    const interval = setInterval(() => {
+      setPrevBgIndex(currentBgIndex);
+      setCurrentBgIndex((prev) => (prev + 1) % menuWallpapers.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [gameState, currentBgIndex]);
 
   const [draggedItem, setDraggedItem] = useState<{ type: "hotbar" | "backpack"; index: number } | null>(null);
 
@@ -1440,9 +2383,69 @@ export default function App() {
   };
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [hoveredMenuBtn, setHoveredMenuBtn] = useState<string | null>(null);
+
+  const hoverInfo: Record<string, { title: string; subtitle: string; desc: string }> = {
+    wave_mode: {
+      title: "OPERAÇÃO: ONDAS DE INSERÇÃO",
+      subtitle: "CAMPANHA / SOBREVIVÊNCIA",
+      desc: "Sobreviva a ondas progressivas de zumbis e mutantes no deserto. Acumule créditos para comprar upgrades permanentes para todos os seus agentes. Coordene retiradas táticas quando necessário."
+    },
+    sandbox_mode: {
+      title: "SIMULADOR: ÁREA SANDBOX",
+      subtitle: "REDE DE TESTE LIVRE",
+      desc: "Treine sua pontaria e teste novos armamentos com munição ilimitada e créditos infinitos. Manequins de treinamento surgem na arena para servir de alvo estático."
+    },
+    shop: {
+      title: "REDE DE SUPRIMENTOS",
+      subtitle: "ADQUIRIR ARMAMENTOS & VISUAIS",
+      desc: "Adquira novos fuzis, escopetas, bazucas e skins exclusivas para personalizar a identidade visual e o arsenal dos seus operadores táticos."
+    },
+    character: {
+      title: "FICHAS: OPERADORES ATIVOS",
+      subtitle: "BIOGRAFIAS E UPGRADES",
+      desc: "Acesse as fichas confidenciais dos quatro agentes disponíveis. Compre melhorias permanentes de vida, stamina, dano e velocidade."
+    },
+    tips: {
+      title: "MANUAL: DIRETRIZES DE CAMPO",
+      subtitle: "DICAS DE SOBREVIVÊNCIA",
+      desc: "Consulte o manual tático para dominar a movimentação, gerenciar o inventário da mochila de sobrevivência e entender as fraquezas das mutações."
+    },
+    bestiary: {
+      title: "ARQUIVOS: MUTANTES DO SUBMUNDO",
+      subtitle: "CATÁLOGO DE MUTAÇÕES",
+      desc: "Estude os relatórios médicos e táticos sobre todas as espécies de zumbis catalogadas. Identifique zumbis comuns, saltadores e os perigosos chefes de área."
+    }
+  };
+
   const [isAimEnabled, setIsAimEnabled] = useState(true);
   const [isCrosshairEnabled, setIsCrosshairEnabled] = useState(true);
   const [aimSensitivity, setAimSensitivity] = useState(1.0);
+  const [backpackImgUrl, setBackpackImgUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    const img = new Image();
+    img.crossOrigin = "Anonymous";
+    img.src = "/tactical_backpack.jpeg";
+    img.onload = () => {
+      const cvs = document.createElement("canvas");
+      cvs.width = img.width;
+      cvs.height = img.height;
+      const cctx = cvs.getContext("2d");
+      if (cctx) {
+        cctx.drawImage(img, 0, 0);
+        const imgData = cctx.getImageData(0, 0, cvs.width, cvs.height);
+        const data = imgData.data;
+        for (let i = 0; i < data.length; i += 4) {
+          if (data[i] < 45 && data[i+1] < 45 && data[i+2] < 45) {
+            data[i+3] = 0; // set alpha to 0 for black pixels
+          }
+        }
+        cctx.putImageData(imgData, 0, 0);
+        setBackpackImgUrl(cvs.toDataURL("image/png"));
+      }
+    };
+  }, []);
 
   const isAimEnabledRef = useRef(true);
   const isCrosshairEnabledRef = useRef(true);
@@ -1521,6 +2524,8 @@ export default function App() {
       magnum: freshWeaponUpgrades(),
     };
     setUpgrades(JSON.parse(JSON.stringify(upgradesRef.current)));
+    charUpgradesRef.current = initialCharUpgrades();
+    setCharUpgrades(initialCharUpgrades());
 
     const wRef = waveRef.current;
     wRef.mode = true;
@@ -1544,10 +2549,21 @@ export default function App() {
     vanTargetY = -350;
 
     // Set all mannequins HP to 0 immediately so none are active during intro
-    // (This avoids random zombies surrounding player on waves mode start)
-    // We can't access mannequins directly here since it is defined in the useEffect.
-    // So we can trigger a flag (window as any).clearZombiesOnStart = true;
     (window as any).clearZombiesOnStart = true;
+
+    // Reset credits, purchases and inventory for clean start
+    setCredits(45); // Start with 45 Cr for a clean start
+    purchasedWeaponIds.length = 0;
+    purchasedWeaponIds.push("pistola"); // default starting pistol
+    inventoryRef.current = {
+      hotbar: ["pistola", null, null, null, null],
+      hotbarAmmo: [WEAPONS_DETAILS.pistola.ammoMax, 0, 0, 0, 0],
+      backpack: Array(16).fill(null),
+      activeSlot: 0,
+      selectedItem: null,
+      purchasedSkins: [...globalPurchasedSkins],
+      equippedSkins: {}
+    } as any;
 
     setWave(1);
     setWaveActive(false);
@@ -1578,6 +2594,7 @@ export default function App() {
   const updateInv = () => setForceRender((v) => v + 1);
 
   const toggleToBackpack = (hotbarIndex: number) => {
+    (window as any).hotbarVisibleTimer = 4.0;
     const inv = inventoryRef.current;
     const item = inv.hotbar[hotbarIndex];
     if (item) {
@@ -1600,6 +2617,7 @@ export default function App() {
   };
 
   const toggleToHotbar = (backpackIndex: number) => {
+    (window as any).hotbarVisibleTimer = 4.0;
     const inv = inventoryRef.current;
     const item = inv.backpack[backpackIndex];
     if (item) {
@@ -1633,10 +2651,25 @@ export default function App() {
       setCredits((prev) => prev - stats.cost);
     }
     setPurchasedWeaponIds((prev) => [...prev, weaponId]);
+    deliverToBackpack(weaponId); // Auto-equip to backpack
   };
 
   const deliverToBackpack = (weaponId: string) => {
     const inv = inventoryRef.current;
+    
+    // 1. Try to equip to the hotbar first
+    const hotbarEmpty = inv.hotbar.findIndex((i) => i === null);
+    if (hotbarEmpty !== -1) {
+      inv.hotbar[hotbarEmpty] = weaponId;
+      inv.hotbarAmmo[hotbarEmpty] = WEAPONS_DETAILS[weaponId]
+        ? WEAPONS_DETAILS[weaponId].ammoMax
+        : 0;
+      inv.activeSlot = hotbarEmpty; // Switch to new weapon
+      updateInv();
+      return true;
+    }
+    
+    // 2. If hotbar is full, deliver to backpack
     const firstEmpty = inv.backpack.findIndex((i) => i === null);
     if (firstEmpty !== -1) {
       inv.backpack[firstEmpty] = weaponId;
@@ -1658,6 +2691,7 @@ export default function App() {
     if (!ctx) return;
 
     // ----- Game State -----
+    const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const TILE_SIZE = 120;
     const PLAYER_SPEED = 400; // px/sec
     const BULLET_SPEED = 1500; // px/sec
@@ -1675,13 +2709,25 @@ export default function App() {
       rightDown: false,
     };
 
+    const maxHpVal = 50 + (charUpgradesRef.current?.maxHp || 0) * 90;
+    const staminaMaxVal = 100 + (charUpgradesRef.current?.staminaMax || 0) * 20;
+    let _hp = maxHpVal;
     const player = {
-      x: 0,
-      y: 0,
+      x: cutsceneRef.current.active ? -1500 : 0,
+      y: cutsceneRef.current.active ? -350 : 0,
       vx: 0,
       vy: 0,
-      hp: 100,
-      maxHp: 100,
+      get hp() { return _hp; },
+      set hp(val) {
+        if (val < _hp) {
+          const dmg = _hp - val;
+          const reducedDmg = dmg * (skinRef.current?.stats?.resistance ?? 1.0);
+          _hp = Math.max(0, _hp - reducedDmg);
+        } else {
+          _hp = Math.min(this.maxHp, val);
+        }
+      },
+      maxHp: maxHpVal,
       angle: 0,
       bloodiness: 0,
       stepDist: 0,
@@ -1707,6 +2753,7 @@ export default function App() {
       furyTimer: 0,
       healthGlowTimer: 0,
       bloodAmount: 0,
+      isLaserOn: false,
       isDead: false,
       deadTimer: 0,
       recoil: 0,
@@ -1718,8 +2765,8 @@ export default function App() {
       rollCooldown: 0,
       rollSpeed: 0,
       rollWasRunning: false,
-      stamina: 100,
-      staminaMax: 100,
+      stamina: staminaMaxVal,
+      staminaMax: staminaMaxVal,
       staminaExhausted: false,
     };
 
@@ -1740,7 +2787,7 @@ export default function App() {
     }[] = [];
 
     const rollGhosts: {
-      x: number; y: number; angle: number; alpha: number; scale: number; isBlue?: boolean;
+      x: number; y: number; angle: number; alpha: number; scale: number; isBlue?: boolean; jumpHeight?: number; rollAngle?: number;
     }[] = [];
 
     const bullets: {
@@ -1841,6 +2888,16 @@ export default function App() {
       size: number;
       life: number;
     }[] = [];
+    const upgradeEnergyOrbs: {
+      x: number;
+      y: number;
+      z: number;
+      vx: number;
+      vy: number;
+      vz: number;
+      bounceCount: number;
+      life: number;
+    }[] = [];
     const healthOrbs: {
       x: number;
       y: number;
@@ -1859,6 +2916,7 @@ export default function App() {
     (window as any).clearDecalsAndShells = () => {
       bloodDecals.length = 0;
       shells.length = 0;
+      shellDecals.length = 0;
       bloodDrops.length = 0;
       gibs.length = 0;
     };
@@ -1877,6 +2935,11 @@ export default function App() {
         if (gl === "reduced" && Math.random() > 0.3) return;
       }
       Array.prototype.push.call(bloodDecals, decal);
+      
+      const maxDecals = isMobileDevice ? 150 : 400;
+      if (bloodDecals.length > maxDecals) {
+        bloodDecals.splice(0, bloodDecals.length - maxDecals);
+      }
     };
 
     const pushShell = (shell: any) => {
@@ -1900,10 +2963,35 @@ export default function App() {
       screenShakeStr = Math.max(screenShakeStr, 5);
       player.kills++;
       
+      // Bestiary Unlocks
+      try {
+        if (m.profile === "ATIRADOR") {
+          localStorage.setItem('mns_unlocked_atirador', 'true');
+        } else if (m.profile === "DASHER") {
+          localStorage.setItem('mns_unlocked_dasher', 'true');
+        } else {
+          localStorage.setItem('mns_unlocked_comum', 'true');
+        }
+      } catch (e) {}
+      
       const earnedCredits = m.isBoss ? 75 : 15;
       setCredits((prev) => prev + earnedCredits);
       if (waveRef.current.mode && waveRef.current.active) {
         waveRef.current.waveCreditsEarned += earnedCredits;
+      }
+
+      // Spawn upgrade energy orb
+      if (Math.random() < 0.6) {
+        upgradeEnergyOrbs.push({
+          x: m.x,
+          y: m.y,
+          z: 15,
+          vx: (Math.random() - 0.5) * 350,
+          vy: (Math.random() - 0.5) * 350,
+          vz: 150 + Math.random() * 200,
+          bounceCount: 0,
+          life: 30, // Stay around a bit longer
+        });
       }
 
       // Spawn health orb
@@ -1992,7 +3080,7 @@ export default function App() {
       isBoss: boolean;
       focusLerp: number;
       attackTimer?: number;
-      profile?: "AGRESSIVO" | "FLANQUEADOR" | "CERCO" | "SALTADOR" | "LENTO";
+      profile?: "AGRESSIVO" | "FLANQUEADOR" | "CERCO" | "SALTADOR" | "LENTO" | "ATIRADOR" | "DASHER";
       jumpCooldown?: number;
       isJumping?: boolean;
       jumpProgress?: number;
@@ -2000,6 +3088,7 @@ export default function App() {
       jumpStartY?: number;
       jumpTargetX?: number;
       jumpTargetY?: number;
+      isTrainingDummy?: boolean;
     }[] = [];
     for (let i = 0; i < 100; i++) {
       const isBoss = i === 0;
@@ -2047,6 +3136,38 @@ export default function App() {
       });
     }
 
+    // Spawn 4 white training mannequins spread out and a moderate distance from the plate
+    const dummyPositions = [
+      { x: 100, y: 150 },
+      { x: 250, y: 100 },
+      { x: 80, y: 300 },
+      { x: 250, y: 250 },
+    ];
+    for (let d = 0; d < 4; d++) {
+      const dummyX = dummyPositions[d].x;
+      const dummyY = dummyPositions[d].y;
+      mannequins.push({
+        id: 2000 + d,
+        x: dummyX,
+        y: dummyY,
+        vx: 0,
+        vy: 0,
+        hp: 150,
+        maxHp: 150,
+        hitTime: 0,
+        deadTime: 0,
+        angle: Math.PI / 2,
+        type: "static",
+        moveTargetX: dummyX,
+        moveTargetY: dummyY,
+        isBoss: false,
+        focusLerp: 0,
+        attackTimer: 0,
+        profile: "AGRESSIVO",
+        isTrainingDummy: true,
+      });
+    }
+
     const damageTexts: {
       x: number;
       y: number;
@@ -2056,9 +3177,10 @@ export default function App() {
       vy: number;
       type?: "damage" | "heal" | "crit" | "player_damage";
       themeColor?: string;
+      isTrainingDummy?: boolean;
     }[] = [];
 
-    let camera = { x: 0, y: 0, zoom: 1, baseZoom: 1 };
+    let camera = { x: 0, y: 0, zoom: 1, baseZoom: 1, tilt: 0 };
     let screenShakeX = 0;
     let screenShakeY = 0;
     let screenShakeStr = 0;
@@ -2107,6 +3229,7 @@ export default function App() {
         if (key === " ") e.preventDefault();
       }
       if (["1", "2", "3", "4", "5"].includes(key)) {
+        (window as any).hotbarVisibleTimer = 4.0;
         inventoryRef.current.activeSlot = parseInt(key) - 1;
         updateInv();
       }
@@ -2119,6 +3242,29 @@ export default function App() {
           player.reloadTimer = stats.reloadTime;
           player.gunSmokeTime = 1.0;
           if (actWep) SoundManager.playReload(actWep);
+        }
+      }
+      if (key === "l" && !player.isDead) {
+        player.isLaserOn = !player.isLaserOn;
+        SoundManager.playLaserToggle(player.isLaserOn);
+        damageTexts.push({
+          x: player.x,
+          y: player.y - 45,
+          value: player.isLaserOn ? "LASER LIGADO" : "LASER DESLIGADO",
+          vx: 0,
+          vy: -60,
+          life: 1.5,
+          type: "player_damage",
+        } as any);
+      }
+      if (key === "t" && !waveRef.current.mode && !player.isDead) {
+        const vanDist = Math.hypot(player.x - VAN_X, player.y - VAN_Y);
+        if (vanDist < VAN_RADIUS + 50) {
+          SoundManager.playSound("heart", 1.0);
+          (window as any).trainingTransitionActive = true;
+          (window as any).trainingTransitionAlpha = 0;
+          (window as any).trainingTransitionState = "FADING_OUT";
+          (window as any).trainingTransitionTimer = 0;
         }
       }
     };
@@ -2278,6 +3424,219 @@ export default function App() {
     };
 
     const update = (dt: number, time: number) => {
+      // --- Update Training Transition ---
+      if ((window as any).trainingTransitionActive) {
+        const tr = window as any;
+        if (tr.trainingTransitionState === "FADING_OUT") {
+          tr.trainingTransitionAlpha = Math.min(1.0, tr.trainingTransitionAlpha + dt * 1.5);
+          if (tr.trainingTransitionAlpha >= 1.0) {
+            // Teleport player & Setup Training Area
+            tr.trainingTransitionState = "ON_HOLD";
+            tr.trainingTransitionTimer = 1.6; // Hold screen for 1.6s
+            tr.inTrainingMode = true;
+            if (tr.setInTrainingModeReact) tr.setInTrainingModeReact(true);
+            tr.freeModeSpawningEnabled = false;
+            
+            // Teleport Player to center of Firing Range
+            player.x = -5000;
+            player.y = 5000;
+            player.vx = 0;
+            player.vy = 0;
+            
+            // Snap camera instantly to avoid mannequin culling
+            camera.x = -5000;
+            camera.y = 5000;
+            
+            // Clear current map mannequins and queue 15 training mannequins to emerge across a larger area
+            mannequins.length = 0;
+            tr.pendingTrainingSpawns = [
+              { x: -5400, y: 4600 },
+              { x: -4600, y: 4600 },
+              { x: -5200, y: 4800 },
+              { x: -4800, y: 4800 },
+              { x: -5100, y: 4900 },
+              { x: -4900, y: 4900 },
+              { x: -5000, y: 4700 },
+              { x: -5000, y: 4800, isBig: true },
+              { x: -5300, y: 5100 },
+              { x: -4700, y: 5100 },
+              { x: -4800, y: 5200, isBig: true },
+              { x: -5200, y: 5200 },
+              { x: -5000, y: 5300, isBig: true },
+              { x: -5400, y: 5400 },
+              { x: -4600, y: 5400 }
+            ];
+            tr.trainingSpawnTimer = 0.5;
+            
+            // Reset player vital stats
+            player.hp = player.maxHp;
+            player.ammo = player.maxAmmo;
+          }
+        } else if (tr.trainingTransitionState === "ON_HOLD") {
+          tr.trainingTransitionTimer -= dt;
+          if (tr.trainingTransitionTimer <= 0) {
+            tr.trainingTransitionState = "FADING_IN";
+          }
+        } else if (tr.trainingTransitionState === "FADING_IN") {
+          tr.trainingTransitionAlpha = Math.max(0, tr.trainingTransitionAlpha - dt * 1.5);
+          if (tr.trainingTransitionAlpha <= 0) {
+            tr.trainingTransitionActive = false;
+          }
+        }
+      }
+
+      // --- Spawn training dummies one-by-one inside Firing Range ---
+      if ((window as any).inTrainingMode && (window as any).pendingTrainingSpawns && (window as any).pendingTrainingSpawns.length > 0) {
+        const tr = window as any;
+        tr.trainingSpawnTimer -= dt;
+        if (tr.trainingSpawnTimer <= 0) {
+          const spawn = tr.pendingTrainingSpawns.shift();
+          if (spawn) {
+            mannequins.push({
+              id: 3000 + mannequins.length,
+              x: spawn.x,
+              y: spawn.y,
+              vx: 0,
+              vy: 0,
+              hp: spawn.isBig ? 500 : 150,
+              maxHp: spawn.isBig ? 500 : 150,
+              hitTime: 0,
+              deadTime: 0,
+              angle: Math.random() * Math.PI * 2,
+              type: "static",
+              moveTargetX: spawn.x,
+              moveTargetY: spawn.y,
+              isBoss: false,
+              focusLerp: 0,
+              attackTimer: 0,
+              profile: "AGRESSIVO",
+              isTrainingDummy: true,
+              isBigDummy: spawn.isBig || false,
+            } as any);
+            tr.trainingSpawnTimer = 0.3; // slightly faster spawning for 15 dummies
+          }
+        }
+      }
+
+      // --- Update Cutscene ---
+      if (cutsceneRef.current.active) {
+        const cs = cutsceneRef.current;
+        if (cs.phase === "INTRO_FADE") {
+          cs.timer -= dt;
+          cs.overlayAlpha = Math.max(0, cs.timer / 1.5);
+          if (cs.timer <= 0) {
+            cs.phase = "KOMBI_ARRIVING";
+            cs.timer = 0;
+            setCutscene({ ...cs });
+            if (SoundManager.menuMusic) {
+              SoundManager.fadeAudioOut(SoundManager.menuMusic, 3500);
+            }
+          }
+        } else if (cs.phase === "KOMBI_ARRIVING") {
+          if (vanState === "PARKED" || Math.hypot(VAN_X - vanTargetX, VAN_Y - vanTargetY) < 10) {
+            cs.phase = "PLAYER_JUMPING";
+            cs.timer = 1.2;
+            cs.playerJumpProgress = 0;
+            setCutscene({ ...cs });
+            SoundManager.playSound("heart", 0.8);
+          }
+        } else if (cs.phase === "PLAYER_JUMPING") {
+          cs.timer -= dt;
+          const progress = 1.0 - Math.max(0, cs.timer / 1.2);
+          cs.playerJumpProgress = progress;
+          setCutscene({ ...cs });
+          
+          const startX = 0;
+          const startY = -350;
+          const endX = 60;
+          const endY = -250;
+          
+          player.x = startX + (endX - startX) * progress;
+          const heightArc = Math.sin(progress * Math.PI) * -100;
+          player.y = startY + (endY - startY) * progress + heightArc;
+          player.angle = Math.PI / 2;
+          
+          if (progress >= 1.0) {
+            // Landing: Transition to Speech and camera Zoom focus
+            cs.phase = "PLAYER_SPEECH";
+            cs.timer = 1.8; // Duration of the close-up zoom and speech
+            setCutscene({ ...cs });
+            
+            player.x = 60;
+            player.y = -250;
+            player.speechText = "Vamos lá!!!";
+            player.speechTimer = 1.8;
+            
+            // Spawn sand dust particles that expand and dissipate properly
+            for (let i = 0; i < 35; i++) {
+              const pAngle = Math.random() * Math.PI * 2;
+              const speed = 60 + Math.random() * 140;
+              dustParticles.push({
+                x: player.x,
+                y: player.y,
+                vx: Math.cos(pAngle) * speed,
+                vy: Math.sin(pAngle) * speed * 0.5, // spread flatter on ground
+                life: 1.2 + Math.random() * 0.8,
+                maxLife: 2.0,
+                size: 8 + Math.random() * 12,
+              });
+            }
+            SoundManager.playFootstepSound(1.0);
+            SoundManager.playSound("click", 0.85); // Cinematic focus audio cue
+          }
+        } else if (cs.phase === "PLAYER_SPEECH") {
+          cs.timer -= dt;
+          setCutscene({ ...cs });
+          
+          player.x = 60;
+          player.y = -250;
+          
+          if (cs.timer <= 0) {
+            // Once speech completes, Kombi starts departing
+            cs.phase = "KOMBI_LEAVING";
+            cs.timer = 2.2;
+            setCutscene({ ...cs });
+            
+            SoundManager.playSound("horn", 0.6);
+            vanState = "LEAVING";
+            vanTargetX = 1500;
+            vanTargetY = -350;
+          }
+        } else if (cs.phase === "KOMBI_LEAVING") {
+          cs.timer -= dt;
+          setCutscene({ ...cs });
+          
+          player.x = 60;
+          player.y = -250;
+          
+          if (cs.timer <= 0) {
+            cs.active = false;
+            cs.phase = "NONE";
+            setCutscene({ ...cs });
+            
+            waveRef.current.introTimer = 3.0;
+            waveRef.current.introText = "PRIMEIRA ONDA";
+            setWaveIntroText("PRIMEIRA ONDA");
+            setWaveActive(false);
+            setWaveRemainingZombies(15);
+          }
+        }
+      }
+
+      // Synchronize player upgrades dynamically in real-time
+      const targetMaxHp = 50 + (charUpgradesRef.current?.maxHp || 0) * 90;
+      if (player.maxHp !== targetMaxHp) {
+        const diff = targetMaxHp - player.maxHp;
+        player.maxHp = targetMaxHp;
+        player.hp = Math.max(0, player.hp + diff);
+      }
+      const targetStaminaMax = 100 + (charUpgradesRef.current?.staminaMax || 0) * 20;
+      if (player.staminaMax !== targetStaminaMax) {
+        const diff = targetStaminaMax - player.staminaMax;
+        player.staminaMax = targetStaminaMax;
+        player.stamina = Math.max(0, player.stamina + diff);
+      }
+
       const dpr = canvas.width / window.innerWidth;
       const logicalWidth = canvas.width / dpr;
       const logicalHeight = canvas.height / dpr;
@@ -2312,6 +3671,25 @@ export default function App() {
               VAN_X += (dx / dist) * speed;
               VAN_Y += (dy / dist) * speed;
             }
+            
+            // Dynamic smoke particles
+            const backOffsetDist = -110;
+            const sideOffsetDist = 35;
+            const rotAngle = vanAngle;
+            const exhaustX = VAN_X + Math.cos(rotAngle) * backOffsetDist - Math.sin(rotAngle) * sideOffsetDist;
+            const exhaustY = VAN_Y + Math.sin(rotAngle) * backOffsetDist + Math.cos(rotAngle) * sideOffsetDist;
+            if (Math.random() < 0.65) {
+              particles.push({
+                x: exhaustX + (Math.random() - 0.5) * 8,
+                y: exhaustY + (Math.random() - 0.5) * 8,
+                vx: -Math.cos(vanAngle) * (140 + Math.random() * 100) + (Math.random() - 0.5) * 50,
+                vy: -Math.sin(vanAngle) * (140 + Math.random() * 100) + (Math.random() - 0.5) * 50,
+                life: 0.8 + Math.random() * 1.2,
+                color: `rgba(95, 95, 95, ${0.12 + Math.random() * 0.12})`,
+                size: 7 + Math.random() * 10,
+                isSmoke: true,
+              });
+            }
           } else {
             VAN_X = targetX;
             VAN_Y = targetY;
@@ -2334,6 +3712,25 @@ export default function App() {
               VAN_X += (dx / dist) * speed;
               VAN_Y += (dy / dist) * speed;
             }
+            
+            // Dynamic smoke particles
+            const backOffsetDist = -110;
+            const sideOffsetDist = 35;
+            const rotAngle = vanAngle;
+            const exhaustX = VAN_X + Math.cos(rotAngle) * backOffsetDist - Math.sin(rotAngle) * sideOffsetDist;
+            const exhaustY = VAN_Y + Math.sin(rotAngle) * backOffsetDist + Math.cos(rotAngle) * sideOffsetDist;
+            if (Math.random() < 0.65) {
+              particles.push({
+                x: exhaustX + (Math.random() - 0.5) * 8,
+                y: exhaustY + (Math.random() - 0.5) * 8,
+                vx: -Math.cos(vanAngle) * (200 + Math.random() * 150) + (Math.random() - 0.5) * 60,
+                vy: -Math.sin(vanAngle) * (200 + Math.random() * 150) + (Math.random() - 0.5) * 60,
+                life: 0.8 + Math.random() * 1.2,
+                color: `rgba(95, 95, 95, ${0.12 + Math.random() * 0.12})`,
+                size: 7 + Math.random() * 10,
+                isSmoke: true,
+              });
+            }
           } else {
             VAN_X = targetX;
             VAN_Y = targetY;
@@ -2349,8 +3746,14 @@ export default function App() {
             waveRef.current.active = true;
             setWaveActive(true);
             setWaveIntroText(null);
+            SoundManager.playGameplayMusic();
             
-            // Set all existing mannequins to 0 HP at start of active wave
+            // Auto-clear blood decals and shell casings for a fresh wave start
+            if ((window as any).clearDecalsAndShells) {
+              (window as any).clearDecalsAndShells();
+            }
+            
+            // Reset all existing mannequins to 0 HP so they can be recycled in the spawner
             for (const m of mannequins) {
               m.hp = 0;
               m.deadTime = 0;
@@ -2377,33 +3780,51 @@ export default function App() {
               let hpMult = 1.0;
               let speedMult = 1.0;
               
-              let profile: "AGRESSIVO" | "FLANQUEADOR" | "CERCO" | "SALTADOR" | "LENTO" = "AGRESSIVO";
+              let profile: "AGRESSIVO" | "FLANQUEADOR" | "CERCO" | "SALTADOR" | "LENTO" | "ATIRADOR" | "DASHER" = "AGRESSIVO";
               const r = Math.random();
               
-              if (wNum <= 5) {
-                profile = r < 0.8 ? "AGRESSIVO" : "LENTO";
+              if (wNum <= 3) {
+                // Occasional ATIRADOR in early waves (Wave 2, 3) to train the player
+                if (wNum >= 2 && r < 0.15) {
+                  profile = "ATIRADOR";
+                } else {
+                  profile = r < 0.8 ? "AGRESSIVO" : "LENTO";
+                }
                 hpMult = 0.6 + wNum * 0.15;
-                speedMult = 1.05 + wNum * 0.05;
+                speedMult = 1.45 + wNum * 0.06; // Faster base speeds for early waves!
               } else if (wNum <= 7) {
-                if (r < 0.4) profile = "AGRESSIVO";
-                else if (r < 0.65) profile = "FLANQUEADOR";
-                else if (r < 0.85) profile = "CERCO";
+                // Wave 4 to 7: Integrate SALTADOR (jumping zombie)
+                if (r < 0.25) profile = "AGRESSIVO";
+                else if (r < 0.42) profile = "FLANQUEADOR";
+                else if (r < 0.55) profile = "CERCO";
+                else if (r < 0.68) profile = "ATIRADOR";
+                else if (r < 0.78) profile = "DASHER";
+                else if (r < 0.90) profile = "SALTADOR";
                 else profile = "LENTO";
                 hpMult = 1.0 + wNum * 0.12;
-                speedMult = 1.15 + wNum * 0.04;
+                speedMult = 1.30 + wNum * 0.04;
               } else {
-                if (r < 0.25) profile = "AGRESSIVO";
-                else if (r < 0.50) profile = "FLANQUEADOR";
-                else if (r < 0.75) profile = "CERCO";
+                if (r < 0.20) profile = "AGRESSIVO";
+                else if (r < 0.38) profile = "FLANQUEADOR";
+                else if (r < 0.53) profile = "CERCO";
+                else if (r < 0.65) profile = "ATIRADOR";
+                else if (r < 0.76) profile = "DASHER";
                 else if (r < 0.90) profile = "SALTADOR";
                 else profile = "LENTO";
                 hpMult = 1.2 + wNum * 0.15;
                 speedMult = 1.25 + wNum * 0.04;
               }
 
+              // Extra speed boost from wave 5+
+              if (wNum >= 5) {
+                speedMult *= 1.20; // 20% faster from wave 5 onwards
+              }
+
               let baseHp = 100;
               if (profile === "LENTO") baseHp = 220;
               else if (profile === "SALTADOR") baseHp = 75;
+              else if (profile === "ATIRADOR") baseHp = 80;
+              else if (profile === "DASHER") baseHp = 90;
 
               deadZombie.maxHp = Math.floor(baseHp * hpMult);
               deadZombie.hp = deadZombie.maxHp;
@@ -2431,6 +3852,7 @@ export default function App() {
             waveRef.current.intervalTimer = 0;
             
             if (waveRef.current.current >= 10) {
+              setCredits(globalCredits);
               setGameState("MENU");
               waveRef.current.mode = false;
               setIsWaveMode(false);
@@ -2533,7 +3955,7 @@ export default function App() {
 
       let dx = 0;
       let dy = 0;
-      if (!player.isDead && !player.isRolling) {
+      if (!player.isDead && !player.isRolling && !cutsceneRef.current.active) {
         if (keys.w) dy -= 1;
         if (keys.s) dy += 1;
         if (keys.a) dx -= 1;
@@ -2547,13 +3969,14 @@ export default function App() {
         }
       }
 
-      if (!player.isDead && !player.isRolling && keys.space && player.rollCooldown <= 0 && player.stamina > 20 && !player.staminaExhausted) {
+      if (!player.isDead && !player.isRolling && keys.space && !cutsceneRef.current.active && player.rollCooldown <= 0 && player.stamina > 20 && !player.staminaExhausted) {
         player.isRolling = true;
-        player.stamina -= 25; // Cost of dodge roll
+        player.stamina -= 25;
         if (player.stamina <= 0) {
            player.stamina = 0;
            player.staminaExhausted = true;
         }
+        (player as any).dashGhostTimer = 0; // reset ghost timer on dash start
         player.rollWasRunning = player.isRunning;
         player.rollDuration = player.isRunning ? 0.52 : 0.65;
         player.rollTimer = player.rollDuration;
@@ -2584,6 +4007,20 @@ export default function App() {
             life: isRock ? 0.6 : 0.4,
             maxLife: isRock ? 0.6 : 0.4,
             size: isRock ? (2 + Math.random() * 2) : (6 + Math.random() * 5),
+          });
+        }
+        
+        // Burst of blue neon particles for the dash
+        for (let i = 0; i < 20; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          particles.push({
+            x: player.x,
+            y: player.y,
+            vx: Math.cos(angle) * (150 + Math.random() * 200),
+            vy: Math.sin(angle) * (150 + Math.random() * 200),
+            life: 0.3 + Math.random() * 0.4,
+            color: Math.random() > 0.5 ? "#3b82f6" : "#60a5fa",
+            size: 2 + Math.random() * 4,
           });
         }
       }
@@ -2632,20 +4069,21 @@ export default function App() {
           player.isMoving = true;
           player.stepDist += Math.hypot(player.vx * dt, player.vy * dt);
 
-          // Spawn afterimage ghosts (only when was running, max 4)
-          if (player.rollWasRunning && rollGhosts.length < 4) {
-            const ghostInterval = 0.12;
-            const ghostPhase = Math.floor(progress / ghostInterval);
-            const prevPhase = Math.floor((progress - dt / player.rollDuration) / ghostInterval);
-            if (ghostPhase !== prevPhase) {
-              rollGhosts.push({
-                x: player.x,
-                y: player.y,
-                angle: player.angle,
-                alpha: 0.4,
-                scale: 1.0,
-              });
-            }
+          // Spawn blue afterimage every 55ms during dash
+          if (!(player as any).dashGhostTimer) (player as any).dashGhostTimer = 0;
+          (player as any).dashGhostTimer += dt;
+          if ((player as any).dashGhostTimer >= 0.055) {
+            (player as any).dashGhostTimer = 0;
+            rollGhosts.push({
+              x: player.x,
+              y: player.y,
+              angle: player.angle,
+              alpha: 0.75,
+              scale: 1.0,
+              isBlue: true,
+              jumpHeight: 0,
+              rollAngle: 0,
+            });
           }
         }
       } else if (dx !== 0 || dy !== 0) {
@@ -2677,6 +4115,26 @@ export default function App() {
             });
           }
         }
+
+        // Spawn extra smooth motion blur ghosts when cinematic mode is active and player is running
+        if (cinematicModeRef.current && player.isRunning && !player.isDead) {
+          if (!(player as any).cinematicGhostTimer) (player as any).cinematicGhostTimer = 0;
+          (player as any).cinematicGhostTimer += dt;
+          if ((player as any).cinematicGhostTimer > 0.045) {
+            (player as any).cinematicGhostTimer = 0;
+            const speed = Math.hypot(player.vx, player.vy);
+            if (speed > 50) {
+              rollGhosts.push({
+                x: player.x,
+                y: player.y,
+                angle: player.angle,
+                alpha: 0.28 * (speed / 300), // opacity scales slightly with speed for smoothness
+                scale: 0.98,
+                isBlue: true, // will draw a soft neon trace behind
+              });
+            }
+          }
+        }
         
         player.moveTimer += dt * (player.isRunning ? 1.5 : 1);
         player.idleTimer = 0;
@@ -2690,8 +4148,10 @@ export default function App() {
         }
 
         const len = Math.hypot(dx, dy);
-        const targetVx = (dx / len) * PLAYER_SPEED * speedMult;
-        const targetVy = (dy / len) * PLAYER_SPEED * speedMult;
+        const upgradeSpeedMult = 1.0 + (charUpgradesRef.current?.speed || 0) * 0.08;
+        const charSpeedMult = skinRef.current?.stats?.speed || 1.0;
+        const targetVx = (dx / len) * PLAYER_SPEED * speedMult * upgradeSpeedMult * charSpeedMult;
+        const targetVy = (dy / len) * PLAYER_SPEED * speedMult * upgradeSpeedMult * charSpeedMult;
 
         player.vx += (targetVx - player.vx) * 15 * dt;
         player.vy += (targetVy - player.vy) * 15 * dt;
@@ -2701,10 +4161,15 @@ export default function App() {
 
         player.stepDist += Math.hypot(player.vx * dt, player.vy * dt);
 
+        const px = player.x;
+        const py = player.y;
         for (const decal of bloodDecals) {
           if (decal.type !== "footprint" && decal.type !== "meat") {
-            const dist = Math.hypot(player.x - decal.x, player.y - decal.y);
-            if (dist < decal.size) {
+            const dx = px - decal.x;
+            const dy = py - decal.y;
+            const distSq = dx * dx + dy * dy;
+            const size = decal.size;
+            if (distSq < size * size) {
               player.bloodiness = Math.min(1.0, player.bloodiness + 0.05);
             }
           }
@@ -2713,6 +4178,25 @@ export default function App() {
         if (player.stepDist > 30) {
           player.stepDist = 0;
           player.leftFoot = !player.leftFoot;
+          
+          // Spawn sand footstep dust particles (pegadas de poeira)
+          const moveAngle = Math.atan2(player.vy, player.vx);
+          const footOffsetX = player.leftFoot ? -8 : 8;
+          const fx = player.x + Math.cos(moveAngle + Math.PI / 2) * footOffsetX;
+          const fy = player.y + Math.sin(moveAngle + Math.PI / 2) * footOffsetX;
+          
+          dustParticles.push({
+            x: fx,
+            y: fy + 8,
+            vx: (Math.random() - 0.5) * 15 - player.vx * 0.12,
+            vy: (Math.random() - 0.5) * 15 - player.vy * 0.12,
+            life: 0.4 + Math.random() * 0.2,
+            maxLife: 0.4 + Math.random() * 0.2,
+            size: 4 + Math.random() * 4,
+          });
+
+          SoundManager.playFootstepSound(player.isRunning ? 0.11 : 0.07);
+
           if (player.bloodiness > 0) {
             const footOffsetX = player.leftFoot ? -8 : 8;
             const moveAngle = Math.atan2(player.vy, player.vx);
@@ -2748,11 +4232,18 @@ export default function App() {
       }
 
       // Map Boundary Constraint for Player
-      const currentMapSize = getMapSize();
-      if (player.x < -currentMapSize) player.x = -currentMapSize;
-      if (player.x > currentMapSize) player.x = currentMapSize;
-      if (player.y < -currentMapSize) player.y = -currentMapSize;
-      if (player.y > currentMapSize) player.y = currentMapSize;
+      if ((window as any).inTrainingMode) {
+        if (player.x < -5800) player.x = -5800;
+        if (player.x > -4200) player.x = -4200;
+        if (player.y < 4200) player.y = 4200;
+        if (player.y > 5800) player.y = 5800;
+      } else {
+        const currentMapSize = getMapSize();
+        if (player.x < -currentMapSize) player.x = -currentMapSize;
+        if (player.x > currentMapSize) player.x = currentMapSize;
+        if (player.y < -currentMapSize) player.y = -currentMapSize;
+        if (player.y > currentMapSize) player.y = currentMapSize;
+      }
 
       // Free Mode Activation Plate Detection
       if (!waveRef.current.mode) {
@@ -2762,10 +4253,10 @@ export default function App() {
             (player as any).onPlate = true;
             SoundManager.playSound("horn", 0.7); // Alert sound
             
-            // Spawn 4 zombies around the plate
+            // Spawn 2 zombies around the plate
             let spawned = 0;
             for (const m of mannequins) {
-              if (m.hp <= 0 && spawned < 4) {
+              if (m.hp <= 0 && spawned < 2 && !m.isTrainingDummy) {
                 const angle = Math.random() * Math.PI * 2;
                 const dist = 600 + Math.random() * 300;
                 m.x = 400 + Math.cos(angle) * dist;
@@ -2793,11 +4284,13 @@ export default function App() {
           (player as any).onPlate = false;
         }
       }
-      const pDistVan = Math.hypot(player.x - VAN_X, player.y - VAN_Y);
-      if (pDistVan < VAN_RADIUS) {
-          const angle = Math.atan2(player.y - VAN_Y, player.x - VAN_X);
-          player.x = VAN_X + Math.cos(angle) * VAN_RADIUS;
-          player.y = VAN_Y + Math.sin(angle) * VAN_RADIUS;
+      if (!(window as any).inTrainingMode) {
+        const pDistVan = Math.hypot(player.x - VAN_X, player.y - VAN_Y);
+        if (pDistVan < VAN_RADIUS) {
+            const angle = Math.atan2(player.y - VAN_Y, player.x - VAN_X);
+            player.x = VAN_X + Math.cos(angle) * VAN_RADIUS;
+            player.y = VAN_Y + Math.sin(angle) * VAN_RADIUS;
+        }
       }
 
       // Circular Physics Collisions
@@ -2873,7 +4366,25 @@ export default function App() {
       // Recoil recovery
       let recoilRecoveryAmount = 0.5 * dt;
 
-      if (isShopOpenRef.current) {
+      if (cutsceneRef.current.active) {
+        targetCamX = VAN_X;
+        targetCamY = VAN_Y;
+        if (cutsceneRef.current.phase === "PLAYER_JUMPING") {
+          targetZoom = 1.4;
+          targetCamX = VAN_X + (60 - VAN_X) * cutsceneRef.current.playerJumpProgress;
+          targetCamY = VAN_Y + (-250 - VAN_Y) * cutsceneRef.current.playerJumpProgress;
+        } else if (cutsceneRef.current.phase === "PLAYER_SPEECH") {
+          targetCamX = 60;
+          targetCamY = -250;
+          targetZoom = 1.95; // Close cinematic zoom on player landing!
+        } else if (cutsceneRef.current.phase === "KOMBI_LEAVING") {
+          targetCamX = 60;
+          targetCamY = -250;
+          targetZoom = 1.25;
+        } else {
+          targetZoom = 1.15;
+        }
+      } else if (isShopOpenRef.current) {
         targetCamX = VAN_X;
         targetCamY = VAN_Y;
         targetZoom = 1.6;
@@ -2883,18 +4394,28 @@ export default function App() {
         const dy = worldMouseY - player.y;
         const dist = Math.hypot(dx, dy);
         
-        const weight = activeWeapon === "rifle" ? 0.70 : 0.50; // Sniper scopes further out
-        const maxDist = activeWeapon === "rifle" ? 350 : 180; // Clamp camera displacement to professional range
+        // Scope vision upgrade gives 15% bonus per level
+        const scopeBonus = 1.0 + ((wUpgrades as any).scopeVision || 0) * 0.15;
+        const weight = cinematicModeRef.current ? 0.25 : (activeWeapon === "rifle" ? 0.70 : 0.50); // Much closer in cinematic mode
+        const maxDist = (cinematicModeRef.current ? 75 : (activeWeapon === "rifle" ? 350 : 180)) * scopeBonus; // Closer displacement clamp
         const targetOffset = Math.min(dist * weight, maxDist);
         
         const angle = Math.atan2(dy, dx);
         targetCamX = player.x + Math.cos(angle) * targetOffset;
         targetCamY = player.y + Math.sin(angle) * targetOffset;
         
-        targetZoom =
-          activeWeapon === "rifle"
-            ? Math.max(0.65, camera.baseZoom - 0.2)
-            : Math.min(2.5, camera.baseZoom + 0.4);
+        // Reduce zoom (zoom out) based on scopeVision upgrade level to widen FOV when aiming
+        const zoomOutAmount = ((wUpgrades as any).scopeVision || 0) * 0.08;
+        if (cinematicModeRef.current) {
+          // Do not zoom out much in cinematic mode, keep close focus
+          targetZoom = Math.max(0.85, camera.baseZoom - 0.05 - zoomOutAmount);
+        } else {
+          targetZoom =
+            activeWeapon === "rifle"
+              ? Math.max(0.40, camera.baseZoom - 0.2 - zoomOutAmount)
+              : Math.max(0.50, Math.min(2.5, camera.baseZoom + 0.4) - zoomOutAmount);
+        }
+        
         recoilRecoveryAmount = 2.0 * dt; // recovers faster
         player.recoil = Math.min(player.recoil, 0.1); // cap recoil while aiming
       } else if (player.isRolling) {
@@ -2925,15 +4446,61 @@ export default function App() {
 
       // Smooth dynamic offset leaning towards the player's aiming/facing angle
       if (!player.isDead && !isShopOpenRef.current) {
-        const leanOffset = activeWeapon === "rifle" ? 100 : 50;
+        let leanOffset = activeWeapon === "rifle" ? 100 : 50;
+        if (cinematicModeRef.current) {
+          // In cinematic camera mode, drift further in aim direction (leads the player)
+          leanOffset = activeWeapon === "rifle" ? 240 : 150;
+          // Add subtle camera drift breathing motion (Lissajous curves for realistic float)
+          const driftX = Math.sin(Date.now() * 0.0008) * 18;
+          const driftY = Math.cos(Date.now() * 0.0006) * 12;
+          targetCamX += driftX;
+          targetCamY += driftY;
+          
+          // Camera recoil push back
+          if (player.recoil > 0) {
+            targetCamX -= Math.cos(player.angle) * (player.recoil * 160);
+            targetCamY -= Math.sin(player.angle) * (player.recoil * 160);
+          }
+
+          // Dynamic zoom depending on player movement speed and state in cinematic mode
+          if (!mouse.rightDown && !player.isRolling) {
+            if (player.isRunning) {
+              targetZoom = Math.max(0.60, camera.baseZoom - 0.28);
+            } else {
+              const speed = Math.hypot(player.vx || 0, player.vy || 0);
+              if (speed < 0.5) {
+                // Focus close-up when standing still, with breathing zoom
+                targetZoom = camera.baseZoom + 0.24 + Math.sin(Date.now() * 0.0005) * 0.03;
+              } else {
+                // Mid-zoom while moving
+                targetZoom = camera.baseZoom - 0.04 + Math.sin(Date.now() * 0.001) * 0.015;
+              }
+            }
+          }
+        }
         targetCamX += Math.cos(player.angle) * leanOffset;
         targetCamY += Math.sin(player.angle) * leanOffset;
       }
 
+      // Smooth camera tilt (roll) calculation
+      let targetTilt = 0;
+      if (cinematicModeRef.current && !player.isDead && !isShopOpenRef.current) {
+        const speed = Math.hypot(player.vx || 0, player.vy || 0);
+        if (speed > 1) {
+          const moveAngle = Math.atan2(player.vy || 0, player.vx || 0);
+          const angleDiff = Math.sin(moveAngle - player.angle);
+          targetTilt = angleDiff * 0.035; // Tilt up to ~2 degrees
+        } else {
+          // Idle sway tilt
+          targetTilt = Math.sin(Date.now() * 0.0007) * 0.006;
+        }
+      }
+      camera.tilt += (targetTilt - camera.tilt) * 3 * dt;
+
       const camLerpSpeed = cinematicModeRef.current ? 2.2 : 5.0;
       camera.x += (targetCamX - camera.x) * camLerpSpeed * dt;
       camera.y += (targetCamY - camera.y) * camLerpSpeed * dt;
-      camera.zoom += (targetZoom - camera.zoom) * 5 * dt;
+      camera.zoom += (targetZoom - camera.zoom) * (cinematicModeRef.current ? 3.0 : 5.0) * dt;
 
       // 3. Update Aiming Angle
       const screenCenterX = logicalWidth / 2;
@@ -2943,98 +4510,110 @@ export default function App() {
       const playerScreenY = screenCenterY + (player.y - camera.y) * camera.zoom;
 
       const isMobileDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-      if (
-        mouse.down ||
-        (mouse.rightDown && isAimEnabledRef.current) ||
-        muzzleFlash > 0 ||
-        player.isReloading
-      ) {
-        let aimed = false;
-        const mobAimAngle = (window as any).mobileAimJoystickAngle;
-        if ((mobShoot || mobAim) && mobAimAngle !== undefined && mobAimAngle !== null) {
-          player.angle = mobAimAngle;
-          // Sync virtualMouse position relative to player
-          virtualMouseX = playerScreenX + Math.cos(mobAimAngle) * 300;
-          virtualMouseY = playerScreenY + Math.sin(mobAimAngle) * 300;
-          aimed = true;
-        } else if (isMobileDevice || mobShoot || mobAim) {
-          let closestZ = null;
-          let closestDist = 800; // auto-aim range
-          for (const m of mannequins) {
-            if (m.hp > 0) {
-              const d = Math.hypot(m.x - player.x, m.y - player.y);
-              if (d < closestDist) {
-                closestDist = d;
-                closestZ = m;
-              }
-            }
-          }
-          if (closestZ) {
-            player.angle = Math.atan2(closestZ.y - player.y, closestZ.x - player.x);
-            // Sync virtualMouse position
-            const mScreenX = screenCenterX + (closestZ.x - camera.x) * camera.zoom;
-            const mScreenY = screenCenterY + (closestZ.y - camera.y) * camera.zoom;
-            virtualMouseX = mScreenX;
-            virtualMouseY = mScreenY;
+      if (!cutsceneRef.current.active) {
+        if (
+          mouse.down ||
+          (mouse.rightDown && isAimEnabledRef.current) ||
+          muzzleFlash > 0 ||
+          player.isReloading
+        ) {
+          let aimed = false;
+          const mobAimAngle = (window as any).mobileAimJoystickAngle;
+          if ((mobShoot || mobAim) && mobAimAngle !== undefined && mobAimAngle !== null) {
+            player.angle = mobAimAngle;
+            // Sync virtualMouse position relative to player
+            virtualMouseX = playerScreenX + Math.cos(mobAimAngle) * 300;
+            virtualMouseY = playerScreenY + Math.sin(mobAimAngle) * 300;
             aimed = true;
-          }
-        }
-        if (!aimed) {
-          player.angle = Math.atan2(
-            virtualMouseY - playerScreenY,
-            virtualMouseX - playerScreenX,
-          );
-        }
-      } else {
-        if (dx !== 0 || dy !== 0) {
-          const targetAngle = Math.atan2(dy, dx);
-          const diff = Math.atan2(
-            Math.sin(targetAngle - player.angle),
-            Math.cos(targetAngle - player.angle),
-          );
-          // Faster turn rate when walking
-          player.angle += diff * 15 * dt;
-        } else {
-          let idleLook = 0;
-          if (player.idleTimer > 2) {
-            idleLook = Math.sin(player.idleTimer * 0.8) * 0.4;
-          }
-          let targetAngle =
-            Math.atan2(virtualMouseY - playerScreenY, virtualMouseX - playerScreenX) +
-            idleLook;
-
-          // --- Estabilização de Mira (Auto-Aim Magnético) ---
-          let closestDist = 180; // Alcance do imã da mira na tela
-          let targetM = null;
-          for (const m of mannequins) {
-            if (m.hp > 0) {
-              const mScreenX = screenCenterX + (m.x - camera.x) * camera.zoom;
-              const mScreenY = screenCenterY + (m.y - camera.y) * camera.zoom;
-              const distToMouse = Math.hypot(mScreenX - virtualMouseX, mScreenY - virtualMouseY);
-              if (distToMouse < closestDist) {
-                closestDist = distToMouse;
-                targetM = m;
+          } else if (isMobileDevice || mobShoot || mobAim) {
+            let closestZ = null;
+            let closestDist = 800; // auto-aim range
+            for (const m of mannequins) {
+              if (m.hp > 0) {
+                const d = Math.hypot(m.x - player.x, m.y - player.y);
+                if (d < closestDist) {
+                  closestDist = d;
+                  closestZ = m;
+                }
               }
             }
+            if (closestZ) {
+              player.angle = Math.atan2(closestZ.y - player.y, closestZ.x - player.x);
+              // Sync virtualMouse position
+              const mScreenX = screenCenterX + (closestZ.x - camera.x) * camera.zoom;
+              const mScreenY = screenCenterY + (closestZ.y - camera.y) * camera.zoom;
+              virtualMouseX = mScreenX;
+              virtualMouseY = mScreenY;
+              aimed = true;
+            }
           }
-          
-          if (targetM) {
-            const mScreenX = screenCenterX + (targetM.x - camera.x) * camera.zoom;
-            const mScreenY = screenCenterY + (targetM.y - camera.y) * camera.zoom;
-            targetAngle = Math.atan2(mScreenY - playerScreenY, mScreenX - playerScreenX);
-            
-            // Puxa suavemente a mira virtual na direção do zumbi
-            virtualMouseX += (mScreenX - virtualMouseX) * 0.08;
-            virtualMouseY += (mScreenY - virtualMouseY) * 0.08;
+          if (!aimed) {
+            const targetAngle = Math.atan2(
+              virtualMouseY - playerScreenY,
+              virtualMouseX - playerScreenX,
+            );
+            if (activeWeapon === "rifle") {
+              const diff = Math.atan2(
+                Math.sin(targetAngle - player.angle),
+                Math.cos(targetAngle - player.angle)
+              );
+              // Smooth, weighted stabilization for sniper aiming (prevents rapid spinning)
+              player.angle += diff * 7.5 * dt;
+            } else {
+              player.angle = targetAngle;
+            }
           }
-          // ----------------------------------------------------
+        } else {
+          if (dx !== 0 || dy !== 0) {
+            const targetAngle = Math.atan2(dy, dx);
+            const diff = Math.atan2(
+              Math.sin(targetAngle - player.angle),
+              Math.cos(targetAngle - player.angle),
+            );
+            // Faster turn rate when walking
+            player.angle += diff * 15 * dt;
+          } else {
+            let idleLook = 0;
+            if (player.idleTimer > 2) {
+              idleLook = Math.sin(player.idleTimer * 0.8) * 0.4;
+            }
+            let targetAngle =
+              Math.atan2(virtualMouseY - playerScreenY, virtualMouseX - playerScreenX) +
+              idleLook;
 
-          const diff = Math.atan2(
-            Math.sin(targetAngle - player.angle),
-            Math.cos(targetAngle - player.angle),
-          );
-          // Gira um pouco mais rápido para a mira travar mais fácil
-          player.angle += diff * (targetM ? 8 : 3) * dt;
+            // --- Estabilização de Mira (Auto-Aim Magnético) ---
+            let closestDist = 180; // Alcance do imã da mira na tela
+            let targetM = null;
+            for (const m of mannequins) {
+              if (m.hp > 0) {
+                const mScreenX = screenCenterX + (m.x - camera.x) * camera.zoom;
+                const mScreenY = screenCenterY + (m.y - camera.y) * camera.zoom;
+                const distToMouse = Math.hypot(mScreenX - virtualMouseX, mScreenY - virtualMouseY);
+                if (distToMouse < closestDist) {
+                  closestDist = distToMouse;
+                  targetM = m;
+                }
+              }
+            }
+            
+            if (targetM) {
+              const mScreenX = screenCenterX + (targetM.x - camera.x) * camera.zoom;
+              const mScreenY = screenCenterY + (targetM.y - camera.y) * camera.zoom;
+              targetAngle = Math.atan2(mScreenY - playerScreenY, mScreenX - playerScreenX);
+              
+              // Puxa suavemente a mira virtual na direção do zumbi
+              virtualMouseX += (mScreenX - virtualMouseX) * 0.08;
+              virtualMouseY += (mScreenY - virtualMouseY) * 0.08;
+            }
+            // ----------------------------------------------------
+
+            const diff = Math.atan2(
+              Math.sin(targetAngle - player.angle),
+              Math.cos(targetAngle - player.angle),
+            );
+            // Gira um pouco mais rápido para a mira travar mais fácil
+            player.angle += diff * (targetM ? 8 : 3) * dt;
+          }
         }
       }
 
@@ -3135,8 +4714,8 @@ export default function App() {
           }
         }
       } else if (!player.isDead) {
-        // Safe check for shooting - block if rolling
-        if (mouse.down && player.ammo > 0 && activeStats && player.isRolling === false) {
+        // Safe check for shooting - block if rolling or cutscene active
+        if (mouse.down && player.ammo > 0 && activeStats && player.isRolling === false && !cutsceneRef.current.active) {
           const baseFireRate = activeStats.fireRate / (1.0 + wUpgrades.fireRate * 0.12);
           const currentFireRate = player.furyTimer > 0 ? baseFireRate * 0.55 : baseFireRate;
           if (time - lastShotTime > currentFireRate * 1000) {
@@ -3151,7 +4730,8 @@ export default function App() {
           player.ammo <= 0 &&
           activeStats &&
           !player.isReloading &&
-          player.isRolling === false
+          player.isRolling === false &&
+          !cutsceneRef.current.active
         ) {
           player.ammo = 0;
           inventoryRef.current.hotbarAmmo[activeSlot] = 0;
@@ -3193,6 +4773,13 @@ export default function App() {
       if (player.bloodAmount !== undefined && player.bloodAmount > 0)
         player.bloodAmount = Math.max(0, player.bloodAmount - dt * 0.02);
 
+      // Invincibility shield tracking
+      if ((player as any).shieldTimer && (player as any).shieldTimer > 0) {
+        (player as any).shieldTimer -= dt;
+        player.hp = Math.max(player.hp, (player as any).lastHp || player.hp);
+      }
+      (player as any).lastHp = player.hp;
+
       // Listen for manual respawn event
       if (player.isDead && window.respawnTriggered) {
         window.respawnTriggered = false;
@@ -3209,6 +4796,27 @@ export default function App() {
           if (dist < 400) {
             m.x += (Math.random() - 0.5) * 1000;
             m.y += (Math.random() - 0.5) * 1000;
+          }
+        }
+      }
+
+      // Listen for Ad-based revive event
+      if (player.isDead && (window as any).respawnAdTriggered) {
+        (window as any).respawnAdTriggered = false;
+        player.isDead = false;
+        player.hp = player.maxHp;
+        player.ammo = player.maxAmmo;
+        SoundManager.startBGMusic();
+        player.bloodAmount = 0;
+        (player as any).shieldTimer = 3.5; // 3.5 seconds of invincibility shield!
+        
+        // Push zombies away from the player's revive spot
+        for (const m of mannequins) {
+          const dist = Math.hypot(m.x - player.x, m.y - player.y);
+          if (dist < 350) {
+            const angle = Math.atan2(m.y - player.y, m.x - player.x) + (Math.random() - 0.5) * 0.5;
+            m.vx = Math.cos(angle) * 850;
+            m.vy = Math.sin(angle) * 850;
           }
         }
       }
@@ -3239,6 +4847,23 @@ export default function App() {
 
       // 5. Update Bullets and Mannequins
       for (const m of mannequins) {
+        if (m.isTrainingDummy && waveRef.current.mode) {
+          m.hp = 0;
+          continue;
+        }
+        if (m.isTrainingDummy) {
+          if (m.hitTime > 0) m.hitTime -= dt;
+          if (m.hp <= 0) {
+            m.deadTime += dt;
+            if (m.deadTime > 4.0) { // Respawn/Reset training dummy after 4 seconds
+              m.hp = m.maxHp;
+              m.deadTime = 0;
+            }
+          }
+          m.vx = 0;
+          m.vy = 0;
+          continue;
+        }
         if (m.hp > 0 && m.type === "patrol") {
           // Handle emerging from ground
           if ((m as any).emergeTimer !== undefined && (m as any).emergeTimer > 0) {
@@ -3450,6 +5075,8 @@ export default function App() {
             else if (m.profile === "AGRESSIVO") speed = 175;
             else if (m.profile === "FLANQUEADOR") speed = 140;
             else if (m.profile === "CERCO") speed = 125;
+            else if (m.profile === "ATIRADOR") speed = 90; // keeps distance
+            else if (m.profile === "DASHER") speed = 160;
 
             if ((m as any).baseSpeedMult) {
               speed *= (m as any).baseSpeedMult;
@@ -3476,6 +5103,164 @@ export default function App() {
               m.angle += aDiff * 6 * dt;
             }
           }
+
+          // ATIRADOR: keep distance and shoot homing red energy projectiles
+          if (m.profile === "ATIRADOR" && m.hp > 0 && !(m as any).emergeTimer) {
+            const distToP = Math.hypot(m.x - player.x, m.y - player.y);
+            // Move away if too close
+            if (distToP < 300) {
+              const awayX = (m.x - player.x) / distToP;
+              const awayY = (m.y - player.y) / distToP;
+              m.vx += awayX * 350 * dt;
+              m.vy += awayY * 350 * dt;
+            }
+            if (!(m as any).shootTimer) (m as any).shootTimer = 1.5 + Math.random();
+            if ((m as any).burstShotsLeft === undefined) (m as any).burstShotsLeft = 0;
+            
+            (m as any).shootTimer -= dt;
+            if ((m as any).shootTimer <= 0 && distToP < 700 && !player.isDead) {
+              const wNum = waveRef.current.current;
+              
+              if ((m as any).burstShotsLeft <= 0) {
+                // Initialize burst sequence based on wave number
+                (m as any).burstShotsLeft = wNum >= 6 ? Math.min(4, Math.floor(wNum / 3)) : 1;
+                // Add a small delay before the burst starts, giving player a visual cue
+                (m as any).shootTimer = 0.4;
+              } else {
+                // Fire a shot in the burst
+                (m as any).burstShotsLeft -= 1;
+                const shootAngle = Math.atan2(player.y - m.y, player.x - m.x) + (Math.random() - 0.5) * 0.15;
+                const bspeed = 360 + (wNum * 5); // Slightly faster projectiles in later waves
+                bullets.push({
+                  x: m.x,
+                  y: m.y,
+                  z: 20,
+                  vx: Math.cos(shootAngle) * bspeed,
+                  vy: Math.sin(shootAngle) * bspeed,
+                  vz: 0,
+                  life: 4.2, // Longer life to allow homing path to play out
+                  dmgMult: -1.0, 
+                  hitEntityIds: [-1], 
+                  isEnemyBullet: true,
+                  isHoming: true,
+                  color: "#ef4444" 
+                });
+                SoundManager.playSound("zombieShoot", 0.45);
+                
+                // If burst is still going, short delay. Otherwise, long cooldown.
+                if ((m as any).burstShotsLeft > 0) {
+                  (m as any).shootTimer = 0.25; // extremely fast consecutive shots
+                } else {
+                  (m as any).shootTimer = 1.8 + Math.random() * 1.2;
+                }
+              }
+            }
+          }
+
+          // DASHER: zig-zag toward player and evade incoming player bullets
+          if (m.profile === "DASHER" && m.hp > 0 && !(m as any).emergeTimer) {
+            if (!(m as any).zigzagTimer) (m as any).zigzagTimer = 0.4;
+            if (!(m as any).zigzagDir) (m as any).zigzagDir = Math.random() > 0.5 ? 1 : -1;
+            if (!(m as any).analyzeTimer) (m as any).analyzeTimer = 0;
+            if (!(m as any).dashActiveTimer) (m as any).dashActiveTimer = 0;
+
+            // 0. Update timers
+            (m as any).zigzagTimer -= dt;
+            if ((m as any).zigzagTimer <= 0) {
+              (m as any).zigzagTimer = 0.25 + Math.random() * 0.15; // fast zig-zag adjustments
+              (m as any).zigzagDir *= -1;
+            }
+
+            if ((m as any).analyzeTimer > 0) {
+              (m as any).analyzeTimer -= dt;
+              // Friction to slow down during analysis pause
+              m.vx *= 0.15 * dt;
+              m.vy *= 0.15 * dt;
+              continue; // Skip dash/movement logic while analyzing the player
+            }
+
+            if ((m as any).dashActiveTimer > 0) {
+              (m as any).dashActiveTimer -= dt;
+              if ((m as any).dashActiveTimer <= 0) {
+                // Dash just ended, check if player got away to trigger analysis pause
+                const distToP = Math.hypot(m.x - player.x, m.y - player.y);
+                if (distToP > 280) {
+                  (m as any).analyzeTimer = 1.0 + Math.random() * 0.5; // wait/analyze player
+                }
+              }
+            }
+
+            const distToP = Math.hypot(m.x - player.x, m.y - player.y);
+            const angleToP = Math.atan2(player.y - m.y, player.x - m.x);
+            
+            // 1. Zig-zag movement physics (Very fast and aggressive)
+            if (!player.isDead) {
+              const runSpeed = 260; // Increased base speed
+              const lateralAngle = angleToP + (Math.PI / 2) * (m as any).zigzagDir;
+              
+              // Strong lateral vector for quick zig-zag
+              const targetVx = Math.cos(angleToP) * runSpeed + Math.cos(lateralAngle) * runSpeed * 2.6;
+              const targetVy = Math.sin(angleToP) * runSpeed + Math.sin(lateralAngle) * runSpeed * 2.6;
+              
+              m.vx += (targetVx - m.vx) * 8 * dt;
+              m.vy += (targetVy - m.vy) * 8 * dt;
+            }
+
+            // 2. Dash / Evade trigger
+            if (!(m as any).dashCooldown) (m as any).dashCooldown = 1.0 + Math.random();
+            (m as any).dashCooldown -= dt;
+            
+            let shouldDash = false;
+            let finalDashAngle = angleToP;
+            let isEvade = false;
+
+            // Evade bullets approaching DASHER (much faster reaction)
+            if ((m as any).dashCooldown <= 0) {
+              for (const b of bullets) {
+                if (!b.isEnemyBullet && b.dmgMult > 0.1) {
+                  const distToBullet = Math.hypot(m.x - b.x, m.y - b.y);
+                  if (distToBullet < 550) { // Increased awareness radius
+                    const bulletAngle = Math.atan2(b.vy, b.vx);
+                    const dodgeDir = Math.random() > 0.5 ? 1 : -1;
+                    finalDashAngle = bulletAngle + (Math.PI / 2) * dodgeDir;
+                    shouldDash = true;
+                    isEvade = true;
+                    (m as any).dashCooldown = 0.05; // extremely agile dodge rate, almost spamming
+                    break;
+                  }
+                }
+              }
+            }
+
+            // Standard target dash toward player
+            if (!shouldDash && (m as any).dashCooldown <= 0 && distToP > 100 && distToP < 550 && !player.isDead) {
+              shouldDash = true;
+              finalDashAngle = angleToP;
+              (m as any).dashCooldown = 1.8 + Math.random() * 1.0;
+            }
+
+            if (shouldDash) {
+              const dashPower = isEvade ? 2500 : 1550; // dodge dash is extremely fast
+              m.vx = Math.cos(finalDashAngle) * dashPower;
+              m.vy = Math.sin(finalDashAngle) * dashPower;
+              (m as any).dashActiveTimer = 0.25; // dash lasts 0.25s
+
+              // Spawn glowing orange trail ghosts behind the dashing zombie
+              for (let gi = 0; gi < 8; gi++) {
+                setTimeout(() => {
+                  if (m.hp <= 0) return; // Don't spawn if zombie died during timeouts
+                  rollGhosts.push({
+                    x: m.x - Math.cos(finalDashAngle) * gi * 14,
+                    y: m.y - Math.sin(finalDashAngle) * gi * 14,
+                    angle: m.angle,
+                    alpha: 0.65,
+                    scale: 1.0,
+                    isBlue: false,
+                  });
+                }, gi * 25);
+              }
+            }
+          }
         }
 
         // Damage Player Logic
@@ -3484,6 +5269,9 @@ export default function App() {
         if (m.hp > 0 && !player.isDead && (!(m as any).emergeTimer || (m as any).emergeTimer <= 0)) {
           const playerDist = Math.hypot(m.x - player.x, m.y - player.y);
           const attackRange = m.isBoss ? 60 : 35;
+
+          // Enemy bullets hit player
+          if ((m as any).isEnemyBullet) { /* handled separately */ }
 
           // Only attack if within range and not on cooldown
           if (
@@ -3539,6 +5327,11 @@ export default function App() {
                 player.isDead = true;
                 player.kills = 0;
                 player.furyKills = 0;
+                // Save credits to global bank on death
+                saveGlobalCredits(globalCredits + credits);
+                // Save any purchased skins to persistent storage
+                const allSkins = [...new Set([...globalPurchasedSkins, ...inventoryRef.current.purchasedSkins])];
+                saveGlobalSkins(allSkins);
                 SoundManager.playSound("gameover", 0.9);
                 SoundManager.stopBGMusic();
 
@@ -3631,9 +5424,10 @@ export default function App() {
 
         if (m.hitTime > 0) m.hitTime -= dt;
         if (m.hp <= 0) {
-          if (!waveRef.current.mode && (window as any).freeModeSpawningEnabled) {
+          if (!waveRef.current.mode && (window as any).freeModeSpawningEnabled && !m.isTrainingDummy) {
+            const aliveCount = mannequins.filter(z => z.hp > 0 && !z.isTrainingDummy).length;
             m.deadTime += dt;
-            if (m.deadTime > 3) {
+            if (m.deadTime > 3 && aliveCount < 4) {
               m.x = player.x + (Math.random() - 0.5) * 2000;
               m.y = player.y + (Math.random() - 0.5) * 2000;
               m.hp = m.maxHp;
@@ -3695,12 +5489,151 @@ export default function App() {
 
       for (let i = bullets.length - 1; i >= 0; i--) {
         const b = bullets[i];
+
+        // Homing logic for ATIRADOR red energy projectiles
+        if ((b as any).isHoming && !player.isDead) {
+          const targetAngle = Math.atan2(player.y - b.y, player.x - b.x);
+          let currentAngle = Math.atan2(b.vy, b.vx);
+          
+          let diff = targetAngle - currentAngle;
+          while (diff < -Math.PI) diff += Math.PI * 2;
+          while (diff > Math.PI) diff -= Math.PI * 2;
+          
+          const maxTurn = 3.8 * dt; // Turn speed in rads/sec
+          currentAngle += Math.max(-maxTurn, Math.min(maxTurn, diff));
+          
+          const speed = Math.hypot(b.vx, b.vy);
+          b.vx = Math.cos(currentAngle) * speed;
+          b.vy = Math.sin(currentAngle) * speed;
+
+          // Spawn beautiful red particle trailing effects
+          if (Math.random() < 0.45) {
+            particles.push({
+              x: b.x,
+              y: b.y,
+              vx: (Math.random() - 0.5) * 60 - b.vx * 0.15,
+              vy: (Math.random() - 0.5) * 60 - b.vy * 0.15,
+              life: Math.random() * 0.4 + 0.2,
+              color: Math.random() < 0.3 ? "#ffffff" : "rgba(255, 30, 30, 0.85)",
+              size: Math.random() * 3.5 + 1.5,
+            });
+          }
+        }
+
+        if ((b as any).lateralDrift && !b.isEnemyBullet) {
+          const bAngle = Math.atan2(b.vy, b.vx);
+          const driftMultiplier = Math.max(0.1, b.life / 1.5);
+          b.vx += -Math.sin(bAngle) * (b as any).lateralDrift * dt * 3.8 * driftMultiplier;
+          b.vy += Math.cos(bAngle) * (b as any).lateralDrift * dt * 3.8 * driftMultiplier;
+        }
         b.x += b.vx * dt;
         b.y += b.vy * dt;
-        b.z += b.vz * dt;
-        const gravityStrength = b.weaponType === "rifle" ? 10 : 300;
-        b.vz -= gravityStrength * dt; // gravity
+        if ((b as any).isEnemyBullet) {
+          b.z = 24 + Math.sin(time * 8 + b.x * 0.05) * 6; // hovering motion
+          b.vz = 0;
+        } else {
+          b.z += b.vz * dt;
+          const gravityStrength = b.weaponType === "rifle" ? 10 : 300;
+          b.vz -= gravityStrength * dt; // gravity
+        }
         b.life -= dt;
+
+        // Bullet vs Bullet collision (dynamic mini explosion)
+        let collidedWithBullet = false;
+        for (let j = bullets.length - 1; j >= 0; j--) {
+          if (i === j) continue;
+          const otherB = bullets[j];
+          if ((b as any).isEnemyBullet !== (otherB as any).isEnemyBullet) {
+            const distB = Math.hypot(b.x - otherB.x, b.y - otherB.y);
+            // Collision radius for bullets
+            if (distB < 35) {
+              collidedWithBullet = true;
+              
+              // Spark effects (Mini Explosion)
+              for (let k = 0; k < 18; k++) {
+                particles.push({
+                  x: b.x + (Math.random() - 0.5) * 15,
+                  y: b.y + (Math.random() - 0.5) * 15,
+                  vx: (Math.random() - 0.5) * 250,
+                  vy: (Math.random() - 0.5) * 250,
+                  life: 0.3 + Math.random() * 0.5,
+                  color: Math.random() > 0.5 ? "#ef4444" : "#fbbf24",
+                  size: 3 + Math.random() * 5
+                });
+              }
+              SoundManager.playSound("headshot", 0.4); // metallic impact
+              
+              // Remove the other bullet
+              bullets.splice(j, 1);
+              if (j < i) i--;
+              break;
+            }
+          }
+        }
+        
+        if (collidedWithBullet) {
+          bullets.splice(i, 1);
+          continue;
+        }
+
+        // Enemy bullet hits player or other zombies (friendly fire)
+        if ((b as any).isEnemyBullet) {
+          const dpToPlayer = Math.hypot(b.x - player.x, b.y - player.y);
+          if (dpToPlayer < 28 && !player.isDead && !player.isRolling) {
+            player.hp -= 40;
+            screenShakeStr = Math.max(screenShakeStr, 35);
+            playerDamageFlash = 1.0;
+            damageTexts.push({ x: player.x, y: player.y - 40, value: 40, vx: (Math.random()-0.5)*50, vy: -80, life: 1.2, type: "player_damage" });
+            bullets.splice(i, 1);
+            continue;
+          }
+
+          // Friendly fire between zombies
+          let hitZombie = false;
+          for (const m of mannequins) {
+            if (m.hp > 0) {
+              const distToZ = Math.hypot(b.x - m.x, b.y - m.y);
+              const hitRadius = m.isBoss ? 55 : 28;
+              // Add a threshold (distToZ > 25) so shooters don't hit themselves instantly
+              if (distToZ < hitRadius && distToZ > 25) {
+                m.hp -= 30; // Deal damage
+                m.hitTime = 0.15;
+
+                damageTexts.push({
+                  x: m.x,
+                  y: m.y - 35,
+                  value: 30,
+                  vx: (Math.random() - 0.5) * 60,
+                  vy: -70,
+                  life: 1.0,
+                  type: "friendly_fire"
+                });
+
+                // Spawn blood particles
+                for (let k = 0; k < 4; k++) {
+                  pushBloodDrop({
+                    x: m.x,
+                    y: m.y,
+                    z: 15,
+                    vx: (Math.random() - 0.5) * 200,
+                    vy: (Math.random() - 0.5) * 200,
+                    vz: 100 + Math.random() * 80,
+                    size: Math.random() * 3 + 2,
+                    color: "rgba(220, 20, 20, 0.8)"
+                  });
+                }
+
+                bullets.splice(i, 1);
+                hitZombie = true;
+                break;
+              }
+            }
+          }
+          if (hitZombie) continue;
+
+          if (b.life <= 0) { bullets.splice(i, 1); continue; }
+          continue; // skip normal zombie collision
+        }
 
         // Bullet - Van Collision
         if (b.dmgMult > 0.1) {
@@ -3761,7 +5694,8 @@ export default function App() {
               const bUpgrades = b.weaponType && (upgradesRef.current as any)[b.weaponType]
                 ? (upgradesRef.current as any)[b.weaponType]
                 : { damage: 0 };
-              const baseDmg = (b.isFury ? customStatsDmg * 2.5 : customStatsDmg) * (1.0 + bUpgrades.damage * 0.15);
+              const charDmgMult = (skinRef.current?.stats?.preferredWeapon === b.weaponType) ? (skinRef.current?.stats?.damage || 1.0) : 1.0;
+              const baseDmg = (b.isFury ? customStatsDmg * 2.5 : customStatsDmg) * (1.0 + bUpgrades.damage * 0.15) * charDmgMult;
               const playerDist = Math.hypot(m.x - player.x, m.y - player.y);
 
               // Double damage up close
@@ -3856,6 +5790,7 @@ export default function App() {
                   life: extraLife,
                   type: isCrit ? "crit" : "damage",
                   themeColor: b.themeColor,
+                  isTrainingDummy: m.isTrainingDummy,
                 });
               }
 
@@ -4149,6 +6084,16 @@ export default function App() {
 
         s.life -= dt;
         if (s.life <= 0) {
+          // Play realistic casing drop sound on landing!
+          const dx = s.x - player.x;
+          const dy = s.y - player.y;
+          const dist = Math.hypot(dx, dy);
+          const maxDist = 700;
+          if (dist < maxDist) {
+            const vol = Math.max(0, 1.0 - dist / maxDist);
+            SoundManager.playCasingDropSound(s.isBazooka, vol);
+          }
+
           shellDecals.push({
             x: s.x,
             y: s.y,
@@ -4158,19 +6103,27 @@ export default function App() {
             isKicked: s.isKicked,
             themeColor: s.themeColor,
           });
-          if (shellDecals.length > 500) shellDecals.shift();
+          const maxShellDecals = isMobileDevice ? 80 : 200;
+          if (shellDecals.length > maxShellDecals) {
+            shellDecals.splice(0, shellDecals.length - maxShellDecals);
+          }
           shells.splice(i, 1);
         }
       }
 
       // --- Player Shell Decals Collision (Kicking ground casings) ---
+      const px = player.x;
+      const py = player.y;
       for (let i = shellDecals.length - 1; i >= 0; i--) {
         const sd = shellDecals[i];
-        const dist = Math.hypot(player.x - sd.x, player.y - sd.y);
+        const dx = px - sd.x;
+        const dy = py - sd.y;
+        const distSq = dx * dx + dy * dy;
         const collRadius = sd.isBazooka ? 36 : 26; // Bazooka casing is larger
-        if (dist < collRadius) {
+        if (distSq < collRadius * collRadius) {
+          const dist = Math.sqrt(distSq);
           // Convert back to active bouncing shell
-          const kickAngle = Math.atan2(sd.y - player.y, sd.x - player.x) + (Math.random() - 0.5) * 0.7;
+          const kickAngle = Math.atan2(sd.y - py, sd.x - px) + (Math.random() - 0.5) * 0.7;
           const kickForce = (collRadius - dist) * 7.5 + 25;
           
           pushShell({
@@ -4261,6 +6214,99 @@ export default function App() {
 
         if (orb.life <= 0) {
           healthOrbs.splice(i, 1);
+        }
+      }
+
+      // Update Upgrade Energy Orbs
+      for (let i = upgradeEnergyOrbs.length - 1; i >= 0; i--) {
+        const orb = upgradeEnergyOrbs[i];
+        orb.x += orb.vx * dt;
+        orb.y += orb.vy * dt;
+        
+        // 3D physics simulation
+        if (orb.z === undefined) orb.z = 0;
+        if (orb.vz === undefined) orb.vz = 0;
+        if (orb.bounceCount === undefined) orb.bounceCount = 0;
+        
+        orb.z += orb.vz * dt;
+        orb.vz -= 650 * dt; // Gravity
+        
+        // Bouncing on the floor
+        if (orb.z <= 0) {
+          orb.z = 0;
+          if (orb.bounceCount < 3) {
+            orb.vz = -orb.vz * 0.55; // Bouncing elasticity
+            orb.vx *= 0.6; // Ground friction
+            orb.vy *= 0.6;
+            orb.bounceCount++;
+          } else {
+            orb.vz = 0;
+            orb.vx = 0;
+            orb.vy = 0;
+          }
+        }
+        
+        orb.vx *= 0.96;
+        orb.vy *= 0.96;
+        orb.life -= dt;
+
+        const distToPlayer = Math.hypot(player.x - orb.x, player.y - orb.y);
+
+        // Clamped magnetism (must be close to start collecting)
+        const magnetRange = 250;
+        if (distToPlayer < magnetRange) {
+          const force = (1.0 - distToPlayer / magnetRange) * 8000 + 3000;
+          orb.vx += ((player.x - orb.x) / distToPlayer) * force * dt;
+          orb.vy += ((player.y - orb.y) / distToPlayer) * force * dt;
+
+          if (Math.random() < 0.5) {
+            particles.push({
+              x: orb.x,
+              y: orb.y - orb.z, // Translate particle relative to z
+              vx: -orb.vx * 0.1 + (Math.random() - 0.5) * 20,
+              vy: -orb.vy * 0.1 + (Math.random() - 0.5) * 20,
+              life: 0.3 + Math.random() * 0.3,
+              color: Math.random() > 0.5 ? "#60a5fa" : "#93c5fd", // Blueish energy
+              size: 2.0 + Math.random() * 2.0,
+            });
+          }
+        }
+
+        if (distToPlayer < 25) {
+          // Collect
+          setCredits((prev) => prev + 2); // Gives 2 credits per orb
+          SoundManager.playUpgradeCollectSound();
+
+          // Add shiny particles
+          for (let k = 0; k < 20; k++) {
+            particles.push({
+              x: player.x + (Math.random() - 0.5) * 30,
+              y: player.y - 20,
+              vx: (Math.random() - 0.5) * 200,
+              vy: -150 - Math.random() * 300,
+              life: 0.6 + Math.random() * 0.8,
+              color: Math.random() > 0.4 ? "#3b82f6" : "#60a5fa",
+              size: 2 + Math.random() * 4,
+            });
+          }
+
+          damageTexts.push({
+            x: player.x,
+            y: player.y - 40,
+            value: "+2 UP",
+            vx: (Math.random() - 0.5) * 30,
+            vy: -80 - Math.random() * 30,
+            life: 1.2,
+            type: "heal",
+            themeColor: "#60a5fa"
+          });
+
+          upgradeEnergyOrbs.splice(i, 1);
+          continue;
+        }
+
+        if (orb.life <= 0) {
+          upgradeEnergyOrbs.splice(i, 1);
         }
       }
 
@@ -4471,12 +6517,38 @@ export default function App() {
 
     const explodeRocket = (rx: number, ry: number) => {
       // 1. Heavy Screen Shake
-      screenShakeStr = Math.max(screenShakeStr, 40);
+      screenShakeStr = Math.max(screenShakeStr, 60);
       SoundManager.playExplosion();
+      SoundManager.playSound("zombieShoot", 0.9); // Add a heavy punchy layer
+
+      // Add dynamic explosion visual particles
+      for (let k = 0; k < 60; k++) {
+        particles.push({
+          x: rx + (Math.random() - 0.5) * 40,
+          y: ry + (Math.random() - 0.5) * 40,
+          vx: (Math.random() - 0.5) * 600,
+          vy: (Math.random() - 0.5) * 600,
+          life: 0.5 + Math.random() * 1.5,
+          color: Math.random() > 0.6 ? "#fbbf24" : Math.random() > 0.3 ? "#ef4444" : "#450a0a",
+          size: 5 + Math.random() * 15
+        });
+      }
+      for (let k = 0; k < 20; k++) {
+        particles.push({
+          x: rx,
+          y: ry,
+          vx: (Math.random() - 0.5) * 1200,
+          vy: (Math.random() - 0.5) * 1200,
+          life: 0.2 + Math.random() * 0.4,
+          color: "#ffffff",
+          size: 2 + Math.random() * 4
+        });
+      }
 
       // 2. Damage all mannequins within explosion radius
       const radius = 220;
-      const baseDamage = 350 * (1.0 + (upgradesRef.current.basuca?.damage || 0) * 0.15);
+      const charDmgMult = (skinRef.current?.stats?.preferredWeapon === "basuca") ? (skinRef.current?.stats?.damage || 1.0) : 1.0;
+      const baseDamage = 350 * (1.0 + (upgradesRef.current.basuca?.damage || 0) * 0.15) * charDmgMult;
 
       for (const m of mannequins) {
         if (m.hp > 0) {
@@ -4597,6 +6669,10 @@ export default function App() {
           player.isDead = true;
           player.kills = 0;
           player.furyKills = 0;
+          // Save credits to global bank on death
+          saveGlobalCredits(globalCredits + credits);
+          const allSkins = [...new Set([...globalPurchasedSkins, ...inventoryRef.current.purchasedSkins])];
+          saveGlobalSkins(allSkins);
           SoundManager.playSound("gameover", 0.9);
           SoundManager.stopBGMusic();
         }
@@ -4723,9 +6799,12 @@ export default function App() {
         const bulletVX = Math.cos(player.angle + spread) * bSpeed;
         const bulletVY = Math.sin(player.angle + spread) * bSpeed;
 
+        const shootAngle = player.angle + spread;
+        const latVel = -Math.sin(shootAngle) * player.vx + Math.cos(shootAngle) * player.vy;
+
         const equippedSkinId = inventoryRef.current.equippedSkins[wType];
         const skinDef = WEAPON_SKINS.find(s => s.id === equippedSkinId);
-        const tColor = skinDef?.themeColor;
+        const tColor = skinRef.current ? skinRef.current.colorMain : (skinDef?.themeColor || "#ff3c3c");
 
         bullets.push({
           x: player.x + offsetX,
@@ -4734,7 +6813,7 @@ export default function App() {
           vx: bulletVX,
           vy: bulletVY,
           vz: wType === "basuca" ? 0 : -20 - Math.random() * 20,
-          life: stats.range * (1.0 + wUpgrades.range * 0.15),
+          life: stats.range * (1.0 + wUpgrades.range * 0.35),
           isFury: player.furyTimer > 0,
           dmgMult: wType === "doze" ? 0.6 : wType === "rifle" ? 1.5 : 1.0,
           hitEntityIds: [],
@@ -4742,6 +6821,7 @@ export default function App() {
           headshotsCount: 0,
           isRocket: wType === "basuca",
           weaponType: wType,
+          lateralDrift: latVel * 0.95,
           themeColor: tColor,
         } as any);
       }
@@ -4809,7 +6889,7 @@ export default function App() {
           color:
             wType === "basuca"
               ? (Math.random() > 0.35 ? (Math.random() > 0.5 ? "#ff4500" : "#ff8c00") : "#ffffff")
-              : (Math.random() > 0.45 ? "#ffaa00" : "#ffffff"),
+              : (skinRef.current ? (Math.random() > 0.45 ? skinRef.current.colorMain : "#ffffff") : (Math.random() > 0.45 ? "#ffaa00" : "#ffffff")),
           size: Math.random() * (wType === "basuca" ? 6.5 : wType === "doze" ? 4 : 3) + 1,
         });
       }
@@ -4836,6 +6916,55 @@ export default function App() {
         ? upgradesRef.current[activeWeapon]
         : { damage: 0, fireRate: 0, stability: 0, accuracy: 0, capacity: 0, reloadSpeed: 0, range: 0 };
 
+      // Update Van Blur Vignette or Aim Depth-of-Field Overlay dynamically
+      if (blurOverlayRef.current) {
+        const isAiming = !player.isDead && !isShopOpenRef.current && ((mouse.rightDown && isAimEnabledRef.current) || (window as any).mobileAimActive || (window as any).mobileShootActive);
+        if (isAiming) {
+          const dprVal = canvas.width / window.innerWidth;
+          const logicalW = canvas.width / dprVal;
+          const logicalH = canvas.height / dprVal;
+          const screenCenterX = logicalW / 2;
+          const screenCenterY = logicalH / 2;
+          
+          // Player position on screen
+          const playerScreenX = screenCenterX + (player.x - camera.x) * camera.zoom;
+          const playerScreenY = screenCenterY + (player.y - camera.y) * camera.zoom;
+          
+          // Aim target position on screen
+          let aimScreenX = playerScreenX + Math.cos(player.angle) * (180 * camera.zoom);
+          let aimScreenY = playerScreenY + Math.sin(player.angle) * (180 * camera.zoom);
+          
+          if (mouse.clientX !== undefined && mouse.clientX !== 0) {
+            aimScreenX = mouse.clientX;
+            aimScreenY = mouse.clientY;
+          }
+          
+          const blurVal = 2.0;
+          blurOverlayRef.current.style.opacity = '1';
+          blurOverlayRef.current.style.backdropFilter = `blur(${blurVal}px) brightness(0.65)`;
+          
+          // CSS Radial Mask: transparent at aim point, black (fully blurred) elsewhere
+          const mask = `radial-gradient(circle 260px at ${aimScreenX}px ${aimScreenY}px, transparent 25%, rgba(0, 0, 0, 1) 90%)`;
+          blurOverlayRef.current.style.maskImage = mask;
+          blurOverlayRef.current.style.webkitMaskImage = mask;
+        } else {
+          const distToVan = Math.hypot(player.x - VAN_X, player.y - VAN_Y);
+          // Apply blur only if not in a cutscene and close to the Van
+          if (distToVan < 450 && !cutsceneRef.current.active) {
+            const factor = Math.max(0, 1 - (distToVan / 450));
+            blurOverlayRef.current.style.opacity = (factor * 0.9).toString();
+            blurOverlayRef.current.style.backdropFilter = `blur(${factor * 5}px)`;
+            blurOverlayRef.current.style.maskImage = 'none';
+            blurOverlayRef.current.style.webkitMaskImage = 'none';
+          } else {
+            blurOverlayRef.current.style.opacity = '0';
+            blurOverlayRef.current.style.backdropFilter = 'blur(0px)';
+            blurOverlayRef.current.style.maskImage = 'none';
+            blurOverlayRef.current.style.webkitMaskImage = 'none';
+          }
+        }
+      }
+
       // Clear Screen
       ctx.fillStyle = "#000";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -4858,16 +6987,37 @@ export default function App() {
         logicalWidth / 2 + screenShakeX,
         logicalHeight / 2 + screenShakeY,
       );
+      let totalRotation = 0;
       if (screenShakeStr > 0) {
-        ctx.rotate(Math.sin(Date.now() * 0.08) * screenShakeStr * 0.0006);
+        totalRotation += Math.sin(Date.now() * 0.08) * screenShakeStr * 0.0006;
       }
+      if (cinematicModeRef.current && camera.tilt) {
+        totalRotation += camera.tilt;
+      }
+      if (totalRotation !== 0) {
+        ctx.rotate(totalRotation);
+      }
+      
       ctx.scale(camera.zoom, camera.zoom);
+      
+      if (cinematicModeRef.current) {
+        // Dynamic 3D diagonal tilt (compresses Y and rotates slightly to simulate semi-isometric depth)
+        ctx.scale(1.0, 0.94);
+        ctx.rotate(-0.02);
+      }
       
       let swayX = 0;
       let swayY = 0;
-      if (cinematicModeRef.current && player.isMoving) {
-        swayX = Math.sin(player.moveTimer * 9) * 3.5;
-        swayY = Math.cos(player.moveTimer * 18) * 2.5;
+      if (cinematicModeRef.current) {
+        if (player.isMoving) {
+          // Dynamic walking camera sway
+          swayX = Math.sin(player.moveTimer * 9.5) * 5.0;
+          swayY = Math.cos(player.moveTimer * 19.0) * 3.5;
+        } else {
+          // Handheld idle floating sway
+          swayX = Math.sin(Date.now() * 0.0012) * 4.5;
+          swayY = Math.cos(Date.now() * 0.0008) * 3.5;
+        }
       }
       ctx.translate(-camera.x + swayX, -camera.y + swayY);
 
@@ -4891,16 +7041,66 @@ export default function App() {
 
       for (let x = startX; x < endX; x += TILE_SIZE) {
         for (let y = startY; y < endY; y += TILE_SIZE) {
-          const isBlack =
-            (Math.floor(x / TILE_SIZE) + Math.floor(y / TILE_SIZE)) % 2 === 0;
-          ctx.fillStyle = isBlack ? "#030303" : "#080808"; // Darkened for cinematic lighting
-          ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
-          
-          // Subtle grid line to make it look technical and premium
-          ctx.strokeStyle = "rgba(255, 255, 255, 0.012)";
-          ctx.lineWidth = 1;
-          ctx.strokeRect(x, y, TILE_SIZE, TILE_SIZE);
+          if ((window as any).inTrainingMode) {
+            // Check if tile center is inside the training arena
+            const cx = x + TILE_SIZE / 2;
+            const cy = y + TILE_SIZE / 2;
+            const tileInArena = cx >= -5800 && cx <= -4200 && cy >= 4200 && cy <= 5800;
+            if (tileInArena) {
+              // Uniform professional dark concrete floor (no checkered grid pattern) - slightly lighter
+              ctx.fillStyle = "#1b1b1e";
+              ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+
+              // Draw fine noise grain texture for concrete look
+              ctx.fillStyle = "rgba(255, 255, 255, 0.015)";
+              const seed = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453;
+              for (let g = 0; g < 8; g++) {
+                 const gx = x + Math.abs(Math.sin(seed + g) * (TILE_SIZE - 2));
+                 const gy = y + Math.abs(Math.cos(seed + g * 2.5) * (TILE_SIZE - 2));
+                 ctx.fillRect(gx, gy, 1.5, 1.5);
+              }
+            } else {
+              // Outside arena = pitch black void
+              ctx.fillStyle = "#08080c";
+              ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+            }
+          } else {
+            // Procedural organic desert sand dunes (sine wave variations) - slightly lighter/clearer
+            const ripple = Math.sin(x * 0.005 + y * 0.0025) * 6;
+            const r = Math.max(18, Math.floor(34 + ripple * 0.5));
+            const g = Math.max(14, Math.floor(27 + ripple * 0.4));
+            const b = Math.max(10, Math.floor(20 + ripple * 0.3));
+            
+            ctx.fillStyle = `rgb(${r}, ${g}, ${b})`; // Slightly lighter desert sand
+            ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+            
+            // Draw pseudo-random sand grains that remain fixed to the ground
+            ctx.fillStyle = "rgba(220, 180, 110, 0.04)"; // Desert sand speckles
+            const seed = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453;
+            const grainCount = 4;
+            for (let g = 0; g < grainCount; g++) {
+               const gx = x + Math.abs(Math.sin(seed + g) * (TILE_SIZE - 4));
+               const gy = y + Math.abs(Math.cos(seed + g * 2.5) * (TILE_SIZE - 4));
+               ctx.fillRect(gx, gy, 1.2, 1.2);
+            }
+          }
         }
+      }
+
+      if ((window as any).inTrainingMode) {
+        // Draw concrete barrier walls/warning stripes around training arena bounds
+        ctx.save();
+        // Thick concrete outer wall
+        ctx.strokeStyle = "#55555c";
+        ctx.lineWidth = 20;
+        ctx.strokeRect(-5810, 4190, 1620, 1620);
+        // Yellow warning dashed stripes
+        ctx.strokeStyle = "#eab308";
+        ctx.lineWidth = 4;
+        ctx.setLineDash([14, 10]);
+        ctx.strokeRect(-5800, 4200, 1600, 1600);
+        ctx.setLineDash([]);
+        ctx.restore();
       }
 
       // --- Draw Activation Plate (Modo Livre only) ---
@@ -5100,12 +7300,14 @@ export default function App() {
           flashY,
           flashSize,
         );
-        lightGrad.addColorStop(0, `rgba(255, 180, 50, ${(isDoze ? 0.65 : 0.4) * muzzleFlash})`);
-        lightGrad.addColorStop(
-          0.2,
-          `rgba(255, 100, 20, ${(isDoze ? 0.35 : 0.15) * muzzleFlash})`,
-        );
-        lightGrad.addColorStop(1, "rgba(255, 100, 20, 0)");
+        const flashHex = (skinRef.current ? skinRef.current.colorMain : "#ffb432").replace('#', '');
+        const fr = parseInt(flashHex.substring(0,2), 16) || 255;
+        const fg = parseInt(flashHex.substring(2,4), 16) || 180;
+        const fb = parseInt(flashHex.substring(4,6), 16) || 50;
+
+        lightGrad.addColorStop(0, `rgba(${fr}, ${fg}, ${fb}, ${(isDoze ? 0.65 : 0.4) * muzzleFlash})`);
+        lightGrad.addColorStop(0.2, `rgba(${fr}, ${fg}, ${fb}, ${(isDoze ? 0.35 : 0.15) * muzzleFlash})`);
+        lightGrad.addColorStop(1, `rgba(${fr}, ${fg}, ${fb}, 0)`);
         ctx.fillStyle = lightGrad;
         ctx.fillRect(flashX - flashSize, flashY - flashSize, flashSize * 2, flashSize * 2);
       }
@@ -5121,8 +7323,15 @@ export default function App() {
           lightGrad.addColorStop(0.3, "rgba(255, 80, 10, 0.15)");
           lightGrad.addColorStop(1, "rgba(255, 50, 0, 0)");
         } else {
-          lightGrad.addColorStop(0, "rgba(255, 200, 100, 0.4)");
-          lightGrad.addColorStop(1, "rgba(255, 100, 0, 0)");
+          let r = 255, g = 200, bl = 100;
+          if (b.themeColor) {
+             const hex = b.themeColor.replace('#', '');
+             r = parseInt(hex.substring(0,2), 16) || 255;
+             g = parseInt(hex.substring(2,4), 16) || 200;
+             bl = parseInt(hex.substring(4,6), 16) || 100;
+          }
+          lightGrad.addColorStop(0, `rgba(${r}, ${g}, ${bl}, 0.4)`);
+          lightGrad.addColorStop(1, `rgba(${r}, ${g}, ${bl}, 0)`);
         }
         ctx.fillStyle = lightGrad;
         ctx.fillRect(b.x - radius, b.y - radius, radius * 2, radius * 2);
@@ -5143,6 +7352,53 @@ export default function App() {
 
       // --- Draw Health Orbs ---
       ctx.globalCompositeOperation = "screen";
+
+      for (const orb of upgradeEnergyOrbs) {
+        ctx.save();
+        const baseAlpha = Math.min(1.0, orb.life);
+        
+        // Ground Shadow
+        ctx.globalAlpha = baseAlpha * 0.45;
+        ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
+        ctx.beginPath();
+        const shadowScale = orb.z !== undefined ? Math.max(0.2, 1.0 - orb.z / 60) : 1.0;
+        ctx.arc(orb.x, orb.y, 4 * shadowScale, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Floor glow (illumination)
+        ctx.globalAlpha = baseAlpha * (0.6 + Math.sin(time * 5) * 0.2); // Pulsing floor glow
+        const floorGrad = ctx.createRadialGradient(orb.x, orb.y, 0, orb.x, orb.y, 45 * shadowScale);
+        floorGrad.addColorStop(0, "rgba(96, 165, 250, 0.4)");
+        floorGrad.addColorStop(1, "rgba(59, 130, 246, 0)");
+        ctx.fillStyle = floorGrad;
+        ctx.beginPath();
+        ctx.arc(orb.x, orb.y, 45 * shadowScale, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Elevate the core of the orb by -orb.z
+        ctx.translate(orb.x, orb.y - (orb.z || 0));
+        ctx.globalAlpha = baseAlpha;
+        
+        // Glow
+        ctx.shadowBlur = 20 + Math.sin(time * 8) * 5; // Pulsing glow
+        ctx.shadowColor = "#3b82f6";
+        
+        // Inner core
+        ctx.fillStyle = "#eff6ff"; // Brighter white/blue
+        ctx.beginPath();
+        ctx.arc(0, 0, 4 + Math.sin(time * 10) * 1, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Outer ring
+        ctx.strokeStyle = "#93c5fd"; // Brighter blue
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(0, 0, 7 + Math.cos(time * 8) * 1.5, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.restore();
+      }
+
       for (const orb of healthOrbs) {
         // Floor Glow
         const floorGrad = ctx.createRadialGradient(
@@ -5207,41 +7463,112 @@ export default function App() {
       }
       ctx.globalCompositeOperation = "source-over";
 
-      // Draw Smoke Barrier
-      const mapSize = getMapSize();
-      ctx.save();
-      ctx.fillStyle = "rgba(0, 0, 0, 0.96)";
-      // Draw outer areas
-      // Top
-      ctx.fillRect(-mapSize - 1000, -mapSize - 1000, mapSize * 2 + 2000, 1000);
-      // Bottom
-      ctx.fillRect(-mapSize - 1000, mapSize, mapSize * 2 + 2000, 1000);
-      // Left
-      ctx.fillRect(-mapSize - 1000, -mapSize, 1000, mapSize * 2);
-      // Right
-      ctx.fillRect(mapSize, -mapSize, 1000, mapSize * 2);
-      
-      // Draw smoke border edge (glowing misty border)
-      ctx.strokeStyle = "rgba(10, 10, 10, 0.9)";
-      ctx.lineWidth = 40;
-      ctx.strokeRect(-mapSize, -mapSize, mapSize * 2, mapSize * 2);
-      
-      // Add some random smoke puffs along the edges
-      ctx.fillStyle = "rgba(5, 5, 5, 0.85)";
-      for (let i = -mapSize; i <= mapSize; i += 120) {
-        // Top edge
-        ctx.beginPath(); ctx.arc(i + Math.sin(Date.now()/500 + i)*20, -mapSize + Math.cos(Date.now()/500 + i)*10, 60 + Math.sin(Date.now()/400 + i)*15, 0, Math.PI*2); ctx.fill();
-        // Bottom edge
-        ctx.beginPath(); ctx.arc(i + Math.sin(Date.now()/500 + i)*20, mapSize + Math.cos(Date.now()/500 + i)*10, 60 + Math.sin(Date.now()/400 + i)*15, 0, Math.PI*2); ctx.fill();
-        // Left edge
-        ctx.beginPath(); ctx.arc(-mapSize + Math.cos(Date.now()/500 + i)*10, i + Math.sin(Date.now()/500 + i)*20, 60 + Math.sin(Date.now()/400 + i)*15, 0, Math.PI*2); ctx.fill();
-        // Right edge
-        ctx.beginPath(); ctx.arc(mapSize + Math.cos(Date.now()/500 + i)*10, i + Math.sin(Date.now()/500 + i)*20, 60 + Math.sin(Date.now()/400 + i)*15, 0, Math.PI*2); ctx.fill();
+      // Draw Smoke Barrier (only outside training mode)
+      if (!(window as any).inTrainingMode) {
+        const mapSize = getMapSize();
+        ctx.save();
+        ctx.fillStyle = "rgba(0, 0, 0, 0.96)";
+        // Draw outer areas
+        // Top
+        ctx.fillRect(-mapSize - 1000, -mapSize - 1000, mapSize * 2 + 2000, 1000);
+        // Bottom
+        ctx.fillRect(-mapSize - 1000, mapSize, mapSize * 2 + 2000, 1000);
+        // Left
+        ctx.fillRect(-mapSize - 1000, -mapSize, 1000, mapSize * 2);
+        // Right
+        ctx.fillRect(mapSize, -mapSize, 1000, mapSize * 2);
+        
+        // Draw smoke border edge (glowing misty border)
+        ctx.strokeStyle = "rgba(10, 10, 10, 0.9)";
+        ctx.lineWidth = 40;
+        ctx.strokeRect(-mapSize, -mapSize, mapSize * 2, mapSize * 2);
+        
+        // Add some random smoke puffs along the edges
+        ctx.fillStyle = "rgba(5, 5, 5, 0.85)";
+        for (let i = -mapSize; i <= mapSize; i += 120) {
+          // Top edge
+          ctx.beginPath(); ctx.arc(i + Math.sin(Date.now()/500 + i)*20, -mapSize + Math.cos(Date.now()/500 + i)*10, 60 + Math.sin(Date.now()/400 + i)*15, 0, Math.PI*2); ctx.fill();
+          // Bottom edge
+          ctx.beginPath(); ctx.arc(i + Math.sin(Date.now()/500 + i)*20, mapSize + Math.cos(Date.now()/500 + i)*10, 60 + Math.sin(Date.now()/400 + i)*15, 0, Math.PI*2); ctx.fill();
+          // Left edge
+          ctx.beginPath(); ctx.arc(-mapSize + Math.cos(Date.now()/500 + i)*10, i + Math.sin(Date.now()/500 + i)*20, 60 + Math.sin(Date.now()/400 + i)*15, 0, Math.PI*2); ctx.fill();
+          // Right edge
+          ctx.beginPath(); ctx.arc(mapSize + Math.cos(Date.now()/500 + i)*10, i + Math.sin(Date.now()/500 + i)*20, 60 + Math.sin(Date.now()/400 + i)*15, 0, Math.PI*2); ctx.fill();
+        }
+        ctx.restore();
+      } else {
+        // Training mode: draw border walls for the training arena
+        ctx.save();
+        const trMinX = -5800, trMaxX = -4200, trMinY = 4200, trMaxY = 5800;
+        // Dark opaque borders around training area
+        ctx.fillStyle = "rgba(0, 0, 0, 0.96)";
+        ctx.fillRect(trMinX - 1000, trMinY - 1000, (trMaxX - trMinX) + 2000, 1000);
+        ctx.fillRect(trMinX - 1000, trMaxY, (trMaxX - trMinX) + 2000, 1000);
+        ctx.fillRect(trMinX - 1000, trMinY, 1000, trMaxY - trMinY);
+        ctx.fillRect(trMaxX, trMinY, 1000, trMaxY - trMinY);
+        // Warning stripes on edges
+        ctx.strokeStyle = "#facc15";
+        ctx.lineWidth = 4;
+        ctx.setLineDash([12, 8]);
+        ctx.strokeRect(trMinX, trMinY, trMaxX - trMinX, trMaxY - trMinY);
+        ctx.setLineDash([]);
+        // Concrete wall look
+        ctx.strokeStyle = "#555";
+        ctx.lineWidth = 8;
+        ctx.strokeRect(trMinX - 4, trMinY - 4, (trMaxX - trMinX) + 8, (trMaxY - trMinY) + 8);
+        ctx.restore();
       }
-      ctx.restore();
+
+      // --- Draw Player Drop Shadow (Drawn before mannequins so it never renders on top of them) ---
+      if (!player.isDead) {
+        ctx.save();
+        ctx.translate(player.x, player.y);
+        ctx.rotate(player.angle);
+        
+        const isAimingMode = !player.isDead && !isShopOpenRef.current && ((mouse.rightDown && isAimEnabledRef.current) || (window as any).mobileAimActive || (window as any).mobileShootActive);
+        
+        if (muzzleFlash > 0) {
+          ctx.fillStyle = `rgba(0, 0, 0, ${0.55 + (muzzleFlash * 0.35)})`;
+          ctx.beginPath();
+          ctx.ellipse(-5, 5, 23, 29, 0, 0, Math.PI * 2);
+          ctx.fill();
+          
+          const shadowLength = 110 + muzzleFlash * 140;
+          const shadowWidth = 28;
+          const shadowGrad = ctx.createLinearGradient(0, 0, -shadowLength, 0);
+          shadowGrad.addColorStop(0, `rgba(0, 0, 0, 0.85)`);
+          shadowGrad.addColorStop(0.35, `rgba(0, 0, 0, 0.65)`);
+          shadowGrad.addColorStop(0.7, `rgba(0, 0, 0, 0.3)`);
+          shadowGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+          
+          ctx.fillStyle = shadowGrad;
+          ctx.beginPath();
+          ctx.ellipse(-10 - (shadowLength / 2), 2, shadowLength / 2, shadowWidth, 0, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.fillStyle = "rgba(0, 0, 0, 0.65)";
+          ctx.beginPath();
+          ctx.ellipse(-5, 5, 22, 28, 0, 0, Math.PI * 2);
+          ctx.fill();
+          
+          const shadowLength = isAimingMode ? 70 : 50;
+          const shadowWidth = 24;
+          const shadowGrad = ctx.createLinearGradient(0, 0, -shadowLength, 0);
+          shadowGrad.addColorStop(0, "rgba(0, 0, 0, 0.65)");
+          shadowGrad.addColorStop(0.5, "rgba(0, 0, 0, 0.3)");
+          shadowGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+          
+          ctx.fillStyle = shadowGrad;
+          ctx.beginPath();
+          ctx.ellipse(-10 - (shadowLength / 2), 2, shadowLength / 2, shadowWidth, 0, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
 
       // --- Draw Mannequins ---
       for (const m of mannequins) {
+        if (m.isTrainingDummy && waveRef.current.mode) continue;
         if (m.x < minDrawX || m.x > maxDrawX || m.y < minDrawY || m.y > maxDrawY) continue;
         if (m.hp <= 0) {
           continue; // exploded
@@ -5255,7 +7582,7 @@ export default function App() {
         const isEmerging = (m as any).emergeTimer !== undefined && (m as any).emergeTimer > 0;
         const emergeProgress = isEmerging ? 1 - ((m as any).emergeTimer / ((m as any).emergeDuration || 1.8)) : 1.0;
 
-        const baseScale = m.isBoss ? 1.6 : m.profile === "LENTO" ? 1.25 : m.profile === "SALTADOR" ? (isJumping ? 0.82 * (1.0 + jumpHeight / 90) : 0.82) : 1.0;
+        const baseScale = (m as any).isBigDummy ? 1.6 : (m.isBoss ? 1.6 : m.profile === "LENTO" ? 1.25 : m.profile === "SALTADOR" ? (isJumping ? 0.82 * (1.0 + jumpHeight / 90) : 0.82) : 1.0);
         const scale = baseScale * (isEmerging ? emergeProgress : 1.0);
 
         const trembleX = m.hitTime > 0 ? (Math.random() - 0.5) * 10 : 0;
@@ -5387,12 +7714,13 @@ export default function App() {
 
         ctx.restore();
 
-        // Shoulders & Arms (Mutated/Jagged)
-        // Shoulders & Arms (Mutated/Jagged)
         let armColor = "#1f2621";
-        if (m.attackTimer && m.attackTimer > 0) armColor = "#8a0303";
+        if (m.isTrainingDummy) armColor = m.hitTime > 0 ? "#ff4444" : "#ffffff";
+        else if (m.attackTimer && m.attackTimer > 0) armColor = "#8a0303";
         else if (m.hitTime > 0) armColor = "#ffffff";
         else if (m.isBoss) armColor = "#301212";
+        else if (m.profile === "DASHER") armColor = "#7e22ce";
+        else if (m.profile === "ATIRADOR") armColor = "#b91c1c";
         else if (m.profile === "LENTO") armColor = "#0f2611";
         else if (m.profile === "SALTADOR") armColor = "#6e1d13";
         else if (m.profile === "FLANQUEADOR") armColor = "#361d3b";
@@ -5424,9 +7752,12 @@ export default function App() {
 
         // Body (Sinister Anatomy / Mutated Torso)
         let bodyColor = "#171c18";
-        if (m.attackTimer && m.attackTimer > 0) bodyColor = "#520000";
+        if (m.isTrainingDummy) bodyColor = m.hitTime > 0 ? "#ff4444" : "#ffffff";
+        else if (m.attackTimer && m.attackTimer > 0) bodyColor = "#520000";
         else if (m.hitTime > 0) bodyColor = "#ffffff";
         else if (m.isBoss) bodyColor = "#1a0808";
+        else if (m.profile === "DASHER") bodyColor = "#581c87";
+        else if (m.profile === "ATIRADOR") bodyColor = "#7f1d1d";
         else if (m.profile === "LENTO") bodyColor = "#0b1c0c";
         else if (m.profile === "SALTADOR") bodyColor = "#4d1008";
         else if (m.profile === "FLANQUEADOR") bodyColor = "#251229";
@@ -5453,9 +7784,12 @@ export default function App() {
         // Head (Elongated / Creepy)
         ctx.beginPath();
         let headColor = "#111411";
-        if (m.attackTimer && m.attackTimer > 0) headColor = "#8a0303";
+        if (m.isTrainingDummy) headColor = m.hitTime > 0 ? "#ff4444" : "#ffffff";
+        else if (m.attackTimer && m.attackTimer > 0) headColor = "#8a0303";
         else if (m.hitTime > 0) headColor = "#ffffff";
         else if (m.isBoss) headColor = "#240000";
+        else if (m.profile === "DASHER") headColor = "#3b0764";
+        else if (m.profile === "ATIRADOR") headColor = "#450a0a";
         else if (m.profile === "LENTO") headColor = "#061207";
         else if (m.profile === "SALTADOR") headColor = "#380a05";
         else if (m.profile === "FLANQUEADOR") headColor = "#160a1a";
@@ -5478,12 +7812,21 @@ export default function App() {
         ctx.shadowColor = eyeColor;
         ctx.shadowBlur = 10;
 
-        ctx.beginPath();
-        ctx.arc(12, -4, m.isBoss ? 3 : 2, 0, Math.PI * 2); // Right eye
-        ctx.arc(12, 4, m.isBoss ? 3 : 2, 0, Math.PI * 2);  // Left eye
-        ctx.fill();
+        if (!m.isTrainingDummy) {
+          ctx.beginPath();
+          ctx.arc(12, -4, m.isBoss ? 3 : 2, 0, Math.PI * 2); // Right eye
+          ctx.arc(12, 4, m.isBoss ? 3 : 2, 0, Math.PI * 2);  // Left eye
+          ctx.fill();
+        } else {
+          ctx.shadowBlur = 0;
+          ctx.fillStyle = "#475569";
+          ctx.beginPath();
+          ctx.arc(11, -3, 1.5, 0, Math.PI * 2);
+          ctx.arc(11, 3, 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
 
-        if (m.isBoss || m.hp > 100) {
+        if ((m.isBoss || m.hp > 100) && !m.isTrainingDummy) {
           // Extra eyes for boss/strong variants
           ctx.beginPath();
           ctx.arc(8, -8, 2, 0, Math.PI * 2);
@@ -5495,17 +7838,17 @@ export default function App() {
         ctx.restore();
 
         // Target Indicator & HP Bar
-        if (m.focusLerp > 0.01 || (m.hp < m.maxHp && m.hp > 0)) {
+        if (m.isTrainingDummy || m.focusLerp > 0.01 || (m.hp < m.maxHp && m.hp > 0)) {
           ctx.save();
           ctx.translate(m.x, m.y);
 
-          const barScale = 1.0 + m.focusLerp * 0.3;
+          const barScale = 1.0 + (m.isTrainingDummy ? 0 : m.focusLerp * 0.3);
           ctx.scale(barScale, barScale);
 
-          const hpRatio = m.isBoss ? 1 : Math.max(0, m.hp / m.maxHp);
+          const hpRatio = Math.max(0, m.hp / m.maxHp);
 
           // Tactical Reticle (Centered)
-          if (m.focusLerp > 0.01) {
+          if (!m.isTrainingDummy && m.focusLerp > 0.01) {
             ctx.save();
             if (m.isHeadTargeted) {
               ctx.rotate(Date.now() * 0.003); // girar ao mirar na cabeca
@@ -5532,26 +7875,31 @@ export default function App() {
           }
 
           // Offset for HP Bar
-          const animOffset = -20 * m.focusLerp;
+          const animOffset = m.isTrainingDummy ? 0 : -20 * m.focusLerp;
           ctx.translate(0, animOffset);
 
-          const uiAlpha = Math.max(0.5, m.focusLerp);
+          const uiAlpha = m.isTrainingDummy ? 0.95 : Math.max(0.5, m.focusLerp);
           ctx.globalAlpha = uiAlpha;
 
           const xOffset = 0;
           const yOffset = -55;
 
-          if (m.focusLerp > 0.15 || m.isBoss) {
+          if (m.isTrainingDummy) {
+            ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
+            ctx.font = "bold 10px monospace";
+            ctx.textAlign = "center";
+            ctx.fillText("MANEQUIM", xOffset, yOffset - 22);
+          } else if (m.focusLerp > 0.15 || m.isBoss) {
             ctx.fillStyle = m.isBoss ? "#ff3333" : "rgba(0, 255, 255, 0.9)";
             ctx.font = "bold 9px monospace";
             ctx.textAlign = "center";
             const name = m.isBoss ? "JUGGERNAUT_CLASS" : "INFECTED_TGT_MKIV";
             ctx.fillText(name, xOffset, yOffset - 22);
           }
-          if (m.focusLerp > 0.05) {
+          if (m.isTrainingDummy || m.focusLerp > 0.05) {
             ctx.font = "8px monospace";
             ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
-            const hpText = `HP: ${Math.floor(hpRatio * 100)}%`;
+            const hpText = m.isTrainingDummy ? `HP: ${Math.floor(m.hp)}/${m.maxHp}` : `HP: ${Math.floor(hpRatio * 100)}%`;
             ctx.fillText(hpText, xOffset, yOffset - 12);
             
             // Draw sleek segmented HP bar
@@ -5565,8 +7913,8 @@ export default function App() {
             for (let i = 0; i < segments; i++) {
               const segRatio = (i + 1) / segments;
               if (hpRatio >= segRatio || (hpRatio > 0 && i === 0)) {
-                ctx.fillStyle = m.isBoss ? "#ff3333" : "#00e5ff";
-                ctx.shadowColor = m.isBoss ? "#ff3333" : "#00e5ff";
+                ctx.fillStyle = m.isTrainingDummy ? "#ffffff" : (m.isBoss ? "#ff3333" : "#00e5ff");
+                ctx.shadowColor = m.isTrainingDummy ? "#ffffff" : (m.isBoss ? "#ff3333" : "#00e5ff");
                 ctx.shadowBlur = 4;
               } else {
                 ctx.fillStyle = "rgba(0,0,0,0.6)";
@@ -5578,6 +7926,28 @@ export default function App() {
           }
           ctx.textAlign = "left";
           ctx.restore();
+        }
+
+        // Draw Warning Indicator for Shooter Zombie
+        if (m.profile === "ATIRADOR" && m.hp > 0 && !(m as any).emergeTimer) {
+          const shootTimer = (m as any).shootTimer || 0;
+          if (shootTimer <= 0.8) {
+            ctx.save();
+            ctx.translate(m.x, m.y);
+            // Dynamic rapid flashing / scaling
+            const flash = Math.floor(Date.now() / 100) % 2 === 0;
+            const scale = 1.0 + Math.sin(Date.now() * 0.025) * 0.2;
+            ctx.scale(scale, scale);
+            
+            ctx.fillStyle = flash ? "#ff3333" : "#ffaa00";
+            ctx.shadowColor = flash ? "#ff3333" : "#ffaa00";
+            ctx.shadowBlur = 15;
+            ctx.font = "bold 26px monospace";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "bottom";
+            ctx.fillText("?", 0, -42);
+            ctx.restore();
+          }
         }
       }
 
@@ -5709,56 +8079,152 @@ export default function App() {
       // --- Draw Van (Loja) ---
       const vanDist = Math.hypot(player.x - VAN_X, player.y - VAN_Y);
       
-      ctx.save();
-      ctx.translate(VAN_X, VAN_Y);
-      ctx.rotate(vanAngle + Math.PI / 2);
-      
-      // Trembling effect
-      if (Math.random() > 0.5) {
-         ctx.translate((Math.random()-0.5)*1.5, (Math.random()-0.5)*1.5);
-      }
-      
-      if (loadedVanImage && loadedVanImage.complete) {
-         const aspect = loadedVanImage.naturalHeight / loadedVanImage.naturalWidth;
-         const vW = 280;
-         const vH = vW * aspect;
-         ctx.shadowColor = "rgba(0,0,0,0.8)";
-         ctx.shadowBlur = 20;
-         ctx.drawImage(loadedVanImage, -vW/2, -vH/2, vW, vH);
-         ctx.shadowBlur = 0;
-      }
-      
-      // Draw Smoke (simple particles rising from the back: y = +40)
-      ctx.fillStyle = `rgba(150, 150, 150, ${Math.sin(Date.now()/200)*0.2 + 0.3})`;
-      ctx.beginPath();
-      ctx.arc(40 + Math.sin(Date.now()/300)*8, 20 - (Date.now()/20)%40, 10 + (Date.now()/20)%25, 0, Math.PI*2);
-      ctx.fill();
-      
-      // Draw UI interaction if close
-      if (vanDist < VAN_RADIUS + 50 && (!waveRef.current.mode || vanState === "PARKED")) {
-        ctx.translate(0, -60);
-        ctx.fillStyle = "rgba(0,0,0,0.8)";
-        ctx.strokeStyle = "#facc15";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        if (ctx.roundRect) {
-           ctx.roundRect(-45, -15, 90, 25, 5);
-        } else {
-           ctx.rect(-45, -15, 90, 25);
+      if (!(window as any).inTrainingMode) {
+        // --- Draw Van Headlights (Faróis Dinâmicos em World Space) ---
+        if (vanState !== "OUT") {
+          let lightAlpha = 0.85;
+          if (vanState === "PARKED") {
+            if (cutsceneRef.current.active) {
+              if (cutsceneRef.current.phase === "PLAYER_JUMPING") {
+                lightAlpha = Math.max(0, 0.85 - cutsceneRef.current.playerJumpProgress);
+              } else if (cutsceneRef.current.phase === "PLAYER_SPEECH" || cutsceneRef.current.phase === "KOMBI_LEAVING") {
+                lightAlpha = 0.0;
+              }
+            }
+          }
+          
+          if (lightAlpha > 0) {
+            ctx.save();
+            ctx.globalCompositeOperation = "screen"; // realistic light addition blend mode
+            
+            const drawHeadlight = (lx: number, ly: number) => {
+              const beamLength = 400;
+              const grad = ctx.createRadialGradient(lx, ly, 10, lx + Math.cos(vanAngle) * beamLength * 0.7, ly + Math.sin(vanAngle) * beamLength * 0.7, beamLength * 0.55);
+              grad.addColorStop(0, `rgba(255, 253, 225, ${lightAlpha * 0.85})`);
+              grad.addColorStop(0.15, `rgba(255, 248, 205, ${lightAlpha * 0.5})`);
+              grad.addColorStop(0.5, `rgba(255, 240, 190, ${lightAlpha * 0.15})`);
+              grad.addColorStop(1, "rgba(255, 240, 190, 0)");
+              
+              ctx.fillStyle = grad;
+              ctx.beginPath();
+              ctx.moveTo(lx, ly);
+              const coneHalfAngle = 0.35; // ~20 degrees spread
+              ctx.arc(
+                lx,
+                ly,
+                beamLength,
+                vanAngle - coneHalfAngle,
+                vanAngle + coneHalfAngle
+              );
+              ctx.closePath();
+              ctx.fill();
+            };
+            
+            // Adjust headlight source coordinate offset based on van orientation
+            const frontDist = 135;
+            const sideDist = 32;
+            const fx = VAN_X + Math.cos(vanAngle) * frontDist;
+            const fy = VAN_Y + Math.sin(vanAngle) * frontDist;
+            const px = Math.cos(vanAngle + Math.PI/2);
+            const py = Math.sin(vanAngle + Math.PI/2);
+            
+            drawHeadlight(fx + px * sideDist, fy + py * sideDist);
+            drawHeadlight(fx - px * sideDist, fy - py * sideDist);
+            ctx.restore();
+          }
         }
-        ctx.fill();
-        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(VAN_X, VAN_Y);
+        ctx.rotate(vanAngle - Math.PI / 2);
         
-        ctx.fillStyle = "#facc15";
-        ctx.font = "bold 12px monospace";
-        ctx.textAlign = "center";
-        ctx.fillText("LOJA [E]", 0, 2);
+        // Trembling effect
+        if (Math.random() > 0.5) {
+           ctx.translate((Math.random()-0.5)*1.5, (Math.random()-0.5)*1.5);
+        }
+        
+        if (loadedVanImage && loadedVanImage.complete) {
+           const aspect = loadedVanImage.naturalHeight / loadedVanImage.naturalWidth;
+           const vW = 280;
+           const vH = vW * aspect;
+           ctx.shadowColor = "rgba(0,0,0,0.8)";
+           ctx.shadowBlur = 20;
+           ctx.drawImage(loadedVanImage, -vW/2, -vH/2, vW, vH);
+           ctx.shadowBlur = 0;
+        }
+        
+        // Draw Smoke (simple particles rising from the back: y = +40)
+        ctx.fillStyle = `rgba(150, 150, 150, ${Math.sin(Date.now()/200)*0.2 + 0.3})`;
+        ctx.beginPath();
+        ctx.arc(40 + Math.sin(Date.now()/300)*8, 20 - (Date.now()/20)%40, 10 + (Date.now()/20)%25, 0, Math.PI*2);
+        ctx.fill();
+        
+        // Draw UI interaction if close
+        if (vanDist < VAN_RADIUS + 50 && (!waveRef.current.mode || vanState === "PARKED")) {
+          ctx.translate(0, -60);
+          ctx.fillStyle = "rgba(0,0,0,0.85)";
+          ctx.strokeStyle = "#facc15";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          const boxWidth = !waveRef.current.mode ? 180 : 90;
+          const boxX = -boxWidth / 2;
+          if (ctx.roundRect) {
+             ctx.roundRect(boxX, -15, boxWidth, 25, 5);
+          } else {
+             ctx.rect(boxX, -15, boxWidth, 25);
+          }
+          ctx.fill();
+          ctx.stroke();
+          
+          ctx.fillStyle = "#facc15";
+          ctx.font = "bold 11px monospace";
+          ctx.textAlign = "center";
+          const promptText = !waveRef.current.mode ? "LOJA [E] | MODO TREINO [T]" : "LOJA [E]";
+          ctx.fillText(promptText, 0, 2);
+        }
+        ctx.restore();
       }
-      ctx.restore();
 
       // --- Draw Bullets (with glowing trails) ---
       for (const b of bullets) {
         const isDoze = b.weaponType === "doze";
+        const isHoming = (b as any).isHoming;
+
+        if (isHoming) {
+          // 1. Draw Shadow on the floor under the projectile (source-over blending, transparent black)
+          ctx.save();
+          ctx.globalCompositeOperation = "source-over";
+          ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+          ctx.beginPath();
+          // Shadow gets smaller as the sphere floats higher
+          const shadowScale = Math.max(0.3, 1.0 - (b.z || 0) / 60);
+          const shadowSize = (8 + Math.sin(time * 8) * 1.5) * shadowScale;
+          ctx.ellipse(b.x, b.y, shadowSize, shadowSize * 0.5, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+
+          // 2. Draw Floating Homing Plasma Ball (screen blending, offset vertically by -b.z)
+          ctx.save();
+          ctx.globalCompositeOperation = "screen";
+          ctx.shadowColor = "rgba(255, 30, 30, 0.9)";
+          ctx.shadowBlur = 20 + Math.random() * 8;
+          
+          // Outer red energy sphere with pulsing size
+          ctx.beginPath();
+          ctx.arc(b.x, b.y - (b.z || 0), 11 + Math.sin(time * 10) * 2.0, 0, Math.PI * 2);
+          ctx.fillStyle = "rgba(255, 20, 20, 0.95)";
+          ctx.fill();
+          
+          // Glowing inner white core
+          ctx.beginPath();
+          ctx.arc(b.x, b.y - (b.z || 0), 4.5, 0, Math.PI * 2);
+          ctx.fillStyle = "#ffffff";
+          ctx.fill();
+          
+          ctx.restore();
+          continue;
+        }
+
         if (b.dmgMult < 1.0 && !isDoze) {
           ctx.globalCompositeOperation = "source-over";
         } else {
@@ -5873,27 +8339,59 @@ export default function App() {
         const gMain = skinRef.current ? skinRef.current.colorMain : "#2d4c22";
         for (let i = rollGhosts.length - 1; i >= 0; i--) {
           const g = rollGhosts[i];
-          g.alpha -= dt * (g.isBlue ? 4.5 : 3.0);
+          const decaySpeed = g.isBlue ? 1.8 : 3.5;
+          g.alpha -= dt * decaySpeed;
           if (g.alpha <= 0) { rollGhosts.splice(i, 1); continue; }
           ctx.save();
-          ctx.globalAlpha = g.alpha * 0.35;
+          ctx.globalAlpha = g.alpha * 0.75;
           ctx.translate(g.x, g.y);
           ctx.rotate(g.angle);
           
           if (g.isBlue) {
-            ctx.fillStyle = "#3b82f6"; // Blue ghost trail!
+            // Neon glow effect matching player's current skin color
+            ctx.shadowBlur = 25;
+            ctx.shadowColor = gMain;
+            ctx.fillStyle = gMain + "88"; // opacity
+            ctx.strokeStyle = gMain + "bb";
+            ctx.lineWidth = 2.5;
+
+            // Draw Torso Silhouette
+            ctx.beginPath();
+            if (ctx.roundRect) {
+              ctx.roundRect(-15, -16, 26, 32, 6);
+            } else {
+              ctx.rect(-15, -16, 26, 32);
+            }
+            ctx.fill();
+            ctx.stroke();
+
+            // Draw Shoulders/Arms Silhouette
+            ctx.beginPath();
+            ctx.ellipse(-2, -16, 14, 9, -Math.PI / 6, 0, Math.PI * 2);
+            ctx.ellipse(-2, 16, 14, 9, Math.PI / 6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Draw Head Silhouette
+            ctx.beginPath();
+            ctx.arc(0, 0, 12, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
           } else {
-            ctx.fillStyle = gMain;
+            // Zombie orange dash trail
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = "#f97316";
+            ctx.fillStyle = "rgba(249, 115, 22, 0.75)";
+            
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 14, 18, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.fillStyle = "#1a1a1a";
+            ctx.beginPath();
+            ctx.arc(12, 0, 10, 0, Math.PI * 2);
+            ctx.fill();
           }
-          
-          ctx.beginPath();
-          ctx.ellipse(0, 0, 14, 18, 0, 0, Math.PI * 2);
-          ctx.fill();
-          
-          ctx.fillStyle = "#1a1a1a";
-          ctx.beginPath();
-          ctx.arc(12, 0, 10, 0, Math.PI * 2);
-          ctx.fill();
           ctx.restore();
         }
       }
@@ -5920,10 +8418,55 @@ export default function App() {
       }
 
       // --- Draw Player ---
-      if (!player.isDead) {
+      if (!player.isDead && (!cutsceneRef.current.active || cutsceneRef.current.phase === "PLAYER_JUMPING" || cutsceneRef.current.phase === "KOMBI_LEAVING")) {
         ctx.save();
         ctx.translate(player.x, player.y);
         ctx.rotate(player.angle);
+
+        // Cinematic Cutscene Jump Scaling & Drop Shadow
+        if (cutsceneRef.current.active && cutsceneRef.current.phase === "PLAYER_JUMPING") {
+          const progress = cutsceneRef.current.playerJumpProgress;
+          const jumpArc = Math.sin(progress * Math.PI);
+          
+          // Tactical Dash / Roll Jump
+          // Translate aggressively forward based on progress
+          ctx.translate(progress * 45, 0);
+          
+          // Fast spinning motion for a tactical flip/roll
+          ctx.rotate(progress * Math.PI * 4); // 2 full spins
+
+          // Squeeze effect during the flip
+          const squeeze = 1.0 - jumpArc * 0.3;
+          ctx.scale(1.0, squeeze);
+          
+          // Motion Blur trail - removed green glow
+          ctx.shadowBlur = 0;
+          
+          // Ground shadow
+          ctx.save();
+          ctx.rotate(-progress * Math.PI * 4);
+          ctx.beginPath();
+          ctx.arc(0, jumpArc * 60, 16 - jumpArc * 6, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(0, 0, 0, ${0.4 - jumpArc * 0.25})`;
+          ctx.shadowBlur = 0;
+          ctx.fill();
+          ctx.restore();
+        }
+
+        // Draw blue shield bubble if invincibility shield is active
+        if ((player as any).shieldTimer && (player as any).shieldTimer > 0) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(0, 0, 36, 0, Math.PI * 2);
+          ctx.strokeStyle = "rgba(59, 130, 246, 0.85)";
+          ctx.lineWidth = 3 + Math.sin(Date.now() * 0.018) * 1.5;
+          ctx.fillStyle = "rgba(59, 130, 246, 0.12)";
+          ctx.shadowBlur = 20;
+          ctx.shadowColor = "#3b82f6";
+          ctx.fill();
+          ctx.stroke();
+          ctx.restore();
+        }
 
         // Draw Mobile Aim Arrow
         const isAimingOrShooting = (window as any).mobileAimActive || (window as any).mobileShootActive;
@@ -6067,25 +8610,51 @@ export default function App() {
         const sDark = skinRef.current ? skinRef.current.colorDark : "#1e3317";
         const sSkin = skinRef.current ? skinRef.current.colorSkin : "#151515";
 
-        // Shadow
-        ctx.beginPath();
-        ctx.ellipse(-5, 5, 22, 28, 0, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(0,0,0,0.5)";
-        ctx.fill();
+        // Player drop shadow is drawn earlier (before mannequins) so it does not render on top of their bodies
+        ctx.save();
+        ctx.restore();
 
         if (player.isRolling) {
            let progress = 1 - (player.rollTimer / (player.rollDuration || 1));
            if (progress < 0) progress = 0;
            if (progress > 1) progress = 1;
 
-           const rollAngle = progress * Math.PI * 2;
+           // Only jump up/down + squish, NO rotation spin
            const jumpHeight = Math.max(0, Math.sin(progress * Math.PI) * 38);
-           const rollScale = Math.max(0.1, 1.0 + Math.sin(progress * Math.PI) * 0.35);
+           const squishX = 1.0 + Math.sin(progress * Math.PI) * 0.4;
+           const squishY = 1.0 - Math.sin(progress * Math.PI) * 0.25;
 
            ctx.translate(0, -jumpHeight);
+           ctx.scale(squishX, squishY);
+
+           // Draw dynamic motion blur speed trails and glow when rolling/dashing
+           ctx.save();
+           ctx.shadowBlur = 28;
+           ctx.shadowColor = sMain;
            
-           ctx.rotate(rollAngle);
-           ctx.scale(rollScale, rollScale);
+           // Motion blur shape 1 (semi-transparent player theme color)
+           ctx.fillStyle = sMain + "4d"; // ~30% opacity
+           ctx.beginPath();
+           ctx.arc(-18, 0, 12, 0, Math.PI * 2);
+           ctx.fill();
+           
+           // Motion blur shape 2
+           ctx.fillStyle = sMain + "26"; // ~15% opacity
+           ctx.beginPath();
+           ctx.arc(-36, 0, 9, 0, Math.PI * 2);
+           ctx.fill();
+           
+           // Speed lines stretching backward
+           ctx.strokeStyle = sMain + "80"; // ~50% opacity
+           ctx.lineWidth = 3;
+           ctx.beginPath();
+           ctx.moveTo(-15, -6);
+           ctx.lineTo(-50, -6);
+           ctx.moveTo(-15, 6);
+           ctx.lineTo(-50, 6);
+           ctx.stroke();
+           
+           ctx.restore();
         }
 
         // Left Shoulder/Arm
@@ -6162,6 +8731,36 @@ export default function App() {
           ctx.rotate(gunAnimRot);
           ctx.translate(-pivotX, -pivotY);
 
+            if (activeWeapon === "minigun") {
+              // Draw dynamic ammo belt linking player back to gun
+              ctx.save();
+              ctx.strokeStyle = "#a1a1aa"; // Zinc
+              ctx.lineWidth = 5;
+              ctx.lineCap = "round";
+              
+              ctx.beginPath();
+              // Back of the player approx
+              ctx.moveTo(-8, 0); 
+              
+              // Control point for gravity curve
+              const cpX = pivotX - 8;
+              const cpY = pivotY + 16 + Math.sin(Date.now() * 0.008) * 4;
+              
+              // End at the weapon side
+              const endX = pivotX + 15;
+              const endY = pivotY + 4;
+              
+              ctx.quadraticCurveTo(cpX, cpY, endX, endY);
+              ctx.stroke();
+
+              // Draw bullet notches along the belt
+              ctx.strokeStyle = "#fbbf24"; // Gold
+              ctx.lineWidth = 2.5;
+              ctx.setLineDash([2, 5]); 
+              ctx.stroke();
+              ctx.restore();
+            }
+
             // Draw using loaded PNG if available
             const equippedSkinId = inventoryRef.current.equippedSkins[activeWeapon];
             const skinImg = equippedSkinId ? loadedSkinImages[equippedSkinId] : null;
@@ -6183,8 +8782,8 @@ export default function App() {
               
               ctx.restore();
 
-              // Render laser sight ONLY for the rifle
-              if (activeWeapon === "rifle") {
+              // Render laser sight for sniper rifle or if the tactical laser is toggled ON
+              if (activeWeapon === "rifle" || player.isLaserOn) {
                 ctx.save();
                 ctx.globalCompositeOperation = "screen";
 
@@ -6632,6 +9231,58 @@ export default function App() {
         ctx.restore(); // Restore from player transformations
       } // close if (!player.isDead)
 
+      // --- Draw Speech Bubble above player ---
+      if (player.speechTimer > 0 && player.speechText && !player.isDead && (!cutsceneRef.current.active || cutsceneRef.current.phase === "KOMBI_LEAVING")) {
+        ctx.save();
+        ctx.translate(player.x, player.y - 72);
+        
+        ctx.font = "bold 13px 'JetBrains Mono', monospace";
+        const textWidth = ctx.measureText(player.speechText).width;
+        const paddingX = 14;
+        const paddingY = 8;
+        const bubbleWidth = textWidth + paddingX * 2;
+        const bubbleHeight = 16 + paddingY * 2;
+        
+        ctx.shadowColor = "rgba(0, 0, 0, 0.45)";
+        ctx.shadowBlur = 10;
+        
+        ctx.fillStyle = "rgba(12, 10, 9, 0.95)";
+        ctx.strokeStyle = "#eab308";
+        ctx.lineWidth = 1.8;
+        
+        ctx.beginPath();
+        if (ctx.roundRect) {
+          ctx.roundRect(-bubbleWidth / 2, -bubbleHeight - 8, bubbleWidth, bubbleHeight, 6);
+        } else {
+          ctx.rect(-bubbleWidth / 2, -bubbleHeight - 8, bubbleWidth, bubbleHeight);
+        }
+        ctx.fill();
+        ctx.stroke();
+        
+        ctx.shadowColor = "transparent";
+        ctx.fillStyle = "rgba(12, 10, 9, 0.95)";
+        ctx.beginPath();
+        ctx.moveTo(-6, -8);
+        ctx.lineTo(6, -8);
+        ctx.lineTo(0, 0);
+        ctx.closePath();
+        ctx.fill();
+        
+        ctx.strokeStyle = "#eab308";
+        ctx.beginPath();
+        ctx.moveTo(-6, -8);
+        ctx.lineTo(0, 0);
+        ctx.lineTo(6, -8);
+        ctx.stroke();
+        
+        ctx.fillStyle = "#ffffff";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(player.speechText, 0, -bubbleHeight / 2 - 8);
+        
+        ctx.restore();
+      }
+
       // --- Draw Reloading Indicator above player ---
       if (player.isReloading && !player.isDead && player.reloadTimer > 0) {
         ctx.save();
@@ -6674,10 +9325,52 @@ export default function App() {
         ctx.translate(t.x, t.y);
         ctx.globalAlpha = t.life;
         ctx.textAlign = "center";
-        ctx.lineWidth = 5;
 
-        if (t.type === "heal") {
+        // Training dummy hit: ultra-cinematic floating number
+        if ((t as any).isTrainingDummy) {
+          const lifeRatio = t.life; // 1.0 = fresh, 0 = gone
+          const scale = 0.75 + Math.sin(lifeRatio * Math.PI) * 0.5; // pop in, then fade
+          ctx.scale(scale, scale);
+
+          const isCritHit = t.type === "crit";
+          const isHeadshot = typeof t.value === "string";
+
+          if (isHeadshot) {
+            // Headshot label on mannequin: dramatic red glow
+            ctx.font = 'bold 14px "JetBrains Mono", monospace';
+            ctx.shadowColor = "#ff0040";
+            ctx.shadowBlur = 22;
+            ctx.fillStyle = "#ff4060";
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = "#000";
+            ctx.strokeText(`${t.value}`, 0, 0);
+            ctx.fillText(`${t.value}`, 0, 0);
+          } else if (isCritHit) {
+            // Critical hit on dummy: big orange pop with intense glow
+            ctx.font = 'bold 22px "JetBrains Mono", monospace';
+            ctx.shadowColor = "#f97316";
+            ctx.shadowBlur = 28;
+            ctx.fillStyle = "#fdba74";
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "#7c2d12";
+            ctx.strokeText(`${t.value}`, 0, 0);
+            ctx.fillText(`${t.value}`, 0, 0);
+          } else {
+            // Regular hit on dummy: sleek white/cyan floating number
+            ctx.font = 'bold 16px "JetBrains Mono", monospace';
+            ctx.shadowColor = "#22d3ee";
+            ctx.shadowBlur = 14;
+            ctx.fillStyle = "#e0f2fe";
+            ctx.lineWidth = 2.5;
+            ctx.strokeStyle = "#0c4a6e";
+            ctx.strokeText(`-${t.value}`, 0, 0);
+            ctx.fillText(`-${t.value}`, 0, 0);
+          }
+          ctx.shadowBlur = 0;
+
+        } else if (t.type === "heal") {
           ctx.font = '900 32px "Helvetica Neue", Arial, sans-serif';
+          ctx.lineWidth = 5;
           ctx.strokeStyle = "#330000";
           ctx.strokeText(`+${t.value}`, 0, 0);
           ctx.fillStyle = "#ff4444";
@@ -6686,8 +9379,8 @@ export default function App() {
           ctx.font = '900 28px "JetBrains Mono", monospace';
           const s = 1.0 + Math.sin(t.life * Math.PI) * 0.3;
           ctx.scale(s, s);
-          ctx.strokeStyle = "#000000";
           ctx.lineWidth = 5;
+          ctx.strokeStyle = "#000000";
           ctx.strokeText(`-${t.value}`, 0, 0);
           ctx.fillStyle = "#ff2222";
           ctx.fillText(`-${t.value}`, 0, 0);
@@ -6695,8 +9388,8 @@ export default function App() {
           ctx.font = '900 32px "JetBrains Mono", monospace';
           const s = 1.0 + Math.sin(t.life * Math.PI) * 0.5;
           ctx.scale(s, s);
-          ctx.strokeStyle = "#000000";
           ctx.lineWidth = 5;
+          ctx.strokeStyle = "#000000";
           ctx.strokeText(`${t.value}`, 0, 0);
           const tC = t.themeColor || "#ff0000";
           ctx.shadowColor = tC;
@@ -6706,6 +9399,7 @@ export default function App() {
           ctx.shadowBlur = 0;
         } else {
           ctx.font = '900 32px "Helvetica Neue", Arial, sans-serif';
+          ctx.lineWidth = 5;
           ctx.strokeStyle = "#000000";
           ctx.strokeText(`-${t.value}`, 0, 0);
           ctx.fillStyle = t.themeColor || "#ff2222";
@@ -7021,29 +9715,87 @@ export default function App() {
         ctx.restore();
       }
 
+      // Draw Soft Ambient Vignette & Cinematic Letterboxes for Cinematic Mode (Soft dark edges, movie aspect ratio)
+      if (cinematicModeRef.current) {
+        ctx.save();
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const outerRadius = Math.max(canvas.width, canvas.height) * 0.72;
+        const innerRadius = Math.min(canvas.width, canvas.height) * 0.18;
+        
+        // Dynamic intensity breathing
+        const pulse = Math.sin(time * 0.8) * 0.04;
+        const alpha = 0.58 + pulse;
+        
+        const grad = ctx.createRadialGradient(centerX, centerY, innerRadius, centerX, centerY, outerRadius);
+        grad.addColorStop(0, "rgba(0, 0, 0, 0)");
+        grad.addColorStop(0.4, `rgba(10, 15, 22, ${alpha * 0.25})`); // Cinematic cool steel color grading
+        grad.addColorStop(0.75, `rgba(0, 0, 0, ${alpha * 0.65})`);
+        grad.addColorStop(1, `rgba(0, 0, 0, ${alpha})`);
+        
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Soft Movie-like Widescreen Letterboxes (solid edge frame with feathered inner transition)
+        const barHeight = canvas.height * 0.085;
+        const solidHeight = barHeight * 0.65;
+        const featherHeight = barHeight - solidHeight;
+        
+        // Top Letterbox
+        ctx.fillStyle = "#000000";
+        ctx.fillRect(0, 0, canvas.width, solidHeight);
+        
+        const topGrad = ctx.createLinearGradient(0, solidHeight, 0, barHeight);
+        topGrad.addColorStop(0, "#000000");
+        topGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+        ctx.fillStyle = topGrad;
+        ctx.fillRect(0, solidHeight, canvas.width, featherHeight);
+        
+        // Bottom Letterbox
+        ctx.fillStyle = "#000000";
+        ctx.fillRect(0, canvas.height - solidHeight, canvas.width, solidHeight);
+        
+        const bottomGrad = ctx.createLinearGradient(0, canvas.height - solidHeight, 0, canvas.height - barHeight);
+        bottomGrad.addColorStop(0, "#000000");
+        bottomGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+        ctx.fillStyle = bottomGrad;
+        ctx.fillRect(0, canvas.height - barHeight, canvas.width, featherHeight);
+        ctx.restore();
+      }
+
       // --- Draw Tactical Radar ---
+      if (!cutsceneRef.current.active && !(window as any).isHudHiddenActive) {
       ctx.save();
-      const radarSize = 160;
-      const radarX = logicalWidth - radarSize / 2 - 30;
-      const radarY = radarSize / 2 + 30; // 30px padding from top
+       const radarSize = 80; // smaller (to prevent cluttering)
+      // Better placement: Top Middle of the screen (as requested)
+      const radarX = logicalWidth / 2;
+      const radarY = radarSize / 2 + 20; // 20px padding from top
       const radarScale = 0.04; // Scale world down to radar
 
-      ctx.translate(radarX, radarY);
+      // Check if we have the smoothed UI object for matching sway/lag
+      const hudOffset = (window as any).smoothedHud || { tx: 0, ty: 0 };
+      
+      // Dynamic sway positioning matching the camera & UI panels
+      ctx.translate(radarX + hudOffset.tx * 0.85, radarY + hudOffset.ty * 0.85);
 
-      // Radar Background
+      // Radar Background (Futuristic Neon Grid style - more transparent)
       ctx.beginPath();
       ctx.arc(0, 0, radarSize / 2, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(5, 10, 8, 0.85)";
+      ctx.fillStyle = "rgba(4, 8, 12, 0.20)"; // more transparent background
       ctx.fill();
-      ctx.lineWidth = 3;
-      ctx.strokeStyle = "rgba(0, 229, 255, 0.7)";
+      
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = "rgba(0, 229, 255, 0.20)"; // more transparent border
+      ctx.shadowColor = "rgba(0, 229, 255, 0.15)"; // more transparent glow
+      ctx.shadowBlur = 4;
       ctx.stroke();
+      ctx.shadowBlur = 0;
 
-      // Radar grid lines
+      // Radar grid lines (Rings)
       ctx.beginPath();
       ctx.arc(0, 0, radarSize / 4, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(0, 229, 255, 0.15)";
-      ctx.lineWidth = 1;
+      ctx.strokeStyle = "rgba(0, 229, 255, 0.05)"; // more transparent grid ring
+      ctx.lineWidth = 0.5;
       ctx.stroke();
 
       // Crosshairs in radar
@@ -7052,8 +9804,34 @@ export default function App() {
       ctx.lineTo(radarSize / 2, 0);
       ctx.moveTo(0, -radarSize / 2);
       ctx.lineTo(0, radarSize / 2);
-      ctx.strokeStyle = "rgba(0, 229, 255, 0.4)";
-      ctx.lineWidth = 1;
+      ctx.strokeStyle = "rgba(0, 229, 255, 0.10)"; // more transparent crosshair
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+
+      // Radar Sweep Scan Effect
+      const sweepAngle = (time * 1.6) % (Math.PI * 2);
+      if (ctx.createConicGradient) {
+        const sweepGrad = ctx.createConicGradient(sweepAngle, 0, 0);
+        sweepGrad.addColorStop(0, "rgba(0, 229, 255, 0.06)"); // more transparent sweep
+        sweepGrad.addColorStop(0.12, "rgba(0, 229, 255, 0.01)");
+        sweepGrad.addColorStop(0.4, "rgba(0, 229, 255, 0)");
+        sweepGrad.addColorStop(0.9, "rgba(0, 229, 255, 0)");
+        sweepGrad.addColorStop(1, "rgba(0, 229, 255, 0.06)");
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(0, 0, radarSize / 2, 0, Math.PI * 2);
+        ctx.fillStyle = sweepGrad;
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // Draw sweeping ray line
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(Math.cos(sweepAngle) * (radarSize / 2), Math.sin(sweepAngle) * (radarSize / 2));
+      ctx.strokeStyle = "rgba(0, 229, 255, 0.18)"; // more transparent sweep line
+      ctx.lineWidth = 0.75;
       ctx.stroke();
 
       // Draw Entities
@@ -7067,10 +9845,27 @@ export default function App() {
           const dx = (m.x - player.x) * radarScale;
           const dy = (m.y - player.y) * radarScale;
           if (Math.hypot(dx, dy) < radarSize / 2 + 10) {
+            // Angle to entity
+            const angleToDot = Math.atan2(dy, dx);
+            // Calculate sweep angular difference for trailing persistence fade
+            let diff = (sweepAngle - angleToDot) % (Math.PI * 2);
+            if (diff < 0) diff += Math.PI * 2;
+
+            // Fade dot intensity depending on when sweep last passed it
+            const dotAlpha = Math.max(0.12, 1.0 - (diff / (Math.PI * 2)));
+
             ctx.beginPath();
-            ctx.arc(dx, dy, m.isBoss ? 6 : 3.5, 0, Math.PI * 2);
-            ctx.fillStyle = m.isBoss ? "#ff1100" : "#f44336";
+            ctx.arc(dx, dy, m.isBoss ? 5.5 : 3.2, 0, Math.PI * 2);
+            ctx.fillStyle = m.isBoss ? `rgba(255, 17, 0, ${dotAlpha})` : `rgba(244, 67, 54, ${dotAlpha})`;
             ctx.fill();
+            if (m.isBoss && dotAlpha > 0.6) {
+              ctx.shadowColor = "#ff1100";
+              ctx.shadowBlur = 5;
+              ctx.strokeStyle = `rgba(255, 255, 255, ${dotAlpha * 0.8})`;
+              ctx.lineWidth = 1.0;
+              ctx.stroke();
+              ctx.shadowBlur = 0;
+            }
           }
         }
       }
@@ -7079,14 +9874,19 @@ export default function App() {
       const vanDx = (VAN_X - player.x) * radarScale;
       const vanDy = (VAN_Y - player.y) * radarScale;
       if (Math.hypot(vanDx, vanDy) < radarSize / 2 + 10) {
+        const vanAngle = Math.atan2(vanDy, vanDx);
+        let vanDiff = (sweepAngle - vanAngle) % (Math.PI * 2);
+        if (vanDiff < 0) vanDiff += Math.PI * 2;
+        const vanAlpha = Math.max(0.2, 1.0 - (vanDiff / (Math.PI * 2)));
+
         ctx.save();
         ctx.translate(vanDx, vanDy);
         
-        ctx.fillStyle = "#10b981"; // base green
-        ctx.strokeStyle = "#ffffff";
+        ctx.fillStyle = `rgba(16, 185, 129, ${vanAlpha})`; // base green
+        ctx.strokeStyle = `rgba(255, 255, 255, ${vanAlpha})`;
         ctx.lineWidth = 1.0;
         ctx.shadowColor = "#10b981";
-        ctx.shadowBlur = 6;
+        ctx.shadowBlur = 6 * vanAlpha;
         
         ctx.beginPath();
         // Base / house shape icon
@@ -7101,7 +9901,7 @@ export default function App() {
         ctx.restore();
       }
 
-      // Draw Player center
+      // Draw Player center (Always bright neon cyan)
       ctx.beginPath();
       ctx.arc(0, 0, 4, 0, Math.PI * 2);
       ctx.fillStyle = "#00e5ff";
@@ -7111,14 +9911,15 @@ export default function App() {
       ctx.fill();
       ctx.shadowBlur = 0;
 
-      // Player facing cone
+      // Player facing cone (fades slightly)
       ctx.beginPath();
       ctx.moveTo(0, 0);
-      ctx.arc(0, 0, 60, player.angle - 0.4, player.angle + 0.4);
-      ctx.fillStyle = "rgba(0, 229, 255, 0.3)";
+      ctx.arc(0, 0, 50, player.angle - 0.4, player.angle + 0.4);
+      ctx.fillStyle = "rgba(0, 229, 255, 0.22)";
       ctx.fill();
 
       ctx.restore();
+      }
 
       // --- Draw Idle Dots ---
       if (!player.isDead && player.idleTimer > 3.0) {
@@ -7148,25 +9949,62 @@ export default function App() {
 
       ctx.restore(); // Restore baseline clean state (from the outer ctx.save() at start of draw)
 
-      // Near edge camera darkening vignette (Fog of war)
-      const borderSize = getMapSize();
-      const edgeDistLeft = player.x - (-borderSize);
-      const edgeDistRight = borderSize - player.x;
-      const edgeDistTop = player.y - (-borderSize);
-      const edgeDistBottom = borderSize - player.y;
-      const closestEdge = Math.min(edgeDistLeft, edgeDistRight, edgeDistTop, edgeDistBottom);
-      if (closestEdge < 350) {
-        const edgeGlow = Math.max(0, 1.0 - closestEdge / 350);
+      // Near edge camera darkening vignette (Fog of war) — skip in training mode
+      if (!(window as any).inTrainingMode) {
+        const borderSize = getMapSize();
+        const edgeDistLeft = player.x - (-borderSize);
+        const edgeDistRight = borderSize - player.x;
+        const edgeDistTop = player.y - (-borderSize);
+        const edgeDistBottom = borderSize - player.y;
+        const closestEdge = Math.min(edgeDistLeft, edgeDistRight, edgeDistTop, edgeDistBottom);
+        if (closestEdge < 350) {
+          const edgeGlow = Math.max(0, 1.0 - closestEdge / 350);
+          ctx.save();
+          ctx.fillStyle = `rgba(0, 0, 0, ${edgeGlow * 0.95})`;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          
+          ctx.fillStyle = `rgba(239, 68, 68, ${edgeGlow * 0.75})`;
+          ctx.font = '900 13px "JetBrains Mono", monospace';
+          ctx.textAlign = "center";
+          ctx.fillText("FUMAÇA VENENOSA - RETORNE AO CENTRO DO MAPA", canvas.width / 2, canvas.height - 100);
+          ctx.restore();
+        }
+      }
+
+      // Draw screen-space drifting dark desert dust/fog particles
+      if (gameState === "GAME" || gameState === "UPGRADE_SCREEN") {
+        if (dustRef.current.length === 0) {
+          for (let i = 0; i < 30; i++) {
+            dustRef.current.push({
+              x: Math.random() * canvas.width,
+              y: Math.random() * canvas.height,
+              size: Math.random() * 100 + 60,
+              speed: Math.random() * 30 + 15,
+              alpha: Math.random() * 0.06 + 0.02,
+            });
+          }
+        }
         ctx.save();
-        ctx.fillStyle = `rgba(0, 0, 0, ${edgeGlow * 0.95})`;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        ctx.fillStyle = `rgba(239, 68, 68, ${edgeGlow * 0.75})`;
-        ctx.font = '900 13px "JetBrains Mono", monospace';
-        ctx.textAlign = "center";
-        ctx.fillText("FUMAÇA VENENOSA - RETORNE AO CENTRO DO MAPA", canvas.width / 2, canvas.height - 100);
+        ctx.globalCompositeOperation = "screen";
+        for (const d of dustRef.current) {
+          d.x += d.speed * dt;
+          if (d.x > canvas.width + d.size) {
+            d.x = -d.size;
+            d.y = Math.random() * canvas.height;
+          }
+          const dustGrad = ctx.createRadialGradient(d.x, d.y, 0, d.x, d.y, d.size);
+          dustGrad.addColorStop(0, `rgba(220, 180, 130, ${d.alpha})`);
+          dustGrad.addColorStop(0.4, `rgba(220, 180, 130, ${d.alpha * 0.4})`);
+          dustGrad.addColorStop(1, "rgba(0,0,0,0)");
+          ctx.fillStyle = dustGrad;
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, d.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
         ctx.restore();
       }
+
+      // Cinematic Mode Permanent Letterbox removed as requested
 
       // Draw Cinematic Wave Intro Overlay
       if (waveRef.current.mode && waveRef.current.introTimer > 0) {
@@ -7181,8 +10019,16 @@ export default function App() {
         
         ctx.save();
         
-        // 1. Darken screen
-        ctx.fillStyle = `rgba(0, 0, 0, ${alpha * 0.85})`;
+        // 1. Darken screen with solid pitch black (fades out only at the final 0.6s to hide cleaning/spawning)
+        const bgAlpha = timer < 0.6 ? (timer / 0.6) : 1.0;
+        ctx.fillStyle = `rgba(0, 0, 0, ${bgAlpha})`;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw red glowing ambient vignette on top
+        const vignetteGrad = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, 50, canvas.width / 2, canvas.height / 2, canvas.width * 0.6);
+        vignetteGrad.addColorStop(0, `rgba(50, 10, 10, ${alpha * 0.4})`);
+        vignetteGrad.addColorStop(1, `rgba(0, 0, 0, 0)`);
+        ctx.fillStyle = vignetteGrad;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         // 2. Draw cinematic black bars (letterbox)
@@ -7191,46 +10037,78 @@ export default function App() {
         ctx.fillRect(0, 0, canvas.width, barHeight);
         ctx.fillRect(0, canvas.height - barHeight, canvas.width, barHeight);
         
-        // 3. Draw text
+        // Horizontal glowing divider line
+        ctx.strokeStyle = `rgba(239, 68, 68, ${alpha * 0.65})`;
+        ctx.lineWidth = 2;
+        ctx.shadowColor = "rgba(239, 68, 68, 0.9)";
+        ctx.shadowBlur = 18;
+        ctx.beginPath();
+        const progress = (3.0 - timer) / 3.0; // 0 to 1
+        const lineW = canvas.width * Math.min(1.0, progress * 2.2);
+        ctx.moveTo(canvas.width / 2 - lineW / 2, canvas.height / 2 - 25);
+        ctx.lineTo(canvas.width / 2 + lineW / 2, canvas.height / 2 - 25);
+        ctx.moveTo(canvas.width / 2 - lineW / 2, canvas.height / 2 + 35);
+        ctx.lineTo(canvas.width / 2 + lineW / 2, canvas.height / 2 + 35);
+        ctx.stroke();
+        
+        // 3. Draw text with scaling animation
         const text = waveRef.current.introText || "";
-        ctx.font = '900 64px "Outfit", "Inter", sans-serif';
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         
-        // Text glow
-        ctx.shadowColor = "rgba(220, 38, 38, 0.8)";
-        ctx.shadowBlur = 35;
-        ctx.fillStyle = `rgba(220, 38, 38, ${alpha})`;
+        const scale = 1.0 + Math.max(0, timer - 0.5) * 0.08;
+        ctx.save();
+        ctx.translate(canvas.width / 2, canvas.height / 2 + 5);
+        ctx.scale(scale, scale);
         
-        ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+        ctx.font = '900 46px "Outfit", "Inter", sans-serif';
+        ctx.shadowColor = "rgba(220, 38, 38, 0.95)";
+        ctx.shadowBlur = 25;
+        ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+        ctx.fillText(text, 0, 0);
+        ctx.restore();
         
         // Subtext
         ctx.shadowBlur = 0;
-        ctx.font = 'bold 16px "JetBrains Mono", monospace';
-        ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.6})`;
+        ctx.font = 'bold 11px "JetBrains Mono", monospace';
+        ctx.fillStyle = `rgba(220, 38, 38, ${alpha * 0.85})`;
         ctx.fillText("SOBREVIVA ÀS HORDAS DE INIMIGOS", canvas.width / 2, canvas.height / 2 + 65);
         
         ctx.restore();
       }
 
       // Update dynamic UI states (via DOM)
-      const uiKillCountEl = document.getElementById("ui-kill-count");
+      if (!(window as any).cachedHudElements) {
+        (window as any).cachedHudElements = {};
+      }
+      const getHUDElement = (id: string): HTMLElement | null => {
+        let el = (window as any).cachedHudElements[id];
+        if (!el) {
+          el = document.getElementById(id);
+          if (el) {
+            (window as any).cachedHudElements[id] = el;
+          }
+        }
+        return el;
+      };
+
+      const uiKillCountEl = getHUDElement("ui-kill-count");
       if (uiKillCountEl) {
         uiKillCountEl.innerText = String(player.kills);
       }
-      const uiAmmoEl = document.getElementById("ui-ammo-count");
+      const uiAmmoEl = getHUDElement("ui-ammo-count");
       if (uiAmmoEl) {
         uiAmmoEl.innerText = String(player.ammo).padStart(2, "0");
       }
-      const uiAmmoMaxEl = document.getElementById("ui-ammo-max");
+      const uiAmmoMaxEl = getHUDElement("ui-ammo-max");
       if (uiAmmoMaxEl) {
         uiAmmoMaxEl.innerText = String(player.maxAmmo);
       }
       
       // Update ammo weapon image visibility & shaking/gray states
-      const weaponIds = ["pistola", "gun", "uzi", "doze", "basuca", "rifle", "magnum"];
+      const weaponIds = ["pistola", "gun", "uzi", "doze", "basuca", "rifle", "magnum", "minigun"];
       weaponIds.forEach((wId) => {
-        const imgEl = document.getElementById(`ui-ammo-weapon-${wId}`);
+        const imgEl = getHUDElement(`ui-ammo-weapon-${wId}`);
         if (imgEl) {
           if (activeWeapon === wId) {
             imgEl.style.display = "block";
@@ -7254,12 +10132,12 @@ export default function App() {
         }
       });
 
-      const uiReloadOverlay = document.getElementById("ui-ammo-reload-overlay");
+      const uiReloadOverlay = getHUDElement("ui-ammo-reload-overlay");
       if (uiReloadOverlay) {
         if (player.isReloading && activeStats) {
           uiReloadOverlay.style.opacity = "1";
           const progress = 1 - (player.reloadTimer / (activeStats.reloadTime / (1.0 + wUpgrades.reloadSpeed * 0.15)));
-          const fillEl = document.getElementById("ui-ammo-reload-fill");
+          const fillEl = getHUDElement("ui-ammo-reload-fill");
           if (fillEl) {
             fillEl.style.width = `${Math.min(100, Math.max(0, progress * 100))}%`;
           }
@@ -7268,21 +10146,36 @@ export default function App() {
         }
       }
 
-      const uiHotbarEl = document.getElementById("ui-hotbar");
+      if ((window as any).hotbarVisibleTimer === undefined) { (window as any).hotbarVisibleTimer = 0; }
+      if ((window as any).hotbarVisibleTimer > 0) {
+        (window as any).hotbarVisibleTimer -= dt;
+      }
+
+      const uiHotbarEl = getHUDElement("ui-hotbar");
       if (uiHotbarEl) {
-        if (player.gunHeat > 2 || player.hitMarkerTime > 0) {
+        if ((window as any).hotbarVisibleTimer > 0) {
+          uiHotbarEl.style.opacity = "1.0";
+        } else if (player.gunHeat > 2 || player.hitMarkerTime > 0) {
           uiHotbarEl.style.opacity = "0.2";
         } else {
           uiHotbarEl.style.opacity = "1.0";
         }
       }
-      const uiPlayerHpText = document.getElementById("ui-player-hp-text");
-      const uiPlayerHpFill = document.getElementById("ui-player-hp-fill");
+      const uiPlayerHpText = getHUDElement("ui-player-hp-text");
+      const uiPlayerHpFill = getHUDElement("ui-player-hp-fill");
+      const uiPlayerHpBar = getHUDElement("ui-player-hp-bar");
       if (uiPlayerHpText && uiPlayerHpFill) {
         uiPlayerHpText.innerText = `${Math.floor(player.hp)}/${player.maxHp}`;
         uiPlayerHpFill.style.width = `${Math.max(0, player.hp / player.maxHp) * 100}%`;
+        if (uiPlayerHpBar) {
+          const baseWidth = 140;
+          const maxWidth = 320;
+          const hpRatio = (player.maxHp - 50) / 450;
+          const currentWidth = baseWidth + Math.max(0, Math.min(1, hpRatio)) * (maxWidth - baseWidth);
+          uiPlayerHpBar.style.width = `${currentWidth}px`;
+        }
 
-        const uiPlayerRollFill = document.getElementById("ui-player-roll-fill");
+        const uiPlayerRollFill = getHUDElement("ui-player-roll-fill");
         if (uiPlayerRollFill) {
           const readyRatio = Math.max(0, 1 - player.rollCooldown / 2.0);
           uiPlayerRollFill.style.width = `${readyRatio * 100}%`;
@@ -7293,7 +10186,8 @@ export default function App() {
           }
         }
 
-        const uiPlayerStaminaFill = document.getElementById("ui-player-stamina-fill");
+        const uiPlayerStaminaFill = getHUDElement("ui-player-stamina-fill");
+        const uiPlayerStaminaBar = getHUDElement("ui-player-stamina-bar");
         if (uiPlayerStaminaFill) {
           const ratio = Math.max(0, player.stamina / player.staminaMax);
           uiPlayerStaminaFill.style.width = `${ratio * 100}%`;
@@ -7302,10 +10196,21 @@ export default function App() {
           } else {
             uiPlayerStaminaFill.style.backgroundColor = "rgba(60,200,100,0.8)";
           }
+          const radarStamina = getHUDElement("ui-radar-replacement-stamina");
+          if (radarStamina) {
+            radarStamina.innerText = `${Math.round(player.stamina)}/${Math.round(player.staminaMax)}`;
+          }
+          if (uiPlayerStaminaBar) {
+            const baseStaminaWidth = 100;
+            const maxStaminaWidth = 200;
+            const staminaRatio = (player.staminaMax - 100) / 100;
+            const currentStaminaWidth = baseStaminaWidth + Math.max(0, Math.min(1, staminaRatio)) * (maxStaminaWidth - baseStaminaWidth);
+            uiPlayerStaminaBar.style.width = `${currentStaminaWidth}px`;
+          }
         }
 
         // Smooth blood screen based on HP
-        const blurLayer = document.getElementById("blur-layer");
+        const blurLayer = getHUDElement("blur-layer");
         if (blurLayer) {
           const damageRatio = 1 - player.hp / player.maxHp;
           let blurVal = damageRatio * 0.8;
@@ -7331,7 +10236,7 @@ export default function App() {
           blurLayer.style.opacity = String(blurVal);
         }
       }
-      const uiAmmoPanel = document.getElementById("ui-ammo-panel");
+      const uiAmmoPanel = getHUDElement("ui-ammo-panel");
       if (uiAmmoPanel) {
         if (mouse.down && player.ammo > 0 && !player.isReloading) {
           uiAmmoPanel.style.opacity = "0.3";
@@ -7340,7 +10245,7 @@ export default function App() {
         }
       }
 
-      const uiReloadEl = document.getElementById("ui-reload-status");
+      const uiReloadEl = getHUDElement("ui-reload-status");
       if (uiReloadEl) {
         if (player.isReloading) {
           uiReloadEl.innerText = "RELOADING...";
@@ -7356,9 +10261,9 @@ export default function App() {
             "text-xs tracking-widest font-mono text-emerald-400 opacity-80";
         }
       }
-      const uiFuryFill = document.getElementById("ui-fury-fill");
-      const uiFuryGlow = document.getElementById("ui-fury-glow");
-      const uiFuryContainer = document.getElementById("ui-fury-container");
+      const uiFuryFill = getHUDElement("ui-fury-fill");
+      const uiFuryGlow = getHUDElement("ui-fury-glow");
+      const uiFuryContainer = getHUDElement("ui-fury-container");
 
       if (uiFuryFill && uiFuryContainer) {
         if (player.furyTimer > 0) {
@@ -7390,8 +10295,8 @@ export default function App() {
         }
       }
 
-      const uiProfileBox = document.getElementById("ui-profile-box");
-      const uiProfileLetter = document.getElementById("ui-profile-letter");
+      const uiProfileBox = getHUDElement("ui-profile-box");
+      const uiProfileLetter = getHUDElement("ui-profile-letter");
       if (uiProfileBox && uiProfileLetter) {
         if (player.furyTimer > 0) {
           uiProfileBox.className =
@@ -7415,6 +10320,149 @@ export default function App() {
           uiProfileLetter.style.transform = "translate(0px, 0px) scale(1)";
         }
       }
+
+      // --- Cinematic UI/UX Sway & Parallax (Alive in Synchrony with Professional Camera) ---
+      // Cache DOM elements to avoid document.getElementById queries on every frame (massively increases performance and fluidity)
+      if (!(window as any).cachedHudElements) {
+        (window as any).cachedHudElements = {
+          leftStack: document.getElementById("ui-hud-left-stack"),
+          rightPanel: document.getElementById("ui-hud-right-panel"),
+          hotbar: document.getElementById("ui-hotbar"),
+          btnSettings: document.getElementById("ui-btn-settings"),
+          btnBackMenu: document.getElementById("ui-btn-back-menu")
+        };
+      }
+      const cached = (window as any).cachedHudElements;
+      if (!cached.leftStack) cached.leftStack = document.getElementById("ui-hud-left-stack");
+      if (!cached.rightPanel) cached.rightPanel = document.getElementById("ui-hud-right-panel");
+      if (!cached.hotbar) cached.hotbar = document.getElementById("ui-hotbar");
+      if (!cached.btnSettings) cached.btnSettings = document.getElementById("ui-btn-settings");
+      if (!cached.btnBackMenu) cached.btnBackMenu = document.getElementById("ui-btn-back-menu");
+
+      const uiLeftStack = cached.leftStack;
+      const uiRightPanel = cached.rightPanel;
+      const uiHotbar = cached.hotbar;
+      const uiBtnSettings = cached.btnSettings;
+      const uiBtnBackMenu = cached.btnBackMenu;
+
+      // Initialize persistent smoothed values (lerp filter) to fully remove any jitter/shaking
+      if (!(window as any).smoothedHud) {
+        (window as any).smoothedHud = { tx: 0, ty: 0, rotX: 0, rotY: 0, rz: 0 };
+      }
+      const sHud = (window as any).smoothedHud;
+
+      let targetTx = 0;
+      let targetTy = 0;
+      let targetRotX = 0;
+      let targetRotY = 0;
+      let targetRz = 0;
+
+      if (cinematicModeRef.current) {
+        // Normalized mouse screen coordinates (-1 to 1)
+        const normX = (mouse.x - canvas.width / 2) / (canvas.width / 2 || 1);
+        const normY = (mouse.y - canvas.height / 2) / (canvas.height / 2 || 1);
+
+        // Slow cinematic breathing sway (low frequency, smooth amplitude)
+        const swayX = Math.sin(time * 1.35) * 1.8;
+        const swayY = Math.cos(time * 1.05) * 1.4;
+
+        // Inertial lag relative to player movement speed (smoother weight to avoid twitching)
+        const lagX = -(player.vx || 0) * 0.012;
+        const lagY = -(player.vy || 0) * 0.012;
+
+        // Camera tilt contribution (subtle opposite tilt)
+        const tiltDeg = (camera.tilt || 0) * (180 / Math.PI) * 0.35;
+
+        // Combined targets
+        targetTx = normX * 8 + swayX + lagX;
+        targetTy = normY * 6 + swayY + lagY;
+        targetRz = -normX * 0.8 + tiltDeg;
+
+        // Elegant 3D perspective rotation yaw (Y) & pitch (X)
+        targetRotY = normX * 6;
+        targetRotX = -normY * 4;
+      }
+
+      // Dynamic interpolation factor (smooth lerp step)
+      const hudLerpSpeed = cinematicModeRef.current ? 4.5 * dt : 12.0 * dt;
+      const hudLerpFactor = Math.min(1.0, hudLerpSpeed);
+
+      sHud.tx += (targetTx - sHud.tx) * hudLerpFactor;
+      sHud.ty += (targetTy - sHud.ty) * hudLerpFactor;
+      sHud.rz += (targetRz - sHud.rz) * hudLerpFactor;
+      sHud.rotX += (targetRotX - sHud.rotX) * hudLerpFactor;
+      sHud.rotY += (targetRotY - sHud.rotY) * hudLerpFactor;
+
+      if (cinematicModeRef.current) {
+        const transformHUD = `translate3d(${sHud.tx}px, ${sHud.ty}px, 0) rotateX(${sHud.rotX}deg) rotateY(${sHud.rotY}deg) rotateZ(${sHud.rz}deg)`;
+        const transformHotbar = `translate3d(calc(-50% + ${sHud.tx}px), ${sHud.ty}px, 0) rotateX(${sHud.rotX}deg) rotateY(${sHud.rotY}deg) rotateZ(${sHud.rz}deg)`;
+
+        // Apply styles smoothly without redundant DOM mutations
+        if (uiLeftStack) {
+          if (uiLeftStack.style.transformStyle !== "preserve-3d") {
+            uiLeftStack.style.transformStyle = "preserve-3d";
+            uiLeftStack.style.perspective = "800px";
+            uiLeftStack.style.transition = "opacity 0.5s ease-in-out, scale 0.5s ease-in-out";
+          }
+          uiLeftStack.style.transform = transformHUD;
+        }
+        if (uiRightPanel) {
+          if (uiRightPanel.style.transformStyle !== "preserve-3d") {
+            uiRightPanel.style.transformStyle = "preserve-3d";
+            uiRightPanel.style.perspective = "800px";
+            uiRightPanel.style.transition = "opacity 0.5s ease-in-out, scale 0.5s ease-in-out";
+          }
+          uiRightPanel.style.transform = transformHUD;
+        }
+        if (uiHotbar) {
+          if (uiHotbar.style.transformStyle !== "preserve-3d") {
+            uiHotbar.style.transformStyle = "preserve-3d";
+            uiHotbar.style.perspective = "800px";
+            uiHotbar.style.transition = "opacity 0.5s ease-in-out, scale 0.5s ease-in-out";
+          }
+          uiHotbar.style.transform = transformHotbar;
+        }
+        if (uiBtnSettings) {
+          if (uiBtnSettings.style.transition !== "opacity 0.5s ease-in-out, scale 0.5s ease-in-out") {
+            uiBtnSettings.style.transition = "opacity 0.5s ease-in-out, scale 0.5s ease-in-out";
+          }
+          uiBtnSettings.style.transform = transformHUD;
+        }
+        if (uiBtnBackMenu) {
+          if (uiBtnBackMenu.style.transition !== "opacity 0.5s ease-in-out, scale 0.5s ease-in-out") {
+            uiBtnBackMenu.style.transition = "opacity 0.5s ease-in-out, scale 0.5s ease-in-out";
+          }
+          uiBtnBackMenu.style.transform = transformHUD;
+        }
+      } else {
+        // Reset to normal flat/static behavior only if transform is not empty
+        if (uiLeftStack && uiLeftStack.style.transform !== "") {
+          uiLeftStack.style.transition = "";
+          uiLeftStack.style.transform = "";
+          uiLeftStack.style.transformStyle = "";
+          uiLeftStack.style.perspective = "";
+        }
+        if (uiRightPanel && uiRightPanel.style.transform !== "") {
+          uiRightPanel.style.transition = "";
+          uiRightPanel.style.transform = "";
+          uiRightPanel.style.transformStyle = "";
+          uiRightPanel.style.perspective = "";
+        }
+        if (uiHotbar && uiHotbar.style.transform !== "translate(-50%, 0)") {
+          uiHotbar.style.transition = "";
+          uiHotbar.style.transform = "translate(-50%, 0)";
+          uiHotbar.style.transformStyle = "";
+          uiHotbar.style.perspective = "";
+        }
+        if (uiBtnSettings && uiBtnSettings.style.transform !== "") {
+          uiBtnSettings.style.transition = "";
+          uiBtnSettings.style.transform = "";
+        }
+        if (uiBtnBackMenu && uiBtnBackMenu.style.transform !== "") {
+          uiBtnBackMenu.style.transition = "";
+          uiBtnBackMenu.style.transform = "";
+        }
+      }
       // Update death screen
       const deathScreen = document.getElementById("death-screen");
       if (deathScreen) {
@@ -7427,6 +10475,39 @@ export default function App() {
           deathScreen.style.pointerEvents = "none";
           deathScreen.style.display = "none";
         }
+      }
+
+      // Draw Cinematic Black Overlay
+      if (cutsceneRef.current.active && cutsceneRef.current.overlayAlpha > 0) {
+        ctx.save();
+        ctx.fillStyle = `rgba(0, 0, 0, ${cutsceneRef.current.overlayAlpha})`;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.restore();
+      }
+
+      // --- Render Training Transition Overlay ---
+      if ((window as any).trainingTransitionActive) {
+        const tr = window as any;
+        ctx.save();
+        ctx.fillStyle = `rgba(0, 0, 0, ${tr.trainingTransitionAlpha})`;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        if (tr.trainingTransitionState === "ON_HOLD") {
+          // Draw "TREINAMENTO" title text
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.font = '900 48px "Outfit", "Inter", sans-serif';
+          ctx.fillStyle = "#ffffff";
+          ctx.shadowColor = "rgba(239, 68, 68, 0.9)";
+          ctx.shadowBlur = 30;
+          ctx.fillText("TREINAMENTO", canvas.width / 2, canvas.height / 2 - 10);
+          
+          ctx.shadowBlur = 0;
+          ctx.font = 'bold 12px "JetBrains Mono", monospace';
+          ctx.fillStyle = "#facc15"; // Yellow subtitle
+          ctx.fillText("PREPARANDO ÁREA DE TIRO... ALVOS DETECTADOS", canvas.width / 2, canvas.height / 2 + 35);
+        }
+        ctx.restore();
       }
     };
 
@@ -7454,10 +10535,15 @@ export default function App() {
     <div style={{ touchAction: "none", userSelect: "none" }} className={`fixed inset-0 w-full h-full bg-black overflow-hidden font-['Helvetica_Neue',Arial,sans-serif] text-white ${isAnyMenuOpen ? 'cursor-default' : 'cursor-none'}`}>
       <canvas
         ref={canvasRef}
-        className="block absolute inset-0 z-0 h-full w-full"
+        className="block absolute inset-0 z-0 h-full w-full transition-all duration-700 ease-in-out"
+        style={{
+          filter: cinematicMode
+            ? "saturate(1.42) contrast(1.15) brightness(1.03) sepia(0.03)"
+            : "none"
+        }}
         onContextMenu={(e) => e.preventDefault()} // Prevent right-click menu disrupting aim
       />
-      <div className="vignette z-10"></div>
+      <div ref={blurOverlayRef} className="absolute inset-0 z-10 pointer-events-none transition-opacity duration-75" style={{ background: 'radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.85) 100%)', opacity: 0 }}></div>
 
       <div
         id="blur-layer"
@@ -7467,164 +10553,612 @@ export default function App() {
 
       <div
         id="death-screen"
-        className="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-black/90 backdrop-blur-md transition-all duration-1000"
+        className="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-black/90 backdrop-blur-md transition-all duration-1000 gap-4"
         style={{ opacity: 0, pointerEvents: "none", display: "none" }}
       >
         <h1
           id="death-title"
-          className="text-3xl md:text-4xl text-center font-black text-red-700 tracking-tighter uppercase drop-shadow-[0_0_30px_rgba(220,38,38,0.8)] mb-6 animate-pulse"
+          className="text-3xl md:text-4xl text-center font-black text-red-700 tracking-tighter uppercase drop-shadow-[0_0_30px_rgba(220,38,38,0.8)] mb-2 animate-pulse"
         >
           Seu Corpo Foi Devorado
         </h1>
-        <button
-          onClick={() => {
-            (window as any).respawnTriggered = true;
-          }}
-          className="px-8 py-3 bg-red-900 border-2 border-red-600 text-white font-mono tracking-widest uppercase hover:bg-red-700 hover:scale-105 transition-all text-sm cursor-crosshair shadow-[0_0_20px_rgba(220,38,38,0.4)]"
-        >
-          Renascer
-        </button>
+        <div className="flex flex-col sm:flex-row gap-4 items-center mt-4">
+          <button
+            onClick={() => {
+              if (isWaveMode) {
+                startWavesMode();
+              }
+              (window as any).respawnTriggered = true;
+            }}
+            className="px-8 py-3 bg-red-950/60 border border-red-700 text-red-200 font-mono tracking-widest uppercase hover:bg-red-900 hover:scale-105 transition-all text-xs cursor-pointer shadow-[0_0_15px_rgba(220,38,38,0.2)] w-60 text-center rounded-lg"
+          >
+            Recomeçar (Wave 1)
+          </button>
+          
+          <button
+            onClick={() => {
+              if ((window as any).triggerAdRevive) {
+                (window as any).triggerAdRevive();
+              }
+            }}
+            className="px-8 py-3 bg-amber-600 border border-amber-500 text-black font-mono font-black tracking-widest uppercase hover:bg-amber-400 hover:scale-105 transition-all text-xs cursor-pointer shadow-[0_0_20px_rgba(245,158,11,0.3)] w-60 text-center rounded-lg flex items-center justify-center gap-1.5"
+          >
+            <span>📺 Reviver com Anúncio</span>
+          </button>
+
+          <button
+            onClick={() => {
+              const deathScreen = document.getElementById("death-screen");
+              if (deathScreen) {
+                deathScreen.style.opacity = "0";
+                deathScreen.style.pointerEvents = "none";
+                deathScreen.style.display = "none";
+              }
+              (window as any).inTrainingMode = false;
+              (window as any).trainingTransitionActive = false;
+              setInTrainingMode(false);
+              setCredits(globalCredits);
+              setGameState("MENU");
+            }}
+            className="px-8 py-3 bg-zinc-900 border border-zinc-700 text-zinc-300 font-mono tracking-widest uppercase hover:bg-zinc-800 hover:scale-105 transition-all text-xs cursor-pointer shadow-[0_0_15px_rgba(255,255,255,0.05)] w-60 text-center rounded-lg"
+          >
+            Voltar para o Menu
+          </button>
+        </div>
       </div>
 
-      {gameState === "MENU" && (
-        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center menu-brick-bg pointer-events-auto overflow-hidden">
-          {/* Subtle dark vignette overlay */}
-          <div className="absolute inset-0 bg-black/40 pointer-events-none z-10" />
+      {gameState === "LOADING" && (
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-zinc-950 font-mono text-white pointer-events-auto select-none p-8 animate-in fade-in duration-300">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(239,68,68,0.05)_0%,transparent_70%)]" />
+          <div className="absolute inset-0 pointer-events-none opacity-20 bg-[repeating-linear-gradient(transparent,transparent_2px,#000_2px,#000_4px)] animate-scan" />
+          
+          <div className="relative flex flex-col items-center max-w-md w-full gap-8 z-10">
+            <div className="absolute -top-6 -left-6 w-4 h-4 border-t-2 border-l-2 border-amber-500/50" />
+            <div className="absolute -top-6 -right-6 w-4 h-4 border-t-2 border-r-2 border-amber-500/50" />
+            <div className="absolute -bottom-6 -left-6 w-4 h-4 border-b-2 border-l-2 border-amber-500/50" />
+            <div className="absolute -bottom-6 -right-6 w-4 h-4 border-b-2 border-r-2 border-amber-500/50" />
 
-          {/* Clean minimal title header */}
-          <div className="relative mb-12 text-center select-none z-20 animate-in fade-in zoom-in-95 duration-500">
-            <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tight flex justify-center gap-4">
-              <span className="menu-title-survival">A LENDA</span>
-            </h1>
-            <p className="text-[12px] font-mono tracking-[0.35em] text-red-600/90 font-bold uppercase mt-2.5">
-              COMBAT SIMULATOR
-            </p>
-          </div>
+            <div className="text-center">
+              <h2 className="text-xs tracking-[0.3em] text-zinc-500 font-black uppercase mb-1">INSERÇÃO EM ANDAMENTO</h2>
+              <h1 className="text-2xl font-black uppercase tracking-[0.15em] text-white">OPERADOR {skinRef.current?.name.toUpperCase()}</h1>
+            </div>
 
-          {/* Simple concrete buttons list */}
-          <div className="flex flex-col gap-4.5 w-full max-w-[420px] relative z-20 px-8">
-             {/* Sandbox Mode Button */}
-             <button
-                onClick={() => {
-                  upgradesRef.current = {
-                    pistola: freshWeaponUpgrades(),
-                    gun: freshWeaponUpgrades(),
-                    uzi: freshWeaponUpgrades(),
-                    doze: freshWeaponUpgrades(),
-                    basuca: freshWeaponUpgrades(),
-                    rifle: freshWeaponUpgrades(),
-                    magnum: freshWeaponUpgrades(),
-                  };
-                  setUpgrades(JSON.parse(JSON.stringify(upgradesRef.current)));
+            <div className="w-24 h-24 border border-zinc-800 rounded-full relative flex items-center justify-center bg-black/40 shadow-inner">
+              <div className="absolute inset-2 border border-dashed border-zinc-900 rounded-full" />
+              <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-transparent via-amber-500/10 to-transparent animate-spin" style={{ animationDuration: "3s" }} />
+              <span className="text-sm font-black text-amber-500 animate-pulse">{loadingProgress}%</span>
+            </div>
 
-                  inventoryRef.current = {
-                    hotbar: ["gun", null, null, null, null],
-                    hotbarAmmo: [200, 0, 0, 0, 0],
-                    backpack: Array(16).fill(null),
-                    activeSlot: 0,
-                    selectedItem: null,
-                    equippedSkins: {},
-                    purchasedSkins: [],
-                  };
-
-                  setIsShopOpen(false);
-                  setIsInventoryOpen(false);
-                  setIsOutfitsOpen(false);
-                  setCredits(999999999);
-
-                  vanState = "PARKED";
-                  VAN_X = 0;
-                  VAN_Y = -350;
-                  vanTargetX = 0;
-                  vanTargetY = -350;
-
-                  waveRef.current.mode = false;
-                  setIsWaveMode(false);
-                  (window as any).clearZombiesOnStart = true;
-                  (window as any).freeModeSpawningEnabled = false;
-                  setGameState("PLAYING");
-                  SoundManager.playSound("click", 1.0);
-                }}
-                className="menu-btn-concrete w-full py-4.5 px-6 rounded-lg flex items-center gap-6 cursor-pointer"
-             >
-                <div className="w-12 h-12 rounded-full border-2 border-black/30 flex items-center justify-center bg-black/5 flex-shrink-0">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-black/80">
-                    <circle cx="12" cy="12" r="9" />
-                    <path d="M12 2v20M2 12h20M12 12m-3 0a3 3 0 1 1 6 0 3 3 0 1 1-6 0" />
-                  </svg>
-                </div>
-                <div className="flex flex-col items-start leading-tight">
-                  <span className="text-xl font-black uppercase tracking-wider text-neutral-900">MODO LIVRE</span>
-                  <span className="text-[10px] text-neutral-800 font-bold opacity-75">TREINO E CRÉDITOS ILIMITADOS</span>
-                </div>
-             </button>
-
-             {/* Weapon Shop Button */}
-             <button
-                onClick={() => {
-                  setIsShopOpen(true);
-                  setIsOutfitsOpen(false);
-                  SoundManager.playSound("click", 1.0);
-                }}
-                className="menu-btn-concrete w-full py-4.5 px-6 rounded-lg flex items-center gap-6 cursor-pointer"
-             >
-                <div className="w-12 h-12 rounded-full border-2 border-black/30 flex items-center justify-center bg-black/5 flex-shrink-0">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-black/80">
-                    <path d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-                  </svg>
-                </div>
-                <div className="flex flex-col items-start leading-tight">
-                  <span className="text-xl font-black uppercase tracking-wider text-neutral-900">LOJA</span>
-                  <span className="text-[10px] text-neutral-800 font-bold opacity-75">ARMAS, UPGRADES E SKINS</span>
-                </div>
-             </button>
-
-             {/* Outfits Button */}
-             <button
-                onClick={() => {
-                  setIsOutfitsOpen(true);
-                  setIsShopOpen(false);
-                  SoundManager.playSound("click", 1.0);
-                }}
-                className="menu-btn-concrete w-full py-4.5 px-6 rounded-lg flex items-center gap-6 cursor-pointer"
-             >
-                <div className="w-12 h-12 rounded-full border-2 border-black/30 flex items-center justify-center bg-black/5 flex-shrink-0">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-black/80">
-                    <path d="M15 2H9L7 5H4v4h3v11h10V9h3V5h-3z" />
-                    <path d="M12 2v3m-3-1a3 3 0 0 0 6 0" />
-                  </svg>
-                </div>
-                <div className="flex flex-col items-start leading-tight">
-                  <span className="text-xl font-black uppercase tracking-wider text-neutral-900">TRAJES</span>
-                  <span className="text-[10px] text-neutral-800 font-bold opacity-75">SELECIONAR APARÊNCIA</span>
-                </div>
-             </button>
-
-             {/* Waves Mode Button */}
-             <button
-                onClick={() => {
-                  startWavesMode();
-                  SoundManager.playSound("click", 1.0);
-                }}
-                className="menu-btn-concrete w-full py-4.5 px-6 rounded-lg flex items-center gap-6 cursor-pointer shadow-[0_4px_15px_rgba(168,15,15,0.4)]"
-             >
-                <div className="w-12 h-12 rounded-full border-2 border-black/30 flex items-center justify-center bg-black/5 flex-shrink-0">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-black/80">
-                    <path d="M12 18v-9m-3 9v-7.5m6 7.5V11m-9 7V13m12 5V14.5" />
-                    <path d="M6 11.5a2 2 0 0 1 4 0M9 10.5a2 2 0 0 1 4 0M12 9a2 2 0 0 1 4 0M15 11a2 2 0 0 1 4 0" />
-                    <path d="M4 21c2.5-1.5 5.5-1.5 8 0s5.5 1.5 8 0" />
-                  </svg>
-                </div>
-                <div className="flex flex-col items-start leading-tight">
-                  <span className="text-xl font-black uppercase tracking-wider text-neutral-900">ONDA DE ZUMBIS</span>
-                  <span className="text-[10px] text-neutral-800 font-bold opacity-75">MODO CAMPANHA SOBREVIVÊNCIA</span>
-                </div>
-             </button>
+            <div className="w-full flex flex-col gap-2">
+              <div className="flex justify-between text-[9px] font-bold text-zinc-500 tracking-wider">
+                <span>{loadingText}</span>
+                <span className="text-amber-500 font-mono">SYSTEM: OK</span>
+              </div>
+              
+              <div className="w-full h-2 bg-zinc-900 border border-zinc-800 rounded-full p-[2px] overflow-hidden shadow-inner">
+                <div 
+                  className="h-full rounded-full bg-gradient-to-r from-amber-600 to-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.5)] transition-all duration-150 ease-out"
+                  style={{ width: `${loadingProgress}%` }}
+                />
+              </div>
+            </div>
           </div>
         </div>
       )}
 
-      {gameState === "PLAYING" &&
+      {gameState === "MENU" && (
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center menu-brick-bg pointer-events-auto overflow-hidden">
+          {/* Cinematic dark intro overlay */}
+          <div 
+            className="absolute inset-0 z-[100] bg-black pointer-events-none transition-opacity duration-[2000ms] ease-in-out"
+            style={{ opacity: introFadeOut ? 0 : 1, pointerEvents: introFadeOut ? "none" : "auto" }}
+          />
+          {/* Slideshow background images */}
+          {menuWallpapers.map((url, idx) => {
+            const isActive = currentBgIndex === idx;
+            const isPrev = prevBgIndex === idx;
+            const isVisible = isActive || isPrev;
+            return (
+              <div
+                key={url}
+                className="absolute inset-0 transition-all duration-[2000ms] ease-in-out bg-cover bg-center pointer-events-none"
+                style={{
+                  backgroundImage: `url("${url}")`,
+                  opacity: isActive ? 0.75 : 0,
+                  transform: isActive ? "scale(1.05)" : "scale(1.0)",
+                  visibility: isVisible ? "visible" : "hidden",
+                  zIndex: isActive ? 2 : 1,
+                }}
+              />
+            );
+          })}
+          {/* Subtle dark vignette overlay */}
+          <div className="absolute inset-0 bg-black/35 pointer-events-none z-10" />
+
+          {showInitialTips ? (
+            /* Render minimal loading tips view */
+            <div className="relative z-20 w-full max-w-[750px] px-8 flex flex-col items-center justify-between min-h-[420px] select-none">
+              {/* Top simulation status */}
+              <div className="text-center">
+                <h2 className="text-2xl font-black uppercase tracking-[0.25em] text-zinc-300 drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+                  Lifeless Land
+                </h2>
+                <p className="text-[10px] font-mono tracking-[0.4em] text-red-600 font-bold uppercase mt-1">
+                  INICIALIZANDO SIMULADOR DE COMBATE
+                </p>
+                <div className="h-[2px] w-28 bg-red-600 mx-auto mt-3 shadow-[0_0_8px_#dc2626]" />
+              </div>
+
+              {/* Game Tip text - styled like a premium holographic dashboard with highly visible font */}
+              <div 
+                key={currentTipIndex}
+                onClick={() => {
+                  setCurrentTipIndex((prev) => (prev + 1) % GAMEPLAY_TIPS.length);
+                  SoundManager.playSound("click", 0.6);
+                }}
+                className="w-full flex flex-col items-center gap-3.5 cursor-pointer animate-tip-in select-none bg-black/60 border border-zinc-800/50 p-6 md:p-8 rounded-xl backdrop-blur-md shadow-[0_4px_30px_rgba(0,0,0,0.4)] hover:border-amber-500/25 transition-all max-w-[720px]"
+              >
+                <span className="text-[10px] font-mono tracking-[0.45em] text-amber-500 font-black uppercase flex items-center gap-1.5 drop-shadow">
+                  💡 DICA DE SOBREVIVÊNCIA
+                </span>
+                <p className="text-white text-[15px] md:text-[17px] font-black tracking-wide text-center leading-relaxed drop-shadow-[0_2px_10px_rgba(0,0,0,1)]">
+                  "{GAMEPLAY_TIPS[currentTipIndex].text}"
+                </p>
+                <span className="text-[8px] font-mono text-zinc-500 uppercase tracking-widest mt-1">
+                  ( clique na caixa para alternar dica )
+                </span>
+              </div>
+
+              {/* Bottom Skip / Enter Button - Minimalist and Clean */}
+              <div className="w-full flex flex-col items-center">
+                <button
+                   onClick={() => {
+                     startTypewriterTransition();
+                   }}
+                   className="py-2.5 px-8 rounded-full border border-white/10 hover:border-white/30 text-white/60 hover:text-white bg-transparent transition-all duration-300 font-mono text-[10.5px] tracking-[0.25em] uppercase cursor-pointer hover:scale-102 flex items-center justify-center gap-2"
+                >
+                   PULAR ➔
+                </button>
+              </div>
+            </div>
+          ) : (
+            /* Render actual menu content - Sleek Left Aligned Layout */
+            <div className="absolute inset-0 z-20 flex items-center justify-start pl-12 md:pl-20 select-none">
+              {/* Left Vignette Backdrop for Menu Content legibility */}
+              <div className="absolute inset-y-0 left-0 w-[550px] bg-gradient-to-r from-black/95 via-black/80 to-transparent pointer-events-none z-10" />
+
+              {/* Minimalist Vertical Content Panel */}
+              <div className="relative z-20 flex flex-col items-start w-full max-w-[400px] gap-6 animate-in slide-in-from-left-12 duration-700">
+                
+                {/* Clean minimal title header - Left Aligned */}
+                <div className="relative text-left select-none animate-in fade-in slide-in-from-left duration-700">
+                  <h1 className="text-5xl md:text-6xl font-black uppercase tracking-wider flex justify-start gap-4">
+                    <span className="menu-title-survival !text-white tracking-[0.1em]" style={{ textShadow: "0 0 20px rgba(239,68,68,0.4), 2px 2px 0px #000" }}>LIFELESS LAND</span>
+                  </h1>
+                  <p className="text-[10px] font-mono tracking-[0.45em] text-red-500 font-black uppercase mt-1.5">
+                    SIMULADOR DE COMBATE
+                  </p>
+                  <div className="h-[2px] w-24 bg-red-600 mt-3.5 shadow-[0_0_10px_#dc2626]" />
+                </div>
+
+                {/* Sleek minimalist button menu list */}
+                <div className="flex flex-col gap-3.5 w-full">
+                   {/* 1. Waves Mode Button (Campanha) */}
+                   <button
+                      onClick={() => {
+                        setIsOutfitsOpen(true);
+                        setIsShopOpen(false);
+                        waveRef.current.mode = true; // Set waveRef.current.mode to true!
+                        SoundManager.playSound("click", 1.0);
+                      }}
+                      onMouseEnter={() => {
+                        setHoveredMenuBtn("wave_mode");
+                        SoundManager.playSound("click", 0.12);
+                      }}
+                      onMouseLeave={() => setHoveredMenuBtn(null)}
+                      className="group relative w-full py-4 px-6 rounded-lg bg-red-950/20 border border-red-500/20 hover:border-red-500/80 hover:bg-red-500/10 hover:shadow-[0_0_20px_rgba(239,68,68,0.2)] text-left transition-all duration-300 cursor-pointer flex items-center gap-4.5 overflow-hidden"
+                   >
+                      <div className="absolute inset-0 bg-gradient-to-r from-red-500/0 via-red-500/5 to-red-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                      <div className="w-10 h-10 rounded-full border border-red-500/20 flex items-center justify-center bg-black/40 flex-shrink-0 group-hover:border-red-500/60 transition-colors">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-red-500 group-hover:scale-110 transition-transform">
+                          <path d="M12 18v-9m-3 9v-7.5m6 7.5V11m-9 7V13m12 5V14.5" />
+                          <path d="M6 11.5a2 2 0 0 1 4 0M9 10.5a2 2 0 0 1 4 0M12 9a2 2 0 0 1 4 0M15 11a2 2 0 0 1 4 0" />
+                          <path d="M4 21c2.5-1.5 5.5-1.5 8 0s5.5 1.5 8 0" />
+                        </svg>
+                      </div>
+                      <div className="flex flex-col items-start leading-tight">
+                        <span className="text-[15px] font-black uppercase tracking-wider text-neutral-100 font-mono">ENTRAR NA ONDA</span>
+                        <span className="text-[8px] text-neutral-400 font-mono tracking-wider uppercase">SELECIONAR OPERADOR E SOBREVIVER</span>
+                      </div>
+                   </button>
+
+                   {/* 2. Free Sandbox Mode Button */}
+                   <button
+                      onClick={() => {
+                        upgradesRef.current = {
+                          pistola: freshWeaponUpgrades(),
+                          gun: freshWeaponUpgrades(),
+                          uzi: freshWeaponUpgrades(),
+                          doze: freshWeaponUpgrades(),
+                          basuca: freshWeaponUpgrades(),
+                          rifle: freshWeaponUpgrades(),
+                          magnum: freshWeaponUpgrades(),
+                          minigun: freshWeaponUpgrades(),
+                        };
+                        setUpgrades(JSON.parse(JSON.stringify(upgradesRef.current)));
+                        charUpgradesRef.current = initialCharUpgrades();
+                        setCharUpgrades(initialCharUpgrades());
+
+                        inventoryRef.current = {
+                          hotbar: ["gun", null, null, null, null],
+                          hotbarAmmo: [200, 0, 0, 0, 0],
+                          backpack: Array(16).fill(null),
+                          activeSlot: 0,
+                          selectedItem: null,
+                          equippedSkins: {},
+                          purchasedSkins: [],
+                        };
+
+                        setIsShopOpen(false);
+                        setIsInventoryOpen(false);
+                        setIsOutfitsOpen(false);
+                        setCredits(999999999);
+
+                        vanState = "PARKED";
+                        VAN_X = 0;
+                        VAN_Y = -350;
+                        vanTargetX = 0;
+                        vanTargetY = -350;
+
+                        waveRef.current.mode = false;
+                        setIsWaveMode(false);
+                        (window as any).clearZombiesOnStart = true;
+                        (window as any).freeModeSpawningEnabled = false;
+                        setGameState("PLAYING");
+                        SoundManager.playSound("click", 1.0);
+                      }}
+                      onMouseEnter={() => {
+                        setHoveredMenuBtn("sandbox_mode");
+                        SoundManager.playSound("click", 0.12);
+                      }}
+                      onMouseLeave={() => setHoveredMenuBtn(null)}
+                      className="group relative w-full py-4 px-6 rounded-lg bg-zinc-950/20 border border-zinc-700/20 hover:border-zinc-500 hover:bg-zinc-500/5 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] text-left transition-all duration-300 cursor-pointer flex items-center gap-4.5 overflow-hidden"
+                   >
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                      <div className="w-10 h-10 rounded-full border border-zinc-700/30 flex items-center justify-center bg-black/40 flex-shrink-0 group-hover:border-zinc-500 transition-colors">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-zinc-400 group-hover:scale-110 transition-transform">
+                          <circle cx="12" cy="12" r="9" />
+                          <path d="M12 2v20M2 12h20M12 12m-3 0a3 3 0 1 1 6 0 3 3 0 1 1-6 0" />
+                        </svg>
+                      </div>
+                      <div className="flex flex-col items-start leading-tight">
+                        <span className="text-[15px] font-black uppercase tracking-wider text-neutral-300 font-mono">MODO TESTE</span>
+                        <span className="text-[8px] text-zinc-500 font-mono tracking-wider uppercase">TREINO E CRÉDITOS ILIMITADOS</span>
+                      </div>
+                   </button>
+
+                   {/* 3. Row: Shop and Outfits side-by-side */}
+                   <div className="flex gap-3 w-full">
+                     {/* Weapon Shop Button (Loja) */}
+                     <button
+                        onClick={() => {
+                          setShopTab("skins");
+                          setIsShopOpen(true);
+                          setIsOutfitsOpen(false);
+                          SoundManager.playSound("click", 1.0);
+                        }}
+                        onMouseEnter={() => {
+                          setHoveredMenuBtn("shop");
+                          SoundManager.playSound("click", 0.12);
+                        }}
+                        onMouseLeave={() => setHoveredMenuBtn(null)}
+                        className="group relative flex-1 py-3 px-4 rounded-lg bg-amber-950/10 border border-amber-500/20 hover:border-amber-500 hover:bg-amber-500/5 hover:shadow-[0_0_15px_rgba(245,158,11,0.15)] transition-all duration-300 flex items-center gap-3 cursor-pointer overflow-hidden"
+                     >
+                        <div className="w-8 h-8 rounded-full border border-amber-500/20 flex items-center justify-center bg-black/40 flex-shrink-0 group-hover:border-amber-500 transition-colors">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-amber-500 group-hover:scale-110 transition-transform">
+                            <path d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                          </svg>
+                        </div>
+                        <div className="flex flex-col items-start leading-tight">
+                          <span className="text-[13px] font-black uppercase tracking-wider text-neutral-200 font-mono">LOJA</span>
+                          <span className="text-[7.5px] text-neutral-500 font-mono uppercase">ARMAS & SKINS</span>
+                        </div>
+                     </button>
+
+                     {/* Outfits Button (Trajes) */}
+                     <button
+                        onClick={() => {
+                          setIsOutfitsOpen(true);
+                          setIsShopOpen(false);
+                          SoundManager.playSound("click", 1.0);
+                        }}
+                        onMouseEnter={() => {
+                          setHoveredMenuBtn("character");
+                          SoundManager.playSound("click", 0.12);
+                        }}
+                        onMouseLeave={() => setHoveredMenuBtn(null)}
+                        className="group relative flex-1 py-3 px-4 rounded-lg bg-zinc-950/20 border border-zinc-800 hover:border-zinc-500 hover:bg-zinc-500/5 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer overflow-hidden"
+                     >
+                        <span className="text-[13px] font-black uppercase tracking-wider text-neutral-300 font-mono">PERSONAGEM</span>
+                     </button>
+                   </div>
+
+                   {/* Highlighted Gameplay Tips Button */}
+                   <button
+                      onClick={() => {
+                        setGameplayTipsOpen(true);
+                        SoundManager.playSound("click", 1.0);
+                      }}
+                      onMouseEnter={() => {
+                        setHoveredMenuBtn("tips");
+                        SoundManager.playSound("click", 0.12);
+                      }}
+                      onMouseLeave={() => setHoveredMenuBtn(null)}
+                      className="group relative w-full py-3 px-5 bg-gradient-to-r from-amber-600/10 to-amber-500/5 border border-amber-500/20 text-amber-200 hover:border-amber-400 hover:from-amber-500/15 hover:to-amber-500/5 hover:shadow-[0_0_15px_rgba(245,158,11,0.15)] transition-all duration-300 rounded-lg flex items-center gap-4 cursor-pointer"
+                   >
+                      <div className="w-8 h-8 rounded-full border border-amber-500/20 flex items-center justify-center bg-black/40 flex-shrink-0 group-hover:border-amber-400 transition-colors">
+                        <span className="text-sm leading-none">💡</span>
+                      </div>
+                      <div className="flex flex-col items-start leading-tight text-left">
+                        <span className="text-[13px] font-black uppercase tracking-wider text-amber-400 font-mono">Dicas de Jogabilidade</span>
+                        <span className="text-[8px] text-amber-500/60 font-mono uppercase tracking-wider">Como jogar, comprar upgrades e ondas</span>
+                      </div>
+                   </button>
+
+                   {/* Bestiary Button */}
+                   <button
+                      onClick={() => {
+                        setIsBestiaryOpen(true);
+                        SoundManager.playSound("click", 1.0);
+                      }}
+                      onMouseEnter={() => {
+                        setHoveredMenuBtn("bestiary");
+                        SoundManager.playSound("click", 0.12);
+                      }}
+                      onMouseLeave={() => setHoveredMenuBtn(null)}
+                      className="group relative w-full py-3.5 px-5 bg-zinc-950/20 border border-zinc-800/40 text-zinc-300 hover:border-zinc-500 hover:bg-zinc-500/5 transition-all duration-300 rounded-lg flex items-center gap-4 cursor-pointer"
+                   >
+                      <div className="w-8 h-8 rounded-full border border-zinc-800/60 flex items-center justify-center bg-black/50 flex-shrink-0 group-hover:border-zinc-500 transition-colors">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-zinc-500 group-hover:scale-110 transition-transform">
+                          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg>
+                      </div>
+                      <div className="flex flex-col items-start leading-tight text-left">
+                        <span className="text-[13px] font-black uppercase tracking-wider text-zinc-200 font-mono">ARQUIVOS ZUMBI</span>
+                        <span className="text-[7.5px] text-zinc-500 font-mono uppercase">CATÁLOGO DE MUTAÇÕES</span>
+                      </div>
+                   </button>
+                </div>
+              </div>
+
+              {/* Right Side Hover Info Panel */}
+              <div className="absolute top-1/2 right-12 md:right-24 -translate-y-1/2 z-20 w-[320px] md:w-[380px] pointer-events-none select-none text-left flex flex-col gap-4 animate-in fade-in slide-in-from-right-8 duration-300">
+                {hoveredMenuBtn ? (
+                  <>
+                    <div className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 bg-red-500 animate-pulse rounded-full shadow-[0_0_8px_#ef4444]" />
+                      <span className="text-[10px] font-mono tracking-[0.25em] text-red-500 font-bold uppercase">
+                        {hoverInfo[hoveredMenuBtn].subtitle}
+                      </span>
+                    </div>
+                    <h2 className="text-2xl md:text-3xl font-black text-white uppercase tracking-wider font-mono">
+                      {hoverInfo[hoveredMenuBtn].title}
+                    </h2>
+                    
+                    {/* Minimalist Cinematic separator line with dot */}
+                    <div className="flex items-center gap-2 w-full my-1">
+                      <div className="h-[1px] bg-gradient-to-r from-red-500/50 to-transparent flex-1" />
+                      <div className="w-1.5 h-1.5 bg-red-500 rounded-full" />
+                    </div>
+                    
+                    <p className="text-[12px] md:text-[13px] font-mono text-zinc-400 leading-relaxed font-semibold">
+                      {hoverInfo[hoveredMenuBtn].desc}
+                    </p>
+                  </>
+                ) : (
+                  <div className="flex flex-col gap-1.5 opacity-25">
+                    <span className="text-[9px] font-mono tracking-widest text-zinc-500 uppercase">
+                      AGUARDANDO INSTRUÇÕES...
+                    </span>
+                    <p className="text-[11px] font-mono text-zinc-600">
+                      Passe o cursor sobre as opções do simulador para obter relatórios de campo.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Bestiary Modal */}
+      {isBestiaryOpen && (
+        <div className="absolute inset-0 z-[120] flex items-center justify-center bg-black/90 backdrop-blur-md pointer-events-auto select-none p-4 font-mono">
+          <div className="bg-zinc-950 border border-zinc-800 p-8 rounded-xl w-full max-w-4xl shadow-2xl relative flex gap-8">
+            <button 
+              onClick={() => {
+                if (selectedBestiaryZombie) setSelectedBestiaryZombie(null);
+                else setIsBestiaryOpen(false);
+                SoundManager.playSound("click", 1.0);
+              }}
+              className="absolute top-4 right-4 text-zinc-500 hover:text-white cursor-pointer"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+            
+            {!selectedBestiaryZombie ? (
+              <div className="w-full flex flex-col items-center">
+                <h2 className="text-3xl font-black text-white mb-2 uppercase tracking-widest border-b border-zinc-800 pb-4 w-full text-center">Arquivos Zumbi</h2>
+                <p className="text-zinc-500 text-sm mb-8">Elimine ameaças no submundo para desbloquear seus relatórios confidenciais.</p>
+                <div className="flex gap-6 justify-center flex-wrap">
+                  {[
+                    { id: 'comum', name: 'Zumbi Comum', img: '/zombies/comum.png' },
+                    { id: 'atirador', name: 'Mutante Atirador', img: '/zombies/atirador.png' },
+                    { id: 'dasher', name: 'Ameaça Dasher', img: '/zombies/dasher.png' }
+                  ].map(z => {
+                    const unlocked = localStorage.getItem(`mns_unlocked_${z.id}`) === 'true';
+                    return (
+                      <div 
+                        key={z.id}
+                        onClick={() => unlocked && setSelectedBestiaryZombie(z.id)}
+                        className={`flex flex-col items-center w-48 p-4 rounded-xl border transition-all ${unlocked ? 'border-zinc-700 bg-zinc-900 cursor-pointer hover:border-red-500 hover:bg-zinc-800' : 'border-zinc-900 bg-black/50 opacity-40 cursor-not-allowed'}`}
+                      >
+                        <img src={z.img} className={`w-32 h-32 object-contain mb-4 ${unlocked ? 'drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]' : 'grayscale brightness-0'}`} />
+                        <span className="text-sm font-bold uppercase tracking-wider text-white">{unlocked ? z.name : 'DESCONHECIDO'}</span>
+                        {!unlocked && <span className="text-[10px] text-zinc-500 mt-2">ALVO NÃO ELIMINADO</span>}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
+              <div className="w-full flex gap-8 animate-in fade-in zoom-in-95 duration-300">
+                <div className="w-1/2 flex items-center justify-center bg-zinc-900 rounded-xl border border-zinc-800 p-4">
+                  <img src={`/zombies/${selectedBestiaryZombie}.png`} className="w-full h-auto max-h-[400px] object-contain drop-shadow-[0_0_30px_rgba(239,68,68,0.6)]" />
+                </div>
+                <div className="w-1/2 flex flex-col justify-center">
+                  <h3 className="text-4xl font-black text-red-500 mb-2 uppercase tracking-tighter">
+                    {selectedBestiaryZombie === 'comum' ? 'Zumbi Comum' : selectedBestiaryZombie === 'atirador' ? 'Mutante Atirador' : 'Ameaça Dasher'}
+                  </h3>
+                  <div className="h-0.5 w-16 bg-red-600 mb-6" />
+                  
+                  <div className="flex flex-col gap-4 text-zinc-300 text-sm leading-relaxed">
+                    {selectedBestiaryZombie === 'comum' ? (
+                      <>
+                        <p><strong>Classificação:</strong> Ameaça Baixa/Média (Em Bando)</p>
+                        <p>Os habitantes originais do submundo. Expostos à toxina atmosférica durante o primeiro vazamento no setor 7. Seu tecido muscular apodreceu, mas o sistema nervoso foi hiper-estimulado, tornando-os caçadores agressivos e implacáveis, movidos apenas pelo instinto de consumo de biomassa fresca.</p>
+                      </>
+                    ) : selectedBestiaryZombie === 'atirador' ? (
+                      <>
+                        <p><strong>Classificação:</strong> Ameaça Alta (Ataque à Distância)</p>
+                        <p>Uma anomalia mutante. Trabalhadores da refinaria que ingeriram diretamente os cristais vermelhos sintéticos. O corpo deles condensa o cristal na corrente sanguínea, permitindo que disparem densas esferas de energia volátil pelos poros e extremidades. São covardes em combate corpo a corpo, mantendo distância para disparar rajadas letais.</p>
+                      </>
+                    ) : (
+                      <>
+                        <p><strong>Classificação:</strong> Ameaça Crítica (Extrema Velocidade)</p>
+                        <p>Predadores alfa corrompidos pela variação roxa do patógeno. Esta cepa alterou a biologia do hospedeiro, injetando adrenalina pura ininterruptamente. O resultado é um monstro ágil e frenético, capaz de desviar de disparos de fogo no ar e de utilizar investidas mortais (Dashes) em frações de segundo para destroçar qualquer agente distraído.</p>
+                      </>
+                    )}
+                  </div>
+                  <button onClick={() => setSelectedBestiaryZombie(null)} className="mt-8 py-3 bg-zinc-800 hover:bg-zinc-700 text-white font-bold rounded-lg uppercase tracking-widest text-xs transition-colors border border-zinc-700">VOLTAR AO CATÁLOGO</button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Detailed Gameplay Tips Manual Modal */}
+      {gameplayTipsOpen && (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-[100] flex items-center justify-center p-4 select-none animate-in fade-in duration-300">
+          <div className="bg-[#0c0a09] border border-zinc-800 rounded-xl max-w-[650px] w-full p-6 md:p-8 flex flex-col gap-6 shadow-[0_0_50px_rgba(0,0,0,0.9)] text-left relative">
+            <button 
+              onClick={() => {
+                setGameplayTipsOpen(false);
+                SoundManager.playSound("click", 0.7);
+              }}
+              className="absolute top-4 right-4 text-zinc-400 hover:text-white hover:scale-110 transition-all cursor-pointer font-bold text-lg p-2"
+            >
+              ✕
+            </button>
+            
+            <div className="flex items-center gap-3.5 border-b border-zinc-800 pb-4">
+              <span className="text-3xl">💡</span>
+              <div>
+                <h2 className="text-2xl font-black uppercase tracking-wider text-neutral-100">Manual de Jogabilidade</h2>
+                <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mt-0.5">Aprenda a Sobreviver em A Lenda</p>
+              </div>
+            </div>
+            
+            <div className="flex flex-col gap-5 overflow-y-auto max-h-[55vh] pr-2 scrollbar-thin">
+              {/* Tab 1: Como Jogar */}
+              <div className="border border-zinc-900 bg-zinc-950/40 p-4 rounded-lg">
+                <h3 className="text-xs font-black text-red-500 uppercase tracking-wider mb-2">🎮 Controles & Movimentação</h3>
+                <p className="text-zinc-300 text-xs leading-relaxed font-semibold">
+                  Use as teclas <span className="font-mono bg-zinc-900 border border-zinc-850 px-1.5 py-0.5 rounded text-white text-[11px]">W, A, S, D</span> para se mover pelo deserto. Mire usando o cursor do mouse e atire com o <span className="text-neutral-100 font-bold">Botão Esquerdo</span>. Pressione <span className="font-mono bg-zinc-900 border border-zinc-850 px-1.5 py-0.5 rounded text-white text-[11px]">R</span> para recarregar. Use <span className="font-mono bg-zinc-900 border border-zinc-850 px-1.5 py-0.5 rounded text-white text-[11px]">Shift</span> ou <span className="font-mono bg-zinc-900 border border-zinc-850 px-1.5 py-0.5 rounded text-white text-[11px]">Espaço</span> para realizar uma rolagem tática de esquiva.
+                </p>
+              </div>
+
+              {/* Tab 2: A Kombi & Loja de Armas */}
+              <div className="border border-zinc-900 bg-zinc-950/40 p-4 rounded-lg">
+                <h3 className="text-xs font-black text-amber-500 uppercase tracking-wider mb-2">🚐 Loja de Armas (A Kombi)</h3>
+                <p className="text-zinc-300 text-xs leading-relaxed font-semibold">
+                  No início de cada partida, a Kombi te deixa no local de combate. Ela permanece estacionada no centro do mapa e serve como sua loja. Aproxime-se dela e pressione <span className="font-mono bg-zinc-900 border border-zinc-850 px-1.5 py-0.5 rounded text-white text-[11px]">E</span> para abrir o catálogo. Compre Pistolas Pesadas, Uzis, Doze, Rifles de Assalto ou a Bazuca de alto dano, além de reabastecer sua munição.
+                </p>
+              </div>
+
+              {/* Tab 3: Aprimoramentos */}
+              <div className="border border-zinc-900 bg-zinc-950/40 p-4 rounded-lg">
+                <h3 className="text-xs font-black text-sky-500 uppercase tracking-wider mb-2">🧬 Aprimoramentos de Personagem</h3>
+                <p className="text-zinc-300 text-xs leading-relaxed font-semibold">
+                  Na aba 'PERSONAGEM' do menu inicial, acesse a sub-aba de 'Aprimoramentos' para gastar seus créditos ganhos nas ondas de zumbis. Compre aprimoramentos permanentes de Vida Máxima, Capacidade de Pente, Dano Extra das Armas, Velocidade de Corrida e alcance do Radar para aumentar a força de todos os seus agentes de forma definitiva.
+                </p>
+              </div>
+
+              {/* Tab 4: Ondas & Perigos */}
+              <div className="border border-zinc-900 bg-zinc-950/40 p-4 rounded-lg">
+                <h3 className="text-xs font-black text-emerald-500 uppercase tracking-wider mb-2">💀 Ondas Progressivas & Gás Tóxico</h3>
+                <p className="text-zinc-300 text-xs leading-relaxed font-semibold">
+                  A cada onda completada, a horda de zumbis fica mais veloz, agressiva e resistente. Fique atento às ondas de chefões, onde surgirão zumbis gigantes (Juggernauts). Evite se afastar muito em direção às bordas do mapa: uma névoa ácida venenosa verde cerca o mapa e causará dano contínuo caso você saia do perímetro central seguro.
+                </p>
+              </div>
+            </div>
+            
+            <button
+              onClick={() => {
+                setGameplayTipsOpen(false);
+                SoundManager.playSound("click", 0.7);
+              }}
+              className="menu-btn-concrete w-full py-3.5 px-5 rounded-lg text-center font-black uppercase tracking-wider text-xs cursor-pointer mt-2"
+            >
+              Entendido, Voltar ao Menu
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Cinematic Typewriter Transition Overlay */}
+      {isTypingActive && (
+        <div 
+          className="fixed inset-0 z-[120] bg-[#020202] flex flex-col items-center justify-center pointer-events-auto transition-opacity duration-[1500ms] ease-in-out"
+          style={{ opacity: typingScreenFade ? 0 : 1 }}
+        >
+          <div className="flex flex-col items-center justify-center gap-4 text-center max-w-[85vw]">
+            <div 
+              className="flex flex-wrap items-center justify-center font-mono text-xl md:text-3xl font-black text-red-550 tracking-[0.2em] transition-opacity duration-700 ease-in-out drop-shadow-[0_0_15px_rgba(239,68,68,0.6)]"
+              style={{ opacity: typingTextFade ? 0 : 1, color: "#ef4444" }}
+            >
+              <span>{typingText}</span>
+              {!typingTextFade && (
+                <span className="w-2.5 h-6 md:h-8 bg-red-500 ml-1.5 animate-pulse" />
+              )}
+            </div>
+            
+            {/* Dramatic subtext that fades in slowly */}
+            {typingText.length >= 10 && (
+              <span 
+                className="text-[9px] md:text-[10px] font-mono tracking-[0.35em] text-zinc-650 uppercase animate-in fade-in duration-1000 mt-2"
+                style={{ opacity: typingTextFade ? 0 : 0.6, color: "#71717a" }}
+              >
+                O SUBMUNDO AGUARDA SEU RETORNO...
+              </span>
+            )}
+          </div>
+
+          {/* Skip button */}
+          {!typingScreenFade && (
+            <button
+              onClick={skipTypewriter}
+              className="absolute bottom-10 right-10 text-zinc-650 hover:text-white font-mono text-[9.5px] uppercase tracking-widest border border-zinc-800 hover:border-zinc-500 px-4 py-2 rounded-full bg-black/40 hover:bg-black/80 transition-all duration-300 cursor-pointer hover:scale-102"
+            >
+              PULAR ➔
+            </button>
+          )}
+        </div>
+      )}
+
+      {gameState === "PLAYING" && (
       <div className="absolute inset-0 z-20 pointer-events-none p-4 sm:p-6 md:p-8 flex flex-col justify-between">
             {/* Cinematic Van Focus Overlay */}
         <div 
@@ -7637,107 +11171,129 @@ export default function App() {
             WebkitMaskImage: "radial-gradient(circle at center, transparent 20%, black 80%)"
           }}
         />
-        {/* Wave Mode HUD */}
-        {waveRef.current.mode && (
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 pointer-events-auto flex flex-col items-center gap-2">
-            {waveActive ? (
-              <div className="bg-black/90 backdrop-blur-md border border-zinc-800 rounded-lg px-6 py-2 flex items-center gap-6 shadow-[0_0_20px_rgba(0,0,0,0.5)]">
-                <div className="flex flex-col items-center">
-                  <span className="text-[8px] font-mono tracking-[0.2em] text-zinc-500 font-bold">ONDA</span>
-                  <span className="text-xl font-black text-amber-500 font-mono">{wave}</span>
-                </div>
-                <div className="w-[1px] h-6 bg-zinc-800" />
-                <div className="flex flex-col items-center">
-                  <span className="text-[8px] font-mono tracking-[0.2em] text-zinc-500 font-bold">ZUMBIS RESTANTES</span>
-                  <span className="text-xl font-black text-red-500 font-mono">{waveRemainingZombies}</span>
-                </div>
-              </div>
-            ) : null}
-          </div>
-        )}
+
 
         {/* Wave Stats & Cleaning Menu */}
         {waveRef.current.mode && waveIntervalTime > 0 && (
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-auto flex flex-col items-center gap-4 bg-zinc-950/95 border-2 border-amber-600/30 p-6 rounded-2xl shadow-[0_0_40px_rgba(0,0,0,0.8)] text-center min-w-[360px] text-white font-mono transition-all duration-300 animate-[fadeIn_0.3s_ease-out]">
-            <span className="text-emerald-400 font-extrabold tracking-[0.25em] text-[11px] uppercase animate-pulse">ONDA CONCLUÍDA</span>
-            <span className="text-3xl font-black text-amber-500 -mt-2">ONDA {waveRef.current.current}</span>
-            
-            <div className="w-full h-[1px] bg-zinc-800 my-1" />
-            
-            <div className="grid grid-cols-2 gap-x-6 gap-y-2.5 w-full text-[10px] text-zinc-400">
-              <div className="flex justify-between">
-                <span>TEMPO:</span>
-                <span className="text-white font-bold">{waveRef.current.lastWaveTime.toFixed(1)}s</span>
-              </div>
-              <div className="flex justify-between">
-                <span>DANO TOTAL:</span>
-                <span className="text-white font-bold">{waveRef.current.lastWaveDamage} HP</span>
-              </div>
-              <div className="flex justify-between">
-                <span>DISPAROS:</span>
-                <span className="text-white font-bold">{waveRef.current.lastWaveShots}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>PRECISÃO:</span>
-                <span className="text-white font-bold">
-                  {waveRef.current.lastWaveShots > 0 
-                    ? Math.round((waveRef.current.lastWaveHits / waveRef.current.lastWaveShots) * 100) 
-                    : 0}%
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>ACERTOS CABEÇA:</span>
-                <span className="text-white font-bold">{waveRef.current.lastWaveHeadshots}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>CRÉDITOS:</span>
-                <span className="text-emerald-400 font-bold">+${waveRef.current.lastWaveCreditsEarned}</span>
-              </div>
+          isWavePanelMinimized ? (
+            /* Minimized Sleek Pill Notification */
+            <div 
+              onClick={() => setIsWavePanelMinimized(false)}
+              className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-zinc-950/95 border border-amber-500/35 p-2 px-4 rounded-xl flex items-center gap-3 cursor-pointer shadow-[0_8px_30px_rgba(0,0,0,0.8)] hover:border-amber-500/80 hover:shadow-[0_0_15px_rgba(245,158,11,0.2)] transition-all text-white font-mono text-[9px] animate-[slideIn_0.3s_ease-out] select-none pointer-events-auto whitespace-nowrap"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+              <span className="font-black tracking-wider uppercase text-zinc-400">ONDA {waveRef.current.current} CONCLUÍDA</span>
+              <span className="text-amber-500 font-extrabold">PRÓXIMA EM: {waveIntervalTime}s</span>
+              <span className="text-[7.5px] text-zinc-550 underline font-bold uppercase tracking-widest pl-2 border-l border-zinc-900 hover:text-zinc-300">DETALHES</span>
             </div>
-            
-            <div className="w-full h-[1px] bg-zinc-800 my-1" />
-            
-            <div className="flex flex-col items-center w-full">
-              <span className="text-[8px] text-zinc-500 uppercase tracking-widest">Próxima Onda em</span>
-              <span className="text-2xl font-black text-amber-500 mt-0.5">{waveIntervalTime}s</span>
-            </div>
-            
-            <div className="flex flex-col gap-2 w-full mt-2">
-              <button
-                onClick={skipInterval}
-                className="w-full py-2 bg-amber-600 hover:bg-amber-500 text-black font-bold text-[9px] tracking-widest uppercase rounded transition-all cursor-pointer shadow-md"
-              >
-                PULAR INTERVALO
-              </button>
-              <button
-                onClick={() => {
-                  if ((window as any).clearDecalsAndShells) {
-                    (window as any).clearDecalsAndShells();
-                    const btn = document.getElementById("btn-clear-scene");
-                    if (btn) {
-                      btn.innerText = "CENÁRIO LIMPO!";
-                      btn.style.color = "#10b981";
-                      setTimeout(() => { 
-                        btn.innerText = "LIMPAR SANGUE E CÁPSULAS"; 
-                        btn.style.color = "#fecaca";
-                      }, 1500);
+          ) : (
+            /* Expanded Sleek Central Panel */
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-auto flex flex-col items-center justify-center gap-4 bg-zinc-950/80 backdrop-blur-md border border-zinc-800/60 p-8 rounded-xl shadow-[0_0_80px_rgba(0,0,0,0.95)] text-center w-[400px] text-white font-mono transition-all duration-700 animate-[fadeIn_0.5s_ease-out] select-none">
+              <div className="w-full flex justify-between items-start absolute top-4 px-6">
+                <span className="text-emerald-500 font-black tracking-[0.4em] text-[11px] uppercase animate-pulse">ONDA CONCLUÍDA</span>
+                <button 
+                  onClick={() => setIsWavePanelMinimized(true)}
+                  className="text-[7.5px] text-zinc-500 hover:text-white border border-zinc-900 hover:border-zinc-700 bg-black/50 px-2 py-0.5 rounded cursor-pointer transition-all"
+                >
+                  MINIMIZAR ⇣
+                </button>
+              </div>
+              <span className="text-5xl font-black text-amber-500 tracking-tighter drop-shadow-[0_0_15px_rgba(245,158,11,0.5)] mt-4">ONDA {waveRef.current.current}</span>
+              
+              <div className="flex flex-col gap-2 w-full mt-4 bg-black/40 border border-zinc-900 rounded-lg p-4">
+                <div className="flex justify-between items-center py-0.5">
+                  <span>TEMPO ONDA:</span>
+                  <span className="text-zinc-300 font-bold">{waveRef.current.lastWaveTime.toFixed(1)}s</span>
+                </div>
+                <div className="flex justify-between items-center py-0.5">
+                  <span>DANO CAUSADO:</span>
+                  <span className="text-zinc-300 font-bold">{waveRef.current.lastWaveDamage} HP</span>
+                </div>
+                <div className="flex justify-between items-center py-0.5">
+                  <span>DISPAROS EFETUADOS:</span>
+                  <span className="text-zinc-300 font-bold">{waveRef.current.lastWaveShots}</span>
+                </div>
+                <div className="flex justify-between items-center py-0.5">
+                  <span>PRECISÃO TÁTICA:</span>
+                  <span className="text-zinc-300 font-bold">
+                    {waveRef.current.lastWaveShots > 0 
+                      ? Math.round((waveRef.current.lastWaveHits / waveRef.current.lastWaveShots) * 100) 
+                      : 0}%
+                  </span>
+                </div>
+                <div className="flex justify-between items-center py-0.5">
+                  <span>ACERTOS NA CABEÇA:</span>
+                  <span className="text-zinc-300 font-bold">{waveRef.current.lastWaveHeadshots}</span>
+                </div>
+                <div className="flex justify-between items-center py-0.5">
+                  <span>CRÉDITOS RECEBIDOS:</span>
+                  <span className="text-emerald-450 font-bold">+${waveRef.current.lastWaveCreditsEarned}</span>
+                </div>
+              </div>
+              
+              <div className="w-full h-[1px] bg-zinc-900" />
+              
+              <div className="flex justify-between items-center w-full bg-zinc-950 border border-zinc-800 rounded-lg p-3 shadow-inner mt-2">
+                <span className="text-[8.5px] text-zinc-500 uppercase tracking-widest font-black">Próxima Onda</span>
+                <span className="text-xl font-black text-amber-500">{waveIntervalTime}s</span>
+              </div>
+              
+              <div className="flex flex-col gap-2 w-full mt-1">
+                <button
+                  onClick={skipInterval}
+                  className="w-full py-2 bg-amber-600 hover:bg-amber-500 text-black font-black text-[9px] tracking-widest uppercase rounded-xl transition-all cursor-pointer shadow-lg shadow-amber-950/20 active:scale-95 flex items-center justify-center gap-1.5"
+                >
+                  PULAR INTERVALO ➔
+                </button>
+                <button
+                  onClick={() => {
+                    if ((window as any).clearDecalsAndShells) {
+                      (window as any).clearDecalsAndShells();
+                      const btn = document.getElementById("btn-clear-scene");
+                      if (btn) {
+                        btn.innerText = "CENÁRIO LIMPO!";
+                        btn.style.color = "#10b981";
+                        setTimeout(() => { 
+                          btn.innerText = "LIMPAR SANGUE E CÁPSULAS"; 
+                          btn.style.color = "#fecaca";
+                        }, 1500);
+                      }
                     }
-                  }
-                }}
-                id="btn-clear-scene"
-                className="w-full py-2 bg-red-950/40 hover:bg-red-900 border border-red-700/40 text-red-200 font-bold tracking-widest uppercase rounded transition-all cursor-pointer text-center text-[8px]"
-              >
-                LIMPAR SANGUE E CÁPSULAS
-              </button>
+                  }}
+                  id="btn-clear-scene"
+                  className="w-full py-2 bg-red-950/20 hover:bg-red-900/30 border border-red-750/15 text-red-350 font-bold tracking-widest uppercase rounded-xl transition-all cursor-pointer text-center text-[8px]"
+                >
+                  LIMPAR SANGUE E CÁPSULAS
+                </button>
+              </div>
             </div>
-          </div>
+          )
         )}
 
         {/* Top Header Tactical Element */}
-        <div className="flex justify-between items-start opacity-90 w-full">
+        <div className={`flex justify-between items-start w-full transition-all duration-700 ${cutscene.active ? 'opacity-0 pointer-events-none translate-y-[-20px]' : 'opacity-90'}`}>
           <div className="flex gap-2 md:gap-3 pointer-events-none items-stretch">
+            {/* Eye Icon (Hide HUD toggle) */}
+            <button
+              onClick={() => setIsHudHidden(!isHudHidden)}
+              className="pointer-events-auto flex items-center justify-center bg-black/85 hover:bg-black border border-white/10 text-white rounded-br-xl p-2.5 shadow-lg hover:scale-105 active:scale-95 transition-all duration-300 relative group h-10 md:h-12 w-10 md:w-12 shrink-0 self-start z-[55] cursor-pointer"
+              style={{ borderColor: uiColor, boxShadow: `0 0 15px ${uiColor}20` }}
+              title={isHudHidden ? "Mostrar Interface" : "Ocultar Interface"}
+            >
+              {isHudHidden ? (
+                <svg className="w-5 h-5 opacity-60 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5 opacity-70 group-hover:opacity-100 transition-opacity" style={{ color: uiColor }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              )}
+            </button>
+
             {/* Left Stack for Vitals + Ammo HUD */}
-            <div className="flex flex-col gap-1.5 items-start">
+            <div id="ui-hud-left-stack" className={`flex flex-col gap-1.5 items-start transition-all duration-500 ${isHudHidden ? 'opacity-0 pointer-events-none translate-x-[-20px] scale-95' : 'opacity-100 scale-100'}`}>
               <div className="flex gap-2 md:gap-3 items-stretch">
                 {/* Player Info Top Left */}
                 <div
@@ -7783,7 +11339,7 @@ export default function App() {
                       </span>
                     </div>
 
-                    <div className="h-1.5 md:h-2 w-full bg-black/80 skew-x-[-15deg] overflow-hidden p-[1px] mb-1 shadow-inner relative border" style={{ borderColor: `${uiColor}40` }}>
+                    <div id="ui-player-hp-bar" className="h-1.5 md:h-2 w-[140px] bg-black/80 skew-x-[-15deg] overflow-hidden p-[1px] mb-1 shadow-inner relative border" style={{ borderColor: `${uiColor}40`, transition: "width 0.3s ease-out" }}>
                       <div className="absolute inset-0" style={{ backgroundColor: `${uiColor}30` }} />
                       <div
                         id="ui-player-hp-fill"
@@ -7831,7 +11387,7 @@ export default function App() {
                       <span className="text-[8px] text-white/40 tracking-[0.3em] uppercase">
                         STMN
                       </span>
-                      <div className="h-1 md:h-1.5 flex-1 bg-black/80 border border-white/10 skew-x-[-15deg] overflow-hidden">
+                      <div id="ui-player-stamina-bar" className="h-1 md:h-1.5 w-[100px] bg-black/80 border border-white/10 skew-x-[-15deg] overflow-hidden" style={{ transition: "width 0.3s ease-out" }}>
                          <div
                             id="ui-player-stamina-fill"
                             className="h-full transition-all duration-100"
@@ -7860,69 +11416,62 @@ export default function App() {
               </div>
 
               {/* Active Weapon & Ammo Panel (Moved under vitals) */}
-              <div
-                id="ui-ammo-panel"
-                className="flex items-center gap-3 pointer-events-none select-none z-45 transition-opacity duration-200 bg-black/80 backdrop-blur-md p-1.5 px-3 border border-white/10 border-l-[3px] rounded-r-xl shadow-lg mt-1"
-                style={{ borderColor: uiColor }}
-              >
-                <div className="relative w-20 h-8 flex items-center justify-center">
-                  {[
-                    { id: "pistola" },
-                    { id: "gun" },
-                    { id: "uzi" },
-                    { id: "doze" },
-                    { id: "basuca" },
-                    { id: "rifle" },
-                    { id: "magnum" }
-                  ].map((w) => {
-                    const themeColor = WEAPONS_DETAILS[w.id]?.color || "#fff";
-                    return (
-                      <div
-                        key={w.id}
-                        id={`ui-ammo-weapon-${w.id}`}
-                        style={{ display: "none" }}
-                        className="transition-all duration-75 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
-                      >
-                        <RenderWeaponIcon type={w.id} color={themeColor} isHudLarge={true} />
-                      </div>
-                    );
-                  })}
+              <div className="flex flex-col gap-1 items-start mt-1 z-45">
+                <div
+                  id="ui-ammo-panel"
+                  className="flex items-center gap-3 pointer-events-none select-none transition-opacity duration-200 bg-black/80 backdrop-blur-md p-1.5 px-3 border border-white/10 border-l-[3px] rounded-r-xl shadow-lg"
+                  style={{ borderColor: uiColor }}
+                >
+                  <div className="relative w-20 h-8 flex items-center justify-center">
+                    {[
+                      { id: "pistola" },
+                      { id: "gun" },
+                      { id: "uzi" },
+                      { id: "doze" },
+                      { id: "basuca" },
+                      { id: "rifle" },
+                      { id: "magnum" }
+                    ].map((w) => {
+                      const themeColor = WEAPONS_DETAILS[w.id]?.color || "#fff";
+                      return (
+                        <div
+                          key={w.id}
+                          id={`ui-ammo-weapon-${w.id}`}
+                          style={{ display: "none" }}
+                          className="transition-all duration-75 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
+                        >
+                          <RenderWeaponIcon type={w.id} color={themeColor} isHudLarge={true} />
+                        </div>
+                      );
+                    })}
 
-                  {/* Reloading Overlay with Progress Bar */}
-                  <div 
-                    id="ui-ammo-reload-overlay"
-                    style={{ opacity: 0 }}
-                    className="absolute inset-0 flex flex-col items-center justify-center bg-black/85 backdrop-blur-[1px] rounded border border-amber-500/20 px-2 transition-opacity duration-200"
-                  >
-                    <span className="text-[6.5px] font-mono font-bold text-amber-500 tracking-[0.1em] uppercase mb-0.5">RECARREGANDO</span>
-                    <div className="w-full h-0.5 bg-zinc-900 border border-zinc-800 rounded-full overflow-hidden">
-                      <div 
-                        id="ui-ammo-reload-fill"
-                        className="h-full bg-amber-500"
-                        style={{ width: "0%" }}
-                      />
+                    {/* Reloading Overlay with Progress Bar */}
+                    <div 
+                      id="ui-ammo-reload-overlay"
+                      style={{ opacity: 0 }}
+                      className="absolute inset-0 flex flex-col items-center justify-center bg-black/85 backdrop-blur-[1px] rounded border border-amber-500/20 px-2 transition-opacity duration-200"
+                    >
+                      <span className="text-[6.5px] font-mono font-bold text-amber-500 tracking-[0.1em] uppercase mb-0.5">RECARREGANDO</span>
+                      <div className="w-full h-0.5 bg-zinc-900 border border-zinc-800 rounded-full overflow-hidden">
+                        <div 
+                          id="ui-ammo-reload-fill"
+                          className="h-full bg-amber-500"
+                          style={{ width: "0%" }}
+                        />
+                      </div>
                     </div>
+                  </div>
+
+                  <div className="w-[1px] h-6 bg-white/10" />
+
+                  <div className="text-2xl font-black font-mono tracking-tighter flex items-baseline text-white">
+                    <span id="ui-ammo-count" className="text-white">200</span>
+                    <span className="text-sm text-white/30 font-light mx-0.5 transform rotate-[15deg]">/</span>
+                    <span id="ui-ammo-max" className="text-xs text-white/40 font-bold">200</span>
                   </div>
                 </div>
 
-                <div className="w-[1px] h-6 bg-white/10" />
-
-                <div className="text-2xl font-black font-mono tracking-tighter flex items-baseline text-white">
-                  <span id="ui-ammo-count" className="text-white">200</span>
-                  <span className="text-sm text-white/30 font-light mx-0.5 transform rotate-[15deg]">/</span>
-                  <span id="ui-ammo-max" className="text-xs text-white/40 font-bold">200</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col justify-center gap-1.5 pl-1 md:pl-2 pointer-events-auto">
-              <div className="flex gap-1.5">
-                <button
-                  id="btn-toggle-ai"
-                  className="px-2.5 py-1.5 border border-emerald-500/50 text-emerald-400 text-[9px] md:text-[10px] font-bold tracking-widest bg-emerald-900/20 hover:bg-emerald-500/20 rounded backdrop-blur-md border-l-[3px]"
-                >
-                  AI: PATROL
-                </button>
+                {/* Backpack button relocated right beneath the Active Weapon/Ammo Panel */}
                 <motion.button
                   id="btn-toggle-backpack"
                   onClick={() => {
@@ -7937,7 +11486,7 @@ export default function App() {
                     backgroundColor: ["rgba(0,0,0,0.4)", "rgba(251,191,36,0.25)", "rgba(0,0,0,0.4)"]
                   } : {}}
                   transition={{ duration: 0.6, ease: "easeInOut" }}
-                  className={`px-2.5 py-1.5 border text-[9px] md:text-[10px] font-bold tracking-widest rounded backdrop-blur-md border-l-[3px] transition-colors flex items-center justify-center gap-1.5 relative min-w-[70px] md:min-w-[85px] ${
+                  className={`px-3 py-1.5 border text-[9px] md:text-[10px] font-bold tracking-widest rounded-r-lg backdrop-blur-md border-l-[3px] transition-colors flex items-center justify-center gap-1.5 relative pointer-events-auto mt-0.5 shadow-md ${
                     isInventoryOpen
                       ? "border-amber-500 text-amber-400 bg-amber-900/40"
                       : "border-white/20 text-white/60 bg-black/40 hover:bg-white/10 hover:text-white"
@@ -7951,7 +11500,11 @@ export default function App() {
                     transition={{ duration: 0.6 }}
                     className="flex items-center shrink-0"
                   >
-                    <Backpack className="w-3 h-3" />
+                    {backpackImgUrl ? (
+                      <img src={backpackImgUrl} alt="mochila" className="w-5 h-5 object-contain filter drop-shadow-[0_0_2px_#10b981]" />
+                    ) : (
+                      <Backpack className="w-3.5 h-3.5" />
+                    )}
                   </motion.span>
                   <span>MOCHILA</span>
 
@@ -7967,51 +11520,17 @@ export default function App() {
                     )}
                   </AnimatePresence>
                 </motion.button>
-
-                <button
-                  onClick={() => {
-                    if (waveRef.current.mode && vanState !== "PARKED") {
-                      alert("A Kombi da Loja não está no mapa no momento! Conclua ondas para ela aparecer.");
-                      return;
-                    }
-                    SoundManager.playSound("horn", 0.6);
-                    setIsShopOpen(!isShopOpen);
-                    setIsInventoryOpen(false);
-                    setIsOutfitsOpen(false);
-                  }}
-                  className={`px-2.5 py-1.5 border text-[9px] md:text-[10px] font-bold tracking-widest rounded backdrop-blur-md border-l-[3px] transition-colors flex items-center justify-center min-w-[60px] md:min-w-[75px] ${
-                    isShopOpen
-                      ? "border-red-500 text-red-400 bg-red-900/40"
-                      : "border-white/20 text-white/60 bg-black/40 hover:bg-white/10 hover:text-white"
-                  }`}
-                >
-                  LOJA
-                </button>
-
-                <button
-                  onClick={() => {
-                    setIsOutfitsOpen(!isOutfitsOpen);
-                    setIsShopOpen(false);
-                    setIsInventoryOpen(false);
-                  }}
-                  className={`px-2.5 py-1.5 border text-[9px] md:text-[10px] font-bold tracking-widest rounded backdrop-blur-md border-l-[3px] transition-colors flex items-center justify-center min-w-[60px] md:min-w-[75px] ${
-                    isOutfitsOpen
-                      ? "border-blue-500 text-blue-400 bg-blue-900/40"
-                      : "border-white/20 text-white/60 bg-black/40 hover:bg-white/10 hover:text-white"
-                  }`}
-                >
-                  TRAJES
-                </button>
               </div>
             </div>
+
+            {/* Removed HUD controls to prevent clutter, now inside backpack */}
           </div>
           <div /> {/* Radar is drawn by canvas on the right */}
         </div>
       </div>
-      }
+      )}
 
-      {/* Weapon Shop Overlay */}
-        {isShopOpen && (
+      {isShopOpen && (
           <div className="absolute inset-0 z-[60] pointer-events-auto flex items-center justify-center bg-black/65 backdrop-blur-md">
             {inspectingItem && (
               <div className="absolute inset-0 z-[60] flex flex-col items-center justify-center bg-black/40 backdrop-blur-md rounded-xl p-8" onClick={() => setInspectingItem(null)}>
@@ -8036,241 +11555,245 @@ export default function App() {
                 </div>
               </div>
             )}
-            <div className="bg-zinc-950/98 backdrop-blur-md border border-zinc-900 rounded-xl p-6 w-[800px] max-w-[90vw] max-h-[90vh] shadow-2xl shadow-black relative flex flex-col">
-              {/* Header */}
-              <div className="flex justify-between items-center mb-3 border-b border-zinc-900 pb-2.5">
+<div className="bg-zinc-950/98 border border-zinc-900 rounded-3xl p-6 w-[860px] max-w-[95vw] h-[585px] max-h-[90vh] shadow-[0_25px_60px_rgba(0,0,0,0.95)] relative flex flex-col overflow-hidden">
+              {/* Header with pill tabs */}
+              <div className="flex justify-between items-center mb-4 pb-3 border-b border-zinc-900 shrink-0">
                 <div className="flex items-center gap-6">
                   <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 bg-zinc-600 rounded-full" />
-                    <span className="text-[10px] font-mono tracking-[0.2em] text-zinc-500 font-bold">
-                      REDE DE SUPRIMENTOS
+                    <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
+                    <span className="text-[10px] font-mono tracking-[0.22em] text-zinc-400 font-black uppercase">
+                      {gameState === "MENU" ? "LOJA DE SKINS EXCLUSIVAS" : "REDE DE SUPRIMENTOS"}
                     </span>
                   </div>
-                  <div className="flex gap-2 border-l border-zinc-800 pl-4">
-                    <button
-                      onClick={() => setShopTab("weapons")}
-                      className={`px-3 py-1 text-[9px] font-mono font-bold tracking-wider rounded transition-all cursor-pointer ${
-                        shopTab === "weapons"
-                          ? "bg-amber-600/20 border border-amber-500/50 text-amber-400"
-                          : "border border-transparent text-zinc-500 hover:text-zinc-300"
-                      }`}
-                    >
-                      ARMAS
-                    </button>
-                    <button
-                      onClick={() => setShopTab("upgrades")}
-                      className={`px-3 py-1 text-[9px] font-mono font-bold tracking-wider rounded transition-all cursor-pointer ${
-                        shopTab === "upgrades"
-                          ? "bg-amber-600/20 border border-amber-500/50 text-amber-400"
-                          : "border border-transparent text-zinc-500 hover:text-zinc-300"
-                      }`}
-                    >
-                      MELHORIAS
-                    </button>
-                    <button
-                      onClick={() => setShopTab("skins")}
-                      className={`px-3 py-1 text-[9px] font-mono font-bold tracking-wider rounded transition-all cursor-pointer ${
-                        shopTab === "skins"
-                          ? "bg-amber-600/20 border border-amber-500/50 text-amber-400"
-                          : "border border-transparent text-zinc-500 hover:text-zinc-300"
-                      }`}
-                    >
-                      SKINS
-                    </button>
+                  <div className="flex bg-zinc-900/40 border border-zinc-800/80 rounded-lg p-0.5 gap-1.5">
+                    {gameState !== "MENU" ? (
+                      <>
+                        <button
+                          onClick={() => setShopTab("weapons")}
+                          className={`px-5 py-1 text-[9px] font-mono font-bold tracking-widest rounded transition-all cursor-pointer ${
+                            shopTab === "weapons"
+                              ? "bg-amber-600/10 border border-amber-500/40 text-amber-400 shadow-inner"
+                              : "border border-transparent text-zinc-500 hover:text-zinc-350"
+                          }`}
+                        >
+                          ARMAS
+                        </button>
+                        <button
+                          onClick={() => setShopTab("upgrades")}
+                          className={`px-5 py-1 text-[9px] font-mono font-bold tracking-widest rounded transition-all cursor-pointer ${
+                            shopTab === "upgrades"
+                              ? "bg-amber-600/10 border border-amber-500/40 text-amber-400 shadow-inner"
+                              : "border border-transparent text-zinc-500 hover:text-zinc-350"
+                          }`}
+                        >
+                          MELHORIAS ARMAS
+                        </button>
+                        <button
+                          onClick={() => setShopTab("character")}
+                          className={`px-5 py-1 text-[9px] font-mono font-bold tracking-widest rounded transition-all cursor-pointer ${
+                            shopTab === "character"
+                              ? "bg-amber-600/10 border border-amber-500/40 text-amber-400 shadow-inner"
+                              : "border border-transparent text-zinc-500 hover:text-zinc-350"
+                          }`}
+                        >
+                          MELHORIAS PERSONAGEM
+                        </button>
+                        <button
+                          onClick={() => setShopTab("skins")}
+                          className={`px-5 py-1 text-[9px] font-mono font-bold tracking-widest rounded transition-all cursor-pointer ${
+                            shopTab === "skins"
+                              ? "bg-amber-600/10 border border-amber-500/40 text-amber-400 shadow-inner"
+                              : "border border-transparent text-zinc-500 hover:text-zinc-350"
+                          }`}
+                        >
+                          SKINS
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        className="px-5 py-1 text-[9px] font-mono font-bold tracking-widest rounded bg-amber-600/10 border border-amber-500/40 text-amber-400 shadow-inner"
+                      >
+                        SKINS DE ARMAS
+                      </button>
+                    )}
                   </div>
                 </div>
                 <button
                   onClick={() => setIsShopOpen(false)}
-                  className="text-white/20 hover:text-white transition-colors p-1"
+                  className="text-zinc-500 hover:text-white transition-colors p-1"
                 >
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                  </svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
               </div>
 
-              {/* Credits indicator */}
-              <div className="bg-zinc-900/50 border border-zinc-800/60 rounded-lg p-2 px-3.5 mb-3 flex justify-between items-center">
-                <span className="text-[9px] font-mono tracking-wider text-zinc-500">
+              {/* Credits banner */}
+              <div className="bg-zinc-950 border border-zinc-900 rounded-xl p-3 px-5 mb-4 flex justify-between items-center relative overflow-hidden shadow-inner shrink-0">
+                <span className="text-[10px] font-mono tracking-[0.18em] text-zinc-500 font-bold">
                   CRÉDITOS ARMAMENTO
                 </span>
-                <span className="text-base font-mono font-bold text-amber-500">
-                  {credits} Cr
+                <span className="text-lg font-mono font-black text-amber-500 drop-shadow-[0_0_10px_rgba(245,158,11,0.22)]">
+                  {credits.toLocaleString()} Cr
                 </span>
               </div>
 
               {/* Split Main Grid */}
-              <div className="grid grid-cols-12 gap-3">
+              <div className="grid grid-cols-12 gap-4 flex-1 min-h-0">
                 {shopTab === "weapons" && (
                   <>
-                    <div className="col-span-5 flex flex-col gap-1.5 pr-0 h-[400px] overflow-y-auto custom-scrollbar">
+                    {/* Weapons list column */}
+                    <div className="col-span-5 flex flex-col gap-2 pr-1 h-full overflow-y-auto custom-scrollbar">
                       {Object.values(WEAPONS_DETAILS).map((weapon) => {
                         const isPaid = purchasedWeaponIds.includes(weapon.id);
                         const isSelected = selectedShopWeaponId === weapon.id;
+                        
                         return (
                           <button
                             key={weapon.id}
                             onClick={() => {
                               setSelectedShopWeaponId(weapon.id);
                               setSelectedShopSkinId(null);
+                              SoundManager.playSound("click", 0.9);
                             }}
-                            className={`w-full p-2 rounded-lg border text-left flex flex-col relative transition-all ${
+                            onMouseEnter={() => SoundManager.playSound("click", 0.12)}
+                            className={`w-full p-3.5 rounded-xl border text-left flex items-center justify-between relative transition-all duration-200 cursor-pointer overflow-hidden hover:scale-[1.015] active:scale-[0.985] ${
                               isSelected
-                                ? "border-zinc-700 bg-zinc-900/60 shadow-inner"
-                                : "border-zinc-900 bg-black/45 hover:bg-zinc-900/20"
+                                ? "border-amber-600/60 bg-zinc-900/40"
+                                : "border-zinc-900 bg-black/45 hover:bg-zinc-900/10 hover:border-zinc-800"
                             }`}
                           >
-                            <div className="flex justify-between items-start w-full gap-1">
+                            {isSelected && (
+                              <div className="absolute left-0 top-0 bottom-0 w-1 bg-amber-500" />
+                            )}
+                            <div className="flex flex-col gap-1 z-10">
                               <span
-                                className={`text-[9.5px] font-bold tracking-wide uppercase truncate ${isSelected ? "text-amber-500" : "text-zinc-300"}`}
+                                className={`text-[10.5px] font-black tracking-widest uppercase truncate ${isSelected ? "text-amber-500" : "text-zinc-300"}`}
                               >
-                                {weapon.name.split(" ")[0]}{" "}
-                                {weapon.name.split(" ")[1] || ""}
+                                {weapon.name}
                               </span>
+                              <div className="flex items-center gap-1.5 text-[8.5px] font-mono mt-0.5">
+                                <span className="text-zinc-600">CUSTO</span>
+                                <span className="text-zinc-400 font-bold">
+                                  {weapon.cost} Cr
+                                </span>
+                              </div>
+                            </div>
+                            
+                            {/* Weapon silhouette / icon on the right side of button */}
+                            <div className="flex items-center gap-3">
                               {isPaid && (
-                                <span className="text-[6.5px] font-mono font-bold text-emerald-550 border border-emerald-500/10 bg-emerald-950/20 px-1 rounded shrink-0">
-                                  OK
+                                <span className="text-[7px] font-mono font-bold text-zinc-350 border border-zinc-800 bg-zinc-900/40 px-1.5 py-0.5 rounded shrink-0">
+                                  ✓ OK
                                 </span>
                               )}
-                            </div>
-                            <div className="flex justify-between items-center mt-0.5 w-full text-[8.5px] font-mono">
-                              <span className="text-zinc-600">CUSTO</span>
-                              <span className="text-zinc-400 font-bold">
-                                {weapon.cost} Cr
-                              </span>
+                              <div className="h-8 w-14 flex items-center justify-center opacity-30 group-hover:opacity-60">
+                                <RenderWeaponIcon type={weapon.id} color={isSelected ? "rgba(245,158,11,0.6)" : "rgba(255,255,255,0.2)"} />
+                              </div>
                             </div>
                           </button>
                         );
                       })}
                     </div>
 
-                    <div className="col-span-7 flex flex-col justify-start border-l border-zinc-900 pl-3 h-[400px] overflow-y-auto custom-scrollbar relative">
+                    {/* Right column details */}
+                    <div className="col-span-7 flex flex-col border-l border-zinc-900 pl-4 h-full relative justify-between overflow-y-auto pr-1 custom-scrollbar">
                       {(() => {
                         const stats =
                           WEAPONS_DETAILS[selectedShopWeaponId || "pistola"];
                         if (!stats) return null;
                         const isPaid = purchasedWeaponIds.includes(stats.id);
+                        
+                        // Define all skins for this weapon, prepending the default/standard blueprint skin
                         const weaponSkins = WEAPON_SKINS.filter(s => s.weapon === stats.id);
-                        const previewingSkin = selectedShopSkinId ? weaponSkins.find(s => s.id === selectedShopSkinId) : null;
+                        const allSkins = [
+                          { id: "default", name: "Estilo Padrão", url: null, isDefault: true, themeColor: stats.color },
+                          ...weaponSkins
+                        ];
+                        
+                        const clampedIndex = Math.abs(selectedShopSkinIndex) % allSkins.length;
+                        const activeSkin = allSkins[clampedIndex];
+                        const isEquipped = activeSkin.isDefault
+                          ? !inventoryRef.current.equippedSkins[stats.id]
+                          : inventoryRef.current.equippedSkins[stats.id] === activeSkin.id;
 
                         return (
-                          <div className="flex flex-col gap-3 h-full">
-                            {/* LARGE PREVIEW AREA */}
-                            <div className="relative shrink-0 w-full h-[150px] bg-black/60 border border-zinc-900 rounded-xl flex items-center justify-center overflow-hidden mb-1 group cursor-pointer" onClick={() => setInspectingItem(previewingSkin ? {type: "skin", id: previewingSkin.id} : {type: "weapon", id: stats.id})}>
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent pointer-events-none z-0" />
-                              <div className="relative z-10 w-full h-full flex items-center justify-center p-4">
-                                {previewingSkin ? (
-                                   <img src={previewingSkin.url} alt={previewingSkin.name} className="max-w-full max-h-full object-contain filter drop-shadow-[0_0_15px_rgba(251,191,36,0.6)] transform group-hover:scale-125 transition-transform duration-500" style={{ imageRendering: "pixelated" }} />
-                                ) : (
-                                   <div className="filter drop-shadow-[0_0_15px_rgba(16,185,129,0.4)] transform scale-150 group-hover:scale-[1.7] transition-transform duration-500">
-                                     <RenderWeaponBlueprint type={stats.id} color={stats.color} />
-                                   </div>
-                                )}
+                          <div className="flex flex-col gap-3 h-full select-none">
+                            {/* LARGE PREVIEW AREA WITH DYNAMIC INTERACTIVE ZOOM */}
+                            <div 
+                              onClick={() => {
+                                setShopZoomed(prev => !prev);
+                                SoundManager.playSound("click", 0.7);
+                              }}
+                              className="relative shrink-0 w-full h-[180px] bg-zinc-950 border border-zinc-900 rounded-2xl flex flex-col items-center justify-center overflow-hidden cursor-zoom-in group select-none transition-all duration-300"
+                              style={{
+                                backgroundImage: "radial-gradient(rgba(255,255,255,0.02) 1px, transparent 0)",
+                                backgroundSize: "16px 16px"
+                              }}
+                            >
+                              {/* Corner Indicators */}
+                              <div className="absolute top-3 left-3 w-3 h-3 border-t border-l border-zinc-800" />
+                              <div className="absolute top-3 right-3 w-3 h-3 border-t border-r border-zinc-800" />
+                              <div className="absolute bottom-3 left-3 w-3 h-3 border-b border-l border-zinc-800" />
+                              <div className="absolute bottom-3 right-3 w-3 h-3 border-b border-r border-zinc-800" />
+
+                              {/* Subtle axis helper lines */}
+                              <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+                                <div className="w-full h-[1px] bg-white/[0.01]" />
+                                <div className="h-full w-[1px] bg-white/[0.01] absolute" />
                               </div>
-                              <div className="absolute top-2 right-2 flex items-center gap-1.5 text-zinc-500 group-hover:text-amber-500 z-20 transition-all bg-black/60 px-2 py-1.5 rounded backdrop-blur-sm border border-zinc-800/50 group-hover:border-amber-500/50 shadow-lg group-hover:shadow-amber-500/20">
-                                <span className="text-[7.5px] font-mono font-bold tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Visualizar</span>
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                  <circle cx="12" cy="12" r="3"></circle>
-                                </svg>
+                              
+                              {/* Weapon blueprint with scale that shifts between 1.75x and 3.1x on zoom */}
+                              <div 
+                                className="transition-all duration-500 ease-out"
+                                style={{
+                                  transform: shopZoomed ? "scale(3.1)" : "scale(1.75)",
+                                  filter: "drop-shadow(0 4px 10px rgba(0,0,0,0.5))"
+                                }}
+                              >
+                                <RenderWeaponBlueprint type={stats.id} color={stats.color} />
+                              </div>
+
+                              {/* Zoom info label */}
+                              <div className="absolute bottom-3 right-3 bg-black/60 border border-zinc-900 px-2 py-0.5 rounded text-[7px] font-mono text-zinc-500 uppercase tracking-widest pointer-events-none group-hover:text-zinc-300 transition-colors">
+                                {shopZoomed ? "Clique para Reduzir [ - ]" : "Clique para Ampliar [ + ]"}
                               </div>
                             </div>
 
                             {/* DETAILS & ACTIONS */}
-                            <div className="flex-1 flex flex-col shrink-0">
-                              <h4 className="text-[12.5px] font-bold tracking-wide text-white uppercase mb-1 drop-shadow-sm">
-                                {previewingSkin ? <span className="text-amber-500">SKIN: {previewingSkin.name}</span> : stats.name}
-                              </h4>
-                              <p className="text-[9px] text-zinc-400 mb-2 leading-relaxed">
-                                {previewingSkin ? `Camuflagem exlusiva para ${stats.name}. Adiciona efeitos visuais incríveis no modo de tiro.` : stats.desc}
-                              </p>
+                            <div className="flex-1 flex flex-col shrink-0 justify-between gap-3 mt-1">
+                              <div className="flex justify-between items-end">
+                                <h4 className="text-[17px] font-black tracking-widest text-white uppercase">{stats.name}</h4>
+                                <span className="text-[12px] font-mono text-amber-500 font-bold">{stats.cost} Cr</span>
+                              </div>
 
-                              {/* STATS */}
-                              <div className="grid grid-cols-2 gap-1.5 text-[8.5px] font-mono bg-black/40 p-2 rounded border border-zinc-900/50 mb-3 shrink-0">
-                                <div className="flex justify-between">
-                                  <span className="text-zinc-600">DANO:</span>
-                                  <span className="text-zinc-400">{stats.damage}</span>
+                              {/* COMPACT STATS ROW */}
+                              <div className="flex justify-between items-center bg-black/40 border border-zinc-900 rounded-lg p-2.5 px-4 text-[11px] font-mono text-zinc-400 shrink-0">
+                                <div className="flex gap-2 items-center">
+                                  <span>DMG</span><span className="text-zinc-200 font-bold">{stats.damage}</span>
                                 </div>
-                                <div className="flex justify-between">
-                                  <span className="text-zinc-600">VEL DISP:</span>
-                                  <span className="text-zinc-400 font-bold">{stats.fireRate}s</span>
+                                <div className="flex gap-2 items-center">
+                                  <span>SPD</span><span className="text-zinc-200 font-bold">{stats.fireRate}s</span>
                                 </div>
-                                <div className="flex justify-between">
-                                  <span className="text-zinc-600">CAPAC.:</span>
-                                  <span className="text-zinc-400">{stats.ammoMax} RD</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-zinc-600">MANUSEIO:</span>
-                                  <span className="text-zinc-400">{stats.handed === "one" ? "1 MÃO" : "2 MÃOS"}</span>
+                                <div className="flex gap-2 items-center">
+                                  <span>MAG</span><span className="text-zinc-200 font-bold">{stats.ammoMax}</span>
                                 </div>
                               </div>
 
-                              {/* ADQUIRIR BUTTON */}
-                              {previewingSkin ? (
-                                // SKINS BUTTON LOGIC
-                                (() => {
-                                   const isSkinPurchased = inventoryRef.current.purchasedSkins.includes(previewingSkin.id);
-                                   if (!isSkinPurchased) {
-                                      return (
-                                        <button
-                                          onClick={() => {
-                                            if (isPaid) {
-                                              inventoryRef.current.purchasedSkins.push(previewingSkin.id);
-                                              updateInv();
-                                            }
-                                          }}
-                                          disabled={!isPaid}
-                                          className={`w-full py-1.5 rounded font-mono text-[9px] font-bold tracking-widest uppercase transition-all shadow-lg shrink-0 ${
-                                            isPaid
-                                              ? "bg-amber-600 text-black hover:bg-amber-500 shadow-amber-900/50"
-                                              : "bg-zinc-900 text-zinc-600 cursor-not-allowed border border-zinc-800/20"
-                                          }`}
-                                        >
-                                          {isPaid ? "RESGATAR SKIN (GRÁTIS)" : "COMPRE A ARMA PRIMEIRO"}
-                                        </button>
-                                      )
-                                   } else {
-                                      return (
-                                        <button
-                                          onClick={() => {
-                                            const isEquipped = inventoryRef.current.equippedSkins[stats.id] === previewingSkin.id;
-                                            if (isEquipped) {
-                                              delete inventoryRef.current.equippedSkins[stats.id];
-                                            } else {
-                                              inventoryRef.current.equippedSkins[stats.id] = previewingSkin.id;
-                                            }
-                                            updateInv();
-                                          }}
-                                          className="w-full py-1.5 shrink-0 bg-zinc-850 hover:bg-zinc-800 text-amber-500 font-mono text-[9px] font-bold tracking-widest uppercase rounded transition-all border border-amber-900/50 shadow-[0_0_10px_rgba(251,191,36,0.1)]"
-                                        >
-                                          {inventoryRef.current.equippedSkins[stats.id] === previewingSkin.id ? "DESEQUIPAR SKIN" : "EQUIPAR SKIN"}
-                                        </button>
-                                      )
-                                   }
-                                })()
-                              ) : (
-                                // WEAPON BUTTON LOGIC
-                                !isPaid ? (
+                              {/* WEAPON ACQUISITION BUTTON */}
+                              <div className="shrink-0 mt-1">
+                                {!isPaid ? (
                                   <button
-                                    onClick={() => purchaseWeapon(stats.id)}
+                                    onClick={() => {
+                                      purchaseWeapon(stats.id);
+                                      SoundManager.playSound("click", 1.0);
+                                    }}
                                     disabled={!(!waveRef.current.mode || credits >= stats.cost)}
-                                    className={`w-full py-1.5 shrink-0 rounded font-mono text-[9px] font-bold tracking-widest uppercase transition-all shadow-lg ${
+                                    className={`w-full py-3 rounded-xl font-mono text-[10px] font-black tracking-widest uppercase transition-all shadow-lg cursor-pointer ${
                                       (!waveRef.current.mode || credits >= stats.cost)
-                                        ? "bg-emerald-600 text-black hover:bg-emerald-500 shadow-emerald-900/50"
-                                        : "bg-zinc-900 text-zinc-600 cursor-not-allowed border border-zinc-800/20"
+                                        ? "bg-zinc-100 hover:bg-white text-black shadow-white/10"
+                                        : "bg-zinc-900 text-zinc-600 cursor-not-allowed border border-zinc-800/50"
                                     }`}
                                   >
-                                    Adquirir Arma ({!waveRef.current.mode ? "GRÁTIS" : `${stats.cost} Cr`})
+                                    {!waveRef.current.mode ? "ADQUIRIR [GRÁTIS]" : `ADQUIRIR [${stats.cost} Cr]`}
                                   </button>
                                 ) : (
                                   <button
@@ -8278,47 +11801,103 @@ export default function App() {
                                       const success = deliverToBackpack(stats.id);
                                       const msgEl = document.getElementById("shop-msg");
                                       if (success) {
-                                        if (msgEl) { msgEl.innerText = "ENVIADO PARA MOCHILA!"; setTimeout(() => { if (msgEl) msgEl.innerText = ""; }, 1500); }
+                                        SoundManager.playSound("click", 1.0);
+                                        if (msgEl) { msgEl.innerText = "EQUIPADO!"; setTimeout(() => { if (msgEl) msgEl.innerText = ""; }, 1500); }
                                       } else {
                                         if (msgEl) { msgEl.innerText = "MOCHILA CHEIA!"; setTimeout(() => { if (msgEl) msgEl.innerText = ""; }, 1500); }
                                       }
                                     }}
-                                    className="w-full py-1.5 shrink-0 bg-zinc-850 hover:bg-zinc-800 text-emerald-555 font-mono text-[9px] font-bold tracking-widest uppercase rounded transition-all border border-emerald-900/50 shadow-[0_0_10px_rgba(16,185,129,0.1)]"
+                                    className="w-full py-3 bg-zinc-900 hover:bg-zinc-850 text-amber-500 font-mono text-[10.5px] font-black tracking-widest uppercase rounded-xl transition-all border border-zinc-800 cursor-pointer"
                                   >
-                                    Enviar p/ Mochila
+                                    Equipar Arma
                                   </button>
-                                )
-                              )}
-                              <div id="shop-msg" className="text-center font-mono text-[8px] text-amber-500 font-bold mt-1 h-2 shrink-0"></div>
+                                )}
+                                <div id="shop-msg" className="text-center font-mono text-[8px] text-amber-500 font-bold mt-1 h-2 shrink-0"></div>
+                              </div>
                             </div>
 
-                            {/* SKINS LIST AT BOTTOM */}
-                            <div className="border-t border-zinc-900 pt-2 shrink-0">
-                                <h4 className="text-[9px] font-bold tracking-wide text-zinc-500 uppercase mb-1.5">
-                                  {weaponSkins.length > 0 ? "CAMUFLAGENS DA ARMA" : "NENHUMA CAMUFLAGEM"}
-                                </h4>
-                                {weaponSkins.length > 0 && (
-                                  <div className="flex gap-2 overflow-x-auto custom-scrollbar pb-2">
-                                    <button 
-                                       onClick={() => setSelectedShopSkinId(null)}
-                                       className={`shrink-0 w-20 h-14 bg-black/40 border rounded-lg p-1 flex flex-col items-center justify-center transition-all ${!previewingSkin ? "border-emerald-500/50 bg-emerald-900/10 shadow-[0_0_10px_rgba(16,185,129,0.2)]" : "border-zinc-900 hover:border-zinc-700"}`}
-                                    >
-                                       <span className="text-[7.5px] font-mono font-bold text-zinc-400">PADRÃO</span>
-                                    </button>
-                                    {weaponSkins.map(skin => {
-                                      const isViewingThis = selectedShopSkinId === skin.id;
-                                      return (
-                                        <button 
-                                           key={skin.id}
-                                           onClick={() => setSelectedShopSkinId(skin.id)}
-                                           className={`shrink-0 w-24 h-14 bg-black/40 border rounded-lg p-1 flex items-center justify-center relative overflow-hidden transition-all group ${isViewingThis ? "border-amber-500/50 bg-amber-900/10 shadow-[0_0_10px_rgba(251,191,36,0.2)]" : "border-zinc-900 hover:border-zinc-700"}`}
-                                        >
-                                           <img src={skin.url} alt={skin.name} className="max-h-full max-w-full object-contain filter drop-shadow-[0_0_4px_rgba(251,191,36,0.3)] transform group-hover:scale-110 transition-transform duration-300" style={{ imageRendering: "pixelated" }} />
-                                        </button>
-                                      );
-                                    })}
-                                  </div>
-                                )}
+                            {/* BIG SKIN CAROUSEL */}
+                            <div className="border-t border-zinc-900 pt-3 shrink-0 flex flex-col gap-2">
+                              <div className="flex items-center justify-between px-1">
+                                <span className="text-[8px] font-mono tracking-widest text-zinc-500 font-bold uppercase">SKINS</span>
+                                <span className="text-[8px] font-mono text-zinc-500 font-bold">{clampedIndex + 1} / {allSkins.length}</span>
+                              </div>
+                              
+                              <div className="flex items-center gap-2">
+                                {/* Left arrow */}
+                                <button
+                                  onClick={() => {
+                                    setSelectedShopSkinIndex(prev => (prev - 1 + allSkins.length) % allSkins.length);
+                                    SoundManager.playSound("click", 0.6);
+                                  }}
+                                  onMouseEnter={() => SoundManager.playSound("click", 0.1)}
+                                  className="w-10 h-[90px] rounded-lg bg-zinc-900/50 hover:bg-zinc-850 border border-zinc-800 hover:border-zinc-700 text-zinc-500 hover:text-white transition-all cursor-pointer flex items-center justify-center font-bold text-lg shrink-0"
+                                >
+                                  ◀
+                                </button>
+
+                                {/* Middle skin preview */}
+                                <div className="flex-1 h-[90px] bg-black/60 border border-zinc-900 rounded-xl flex items-center justify-center relative overflow-hidden group">
+                                  {activeSkin.isDefault ? (
+                                    <div className="transform scale-[1.0] opacity-40 filter grayscale transition-transform duration-300 group-hover:scale-[1.12]">
+                                      <RenderWeaponBlueprint type={stats.id} color="#666" />
+                                    </div>
+                                  ) : (
+                                    <img src={activeSkin.url || ""} alt={activeSkin.name} className="max-h-[85%] max-w-[85%] object-contain transition-transform duration-300 group-hover:scale-[1.12]" style={{ imageRendering: "pixelated" }} />
+                                  )}
+                                </div>
+
+                                {/* Right arrow */}
+                                <button
+                                  onClick={() => {
+                                    setSelectedShopSkinIndex(prev => (prev + 1) % allSkins.length);
+                                    SoundManager.playSound("click", 0.6);
+                                  }}
+                                  onMouseEnter={() => SoundManager.playSound("click", 0.1)}
+                                  className="w-10 h-[90px] rounded-lg bg-zinc-900/50 hover:bg-zinc-850 border border-zinc-800 hover:border-zinc-700 text-zinc-500 hover:text-white transition-all cursor-pointer flex items-center justify-center font-bold text-lg shrink-0"
+                                >
+                                  ▶
+                                </button>
+                              </div>
+
+                              <div className="flex items-center justify-between gap-2 mt-1 px-1">
+                                <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest">{activeSkin.name}</span>
+                                
+                                <button
+                                  onClick={() => {
+                                    if (activeSkin.isDefault) {
+                                      delete inventoryRef.current.equippedSkins[stats.id];
+                                    } else {
+                                      if (!inventoryRef.current.purchasedSkins.includes(activeSkin.id)) {
+                                        const cost = activeSkin.cost || 120;
+                                        if (credits >= cost) {
+                                          setCredits(prev => prev - cost);
+                                          inventoryRef.current.purchasedSkins.push(activeSkin.id);
+                                          inventoryRef.current.equippedSkins[stats.id] = activeSkin.id;
+                                        } else {
+                                          alert(`Créditos insuficientes para comprar esta skin (${cost} Cr necessárias).`);
+                                        }
+                                      } else {
+                                        inventoryRef.current.equippedSkins[stats.id] = activeSkin.id;
+                                      }
+                                    }
+                                    updateInv();
+                                  }}
+                                  className={`px-4 py-1.5 rounded-lg font-mono text-[9px] font-black tracking-wider uppercase transition-all cursor-pointer ${
+                                    isEquipped
+                                      ? "bg-zinc-800 border border-zinc-600 text-amber-500"
+                                      : !activeSkin.isDefault && !inventoryRef.current.purchasedSkins.includes(activeSkin.id)
+                                        ? "bg-amber-600 hover:bg-amber-500 text-black shadow-md"
+                                        : "bg-zinc-100 hover:bg-white text-black"
+                                  }`}
+                                >
+                                  {isEquipped
+                                    ? "EQUIPADO"
+                                    : !activeSkin.isDefault && !inventoryRef.current.purchasedSkins.includes(activeSkin.id)
+                                      ? `COMPRAR [${activeSkin.cost || 120} Cr]`
+                                      : "USAR SKIN"}
+                                </button>
+                              </div>
                             </div>
                           </div>
                         );
@@ -8328,9 +11907,9 @@ export default function App() {
                 )}
 
                 {shopTab === "upgrades" && (
-                  <div className="col-span-12 flex flex-col gap-3 h-[400px] overflow-y-auto custom-scrollbar relative">
+                  <div className="col-span-12 flex flex-col gap-3 h-[400px] overflow-y-auto custom-scrollbar relative p-1">
                     {/* Weapons list for upgrades */}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-1">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 p-1">
                       {[
                         { id: "pistola", name: "Pistola Tática" },
                         { id: "gun", name: "M4 Carbine" },
@@ -8340,76 +11919,64 @@ export default function App() {
                         { id: "rifle", name: "Sniper Bolt" },
                         { id: "magnum", name: "Magnum .357" }
                       ].map((w) => {
+                        const stats = WEAPONS_DETAILS[w.id];
                         const isOwned = purchasedWeaponIds.includes(w.id);
-                        const details = WEAPONS_DETAILS[w.id];
-                        const themeColor = details?.color || "#fff";
-                        
+                        const themeColor = stats?.color || "#fff";
                         return (
-                          <div 
+                          <button
                             key={w.id}
-                            onClick={() => {
-                              if (isOwned) {
-                                setSelectedWeaponForUpgrade(w.id);
-                              }
-                            }}
-                            className={`relative border p-3 rounded-xl flex flex-col items-center justify-between gap-3 transition-all ${
-                              isOwned 
-                                ? "bg-zinc-950/80 border-zinc-800 hover:border-zinc-500 hover:-translate-y-0.5 cursor-pointer shadow-md" 
-                                : "bg-zinc-950/20 border-zinc-950/40 opacity-40 filter grayscale cursor-not-allowed"
+                            disabled={!isOwned}
+                            onClick={() => setSelectedWeaponForUpgrade(w.id)}
+                            className={`p-3 border rounded-xl flex flex-col items-start gap-1 relative overflow-hidden transition-all ${
+                              !isOwned
+                                ? "border-zinc-900 bg-zinc-950 opacity-40 cursor-not-allowed"
+                                : selectedWeaponForUpgrade === w.id
+                                  ? "border-amber-500/80 bg-zinc-900/40 text-amber-400"
+                                  : "border-zinc-850 bg-black/40 text-zinc-400 hover:bg-zinc-900/10 cursor-pointer"
                             }`}
-                            style={{
-                              boxShadow: isOwned ? `0 4px 6px rgba(0,0,0,0.5), inset 0 0 10px ${themeColor}10` : "none"
-                            }}
                           >
-                            <div className="w-full flex justify-between items-center text-[8px] font-mono text-zinc-500">
-                              <span>MODEL: {w.id.toUpperCase()}</span>
-                              <span className={`font-bold ${isOwned ? "text-emerald-500" : "text-zinc-650"}`}>
-                                {isOwned ? "ADQUIRIDA" : "BLOQUEADA"}
-                              </span>
-                            </div>
-
-                            <div className="h-12 flex items-center justify-center filter drop-shadow-[0_0_8px_rgba(0,0,0,0.5)]">
-                              <RenderWeaponIcon type={w.id} color={themeColor} />
-                            </div>
-
-                            <div className="text-center">
-                              <div className="text-[10px] font-extrabold text-white tracking-wider uppercase">{w.name}</div>
-                              <div className="text-[7.5px] font-mono text-zinc-500 mt-0.5">
-                                {isOwned ? "CLIQUE PARA MELHORAR" : "REQUER COMPRA NA LOJA"}
-                              </div>
-                            </div>
-                          </div>
+                            <span className="text-[10px] font-black uppercase tracking-wider">{w.name}</span>
+                            <span className="text-[8px] font-mono opacity-60">
+                              {isOwned ? "DESBLOQUEADA" : "BLOQUEADA"}
+                            </span>
+                          </button>
                         );
                       })}
                     </div>
 
                     {/* Weapon Specific Upgrades Modal overlay */}
                     {selectedWeaponForUpgrade && (
-                      <div className="absolute inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 rounded-2xl animate-in fade-in duration-200">
-                        <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-5 w-full max-w-lg shadow-[0_20px_50px_rgba(0,0,0,0.9)] flex flex-col gap-3 relative">
+                      <div className="absolute inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 rounded-3xl animate-in fade-in duration-300">
+                        <div className="bg-zinc-950 border border-zinc-900 rounded-3xl p-6 w-[560px] max-w-[95vw] shadow-[0_25px_70px_rgba(0,0,0,0.98)] flex flex-col gap-4 relative overflow-hidden">
+                          {/* Corner brackets */}
+                          <div className="absolute top-4 left-4 w-3.5 h-3.5 border-t-2 border-l-2 border-zinc-800" />
+                          <div className="absolute top-4 right-4 w-3.5 h-3.5 border-t-2 border-r-2 border-zinc-800" />
+                          <div className="absolute bottom-4 left-4 w-3.5 h-3.5 border-b-2 border-l-2 border-zinc-800" />
+                          <div className="absolute bottom-4 right-4 w-3.5 h-3.5 border-b-2 border-r-2 border-zinc-800" />
+                          
                           {/* Close button */}
                           <button 
                             onClick={() => setSelectedWeaponForUpgrade(null)}
-                            className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors font-mono text-xs p-1"
+                            className="absolute top-4 right-4 text-zinc-550 hover:text-white transition-all font-mono text-[9px] tracking-widest bg-zinc-900 border border-zinc-850 px-3 py-1.5 rounded-lg cursor-pointer"
                           >
-                            [X] FECHAR
+                            ✕ FECHAR
                           </button>
 
                           {/* Weapon details header */}
-                          <div className="flex items-center gap-3 border-b border-zinc-900 pb-3 mb-1">
-                            <div className="w-12 h-12 flex items-center justify-center bg-zinc-900/50 border border-zinc-800/40 rounded-lg shrink-0">
+                          <div className="flex items-center gap-4 border-b border-zinc-900 pb-3 mb-1 z-10">
+                            <div className="w-14 h-14 flex items-center justify-center bg-zinc-950 border border-zinc-900 rounded-xl shrink-0 shadow-inner">
                               <RenderWeaponIcon type={selectedWeaponForUpgrade} color={WEAPONS_DETAILS[selectedWeaponForUpgrade]?.color} />
                             </div>
                             <div>
-                              <h3 className="text-xs font-black text-white tracking-widest uppercase">
+                              <h3 className="text-xs font-black text-white tracking-widest uppercase mb-0.5">
                                 {WEAPONS_DETAILS[selectedWeaponForUpgrade]?.name}
                               </h3>
-                              <p className="text-[8px] text-zinc-500 font-mono tracking-wider">UPGRADE STATION / PARÂMETROS ESPECÍFICOS</p>
+                              <p className="text-[8px] text-zinc-500 font-mono tracking-wider">UPGRADE SYSTEM / LABORATÓRIO DE BALÍSTICA</p>
                             </div>
                           </div>
 
                           {/* Upgrades grid */}
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[260px] overflow-y-auto custom-scrollbar pr-1">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 max-h-[260px] overflow-y-auto custom-scrollbar pr-1.5 z-10">
                             {[
                               { key: "damage", name: "Dano Físico", desc: "Aumenta a potência dos projéteis em 15% por nível." },
                               { key: "fireRate", name: "Velocidade de Disparo", desc: "Aumenta a cadência de tiro em 12% por nível." },
@@ -8418,62 +11985,79 @@ export default function App() {
                               { key: "capacity", name: "Capacidade do Carregador", desc: "Aumenta a munição máxima em 15% por nível." },
                               { key: "reloadSpeed", name: "Velocidade de Recarga", desc: "Reduz o tempo de recarga em 15% por nível." },
                               { key: "range", name: "Alcance Efetivo", desc: "Aumenta o alcance e vida útil do projétil em 15% por nível." },
+                              { key: "scopeVision", name: "Visão e Mira", desc: "Aumenta o campo de visão e alcance da mira em 15% por nível." },
                             ].map((item) => {
-                              const weaponUpgrades = upgrades[selectedWeaponForUpgrade] || { damage: 0, fireRate: 0, stability: 0, accuracy: 0, capacity: 0, reloadSpeed: 0, range: 0 };
+                              const weaponUpgrades = upgrades[selectedWeaponForUpgrade] || { damage: 0, fireRate: 0, stability: 0, accuracy: 0, capacity: 0, reloadSpeed: 0, range: 0, scopeVision: 0 };
                               const lvl = weaponUpgrades[item.key] || 0;
                               const isMax = lvl >= 5;
-                              const cost = isMax ? 0 : Math.round(50 * Math.pow(1.8, lvl));
+                              const cost = isMax ? 0 : Math.round(75 * Math.pow(2.85, lvl));
                               
                               return (
-                                <div key={item.key} className="bg-black/40 border border-zinc-900/60 rounded-xl p-2.5 flex flex-col justify-between gap-2">
+                                <div key={item.key} className="bg-zinc-950 border border-zinc-900 rounded-2xl p-3.5 flex flex-col justify-between gap-3 transition-all hover:border-zinc-850 hover:bg-zinc-900/10">
                                   <div>
                                     <div className="flex justify-between items-center">
-                                      <span className="text-zinc-200 text-[9px] font-bold font-mono tracking-wider uppercase">{item.name}</span>
-                                      <span className="text-[8px] font-mono font-bold text-amber-500 bg-amber-950/40 px-1.5 py-0.5 rounded border border-amber-800/30">
-                                        {isMax ? "MÁX" : `${lvl}/5`}
+                                      <span className="text-zinc-200 text-[9.5px] font-black font-mono tracking-wider uppercase">{item.name}</span>
+                                      <span className="text-[8px] font-mono font-black text-amber-500 bg-amber-950/40 px-2 py-0.5 rounded border border-amber-900/30">
+                                        {isMax ? "MÁX" : `LVL ${lvl}/5`}
                                       </span>
                                     </div>
-                                    <p className="text-[7.5px] text-zinc-500 mt-0.5 leading-relaxed">{item.desc}</p>
+                                    <p className="text-[7.5px] text-zinc-500 mt-1 leading-relaxed font-sans">{item.desc}</p>
                                   </div>
                                   
-                                  {/* Progress bars */}
-                                  <div className="flex gap-1 my-0.5">
+                                  {/* Segmented tactile progress bars */}
+                                  <div className="flex gap-1.5 my-0.5">
                                     {[1, 2, 3, 4, 5].map((idx) => (
                                       <div
                                         key={idx}
-                                        className={`h-1 flex-1 rounded-sm transition-all ${
-                                          idx <= lvl ? "bg-amber-500 shadow-[0_0_6px_rgba(245,158,11,0.4)]" : "bg-zinc-900"
+                                        className={`h-1.5 flex-1 rounded-sm transition-all ${
+                                          idx <= lvl 
+                                            ? "bg-gradient-to-r from-amber-600 to-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.5)]" 
+                                            : "bg-zinc-900 border border-zinc-950"
                                         }`}
                                       />
                                     ))}
                                   </div>
 
-                                  <button
-                                    onClick={() => {
-                                      if (isMax) return;
-                                      const isFreeMode = !waveRef.current.mode;
-                                      if (isFreeMode || credits >= cost) {
-                                        if (!isFreeMode) {
-                                          setCredits(prev => prev - cost);
+                                  <div className="flex gap-2 mt-1">
+                                    <button
+                                      onClick={() => {
+                                        if (isMax) return;
+                                        const isFreeMode = !waveRef.current.mode;
+                                        if (isFreeMode || credits >= cost) {
+                                          if (!isFreeMode) {
+                                            setCredits(prev => prev - cost);
+                                          }
+                                          const newLvl = lvl + 1;
+                                          const updatedWeaponUpgrades = { ...weaponUpgrades, [item.key]: newLvl };
+                                          upgradesRef.current[selectedWeaponForUpgrade] = updatedWeaponUpgrades;
+                                          setUpgrades(prev => ({ ...prev, [selectedWeaponForUpgrade]: updatedWeaponUpgrades }));
+                                          SoundManager.playSound("heart", 0.85);
                                         }
-                                        const newLvl = lvl + 1;
-                                        const updatedWeaponUpgrades = { ...weaponUpgrades, [item.key]: newLvl };
-                                        upgradesRef.current[selectedWeaponForUpgrade] = updatedWeaponUpgrades;
-                                        setUpgrades(prev => ({ ...prev, [selectedWeaponForUpgrade]: updatedWeaponUpgrades }));
-                                        SoundManager.playSound("heart", 0.85);
-                                      }
-                                    }}
-                                    disabled={isMax || (!(!waveRef.current.mode || credits >= cost))}
-                                    className={`w-full py-1 font-mono text-[7.5px] font-bold tracking-widest uppercase transition-all rounded ${
-                                      isMax
-                                        ? "bg-zinc-900 text-zinc-650 cursor-not-allowed"
-                                        : (!waveRef.current.mode || credits >= cost)
-                                          ? "bg-amber-600 text-black hover:bg-amber-500 shadow-md cursor-pointer"
-                                          : "bg-zinc-950 text-zinc-600 border border-zinc-900 cursor-not-allowed"
-                                    }`}
-                                  >
-                                    {isMax ? "MÁXIMO" : `Melhorar (${!waveRef.current.mode ? "GRÁTIS" : `${cost} Cr`})`}
-                                  </button>
+                                      }}
+                                      disabled={isMax || (!(!waveRef.current.mode || credits >= cost))}
+                                      className={`flex-1 py-1.5 font-mono text-[8px] font-black tracking-widest uppercase transition-all rounded-lg cursor-pointer ${
+                                        isMax
+                                          ? "bg-zinc-900 text-zinc-650 cursor-not-allowed"
+                                          : (!waveRef.current.mode || credits >= cost)
+                                            ? "bg-amber-600 text-black hover:bg-amber-500 shadow-md"
+                                            : "bg-zinc-950 border border-zinc-900/60 text-zinc-600 cursor-not-allowed"
+                                      }`}
+                                    >
+                                      {isMax ? "COMPLETO" : `${!waveRef.current.mode ? "GRÁTIS" : `${cost} Cr`}`}
+                                    </button>
+                                    
+                                    {!isMax && (
+                                      <button
+                                        onClick={() => {
+                                          setAdAlertOpen(true);
+                                        }}
+                                        className="px-3 py-1.5 bg-zinc-900/60 hover:bg-zinc-900 text-amber-500 border border-amber-500/25 hover:border-amber-500/65 rounded-lg transition-all cursor-pointer font-mono text-[8px] font-black flex items-center justify-center gap-1 shrink-0"
+                                        title="Melhorar Grátis assistindo um anúncio"
+                                      >
+                                        📺 AD
+                                      </button>
+                                    )}
+                                  </div>
                                 </div>
                               );
                             })}
@@ -8484,15 +12068,233 @@ export default function App() {
                   </div>
                 )}
 
+                {shopTab === "character" && (
+                  <div className="col-span-12 flex flex-col gap-3 h-[400px] overflow-y-auto custom-scrollbar relative p-1">
+                    {/* Character Upgrade List */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-1">
+                      {[
+                        { key: "maxHp", name: "Vida Máxima", desc: "Aumenta a saúde máxima do jogador em +20 por nível.", icon: "❤" },
+                        { key: "staminaMax", name: "Estamina / Energia", desc: "Aumenta a capacidade de estamina máxima do jogador em +20 por nível.", icon: "⚡" },
+                        { key: "speed", name: "Velocidade de Movimento", desc: "Aumenta a velocidade de caminhada e corrida em 8% por nível.", icon: "👟" }
+                      ].map((item) => {
+                        const lvl = charUpgrades[item.key] || 0;
+                        const isMax = lvl >= 5;
+                        const cost = isMax ? 0 : Math.round(80 * Math.pow(2.4, lvl));
+                        const isFreeMode = !waveRef.current.mode;
+
+                        return (
+                          <div
+                            key={item.key}
+                            className="bg-zinc-950 border border-zinc-900 rounded-2xl p-4 flex flex-col justify-between gap-4 transition-all hover:border-zinc-800 shadow-lg"
+                          >
+                            <div className="flex justify-between items-start">
+                              <div className="flex flex-col gap-1">
+                                <span className="text-[10px] font-black font-mono tracking-wider uppercase text-zinc-300 flex items-center gap-1.5">
+                                  <span className="text-amber-500 text-xs">{item.icon}</span>
+                                  {item.name}
+                                </span>
+                                <p className="text-[7.5px] text-zinc-555 leading-relaxed font-sans mt-0.5">{item.desc}</p>
+                              </div>
+                              <span className="text-[8px] font-mono font-black text-amber-500 bg-amber-950/40 px-2 py-0.5 rounded border border-amber-900/30 shrink-0">
+                                {isMax ? "MÁX" : `LVL ${lvl}/5`}
+                              </span>
+                            </div>
+
+                            {/* Tactile segmented progress bars */}
+                            <div className="flex gap-1.5 my-1">
+                              {[1, 2, 3, 4, 5].map((idx) => (
+                                <div
+                                  key={idx}
+                                  className={`h-1.5 flex-1 rounded-sm transition-all ${
+                                    idx <= lvl
+                                      ? "bg-gradient-to-r from-amber-600 to-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.5)]"
+                                      : "bg-zinc-900 border border-zinc-950"
+                                  }`}
+                                />
+                              ))}
+                            </div>
+
+                            <button
+                              onClick={() => {
+                                if (isMax) return;
+                                if (isFreeMode || credits >= cost) {
+                                  if (!isFreeMode) {
+                                    setCredits(prev => prev - cost);
+                                  }
+                                  const newLvl = lvl + 1;
+                                  charUpgradesRef.current[item.key] = newLvl;
+                                  setCharUpgrades(prev => ({ ...prev, [item.key]: newLvl }));
+                                  SoundManager.playSound("heart", 0.95);
+                                }
+                              }}
+                              disabled={isMax || (!isFreeMode && credits < cost)}
+                              className={`w-full py-2 font-mono text-[8px] font-black tracking-widest uppercase transition-all rounded-lg cursor-pointer ${
+                                isMax
+                                  ? "bg-zinc-900 text-zinc-650 cursor-not-allowed"
+                                  : (isFreeMode || credits >= cost)
+                                    ? "bg-amber-600 text-black hover:bg-amber-500 shadow-md"
+                                    : "bg-zinc-950 border border-zinc-900/60 text-zinc-600 cursor-not-allowed"
+                              }`}
+                            >
+                              {isMax ? "COMPLETO" : `${isFreeMode ? "GRÁTIS" : `${cost} Cr`}`}
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
                 {shopTab === "skins" && (
-                  <div className="col-span-12 flex flex-col items-center justify-center h-[400px] border border-dashed border-zinc-800 rounded-2xl bg-black/40">
-                    <svg className="w-12 h-12 text-zinc-700 mb-3 animate-pulse" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
-                    <span className="text-zinc-500 font-mono text-[10px] tracking-[0.2em] font-bold uppercase mb-1">
-                      SEÇÃO BLOQUEADA
-                    </span>
-                    <span className="text-zinc-600 text-[8px] max-w-xs text-center font-mono leading-relaxed">
-                      Seção visual de Skins vazia para implementação futura.
-                    </span>
+                  <div className="col-span-12 grid grid-cols-12 gap-4 h-[400px] overflow-hidden">
+                    {/* Left: Skin list grouped by weapon */}
+                    <div className="col-span-5 flex flex-col gap-1 pr-1 h-full overflow-y-auto custom-scrollbar">
+                      {Object.values(WEAPONS_DETAILS).map((w) => {
+                        const weaponSkins = WEAPON_SKINS.filter(s => s.weapon === w.id);
+                        if (weaponSkins.length === 0) return null;
+                        return (
+                          <div key={w.id} className="mb-3">
+                            <div className="flex items-center gap-1.5 mb-1.5 px-1">
+                              <div className="w-1 h-1 rounded-full" style={{ backgroundColor: w.color }} />
+                              <span className="text-[7px] font-mono text-zinc-500 font-bold uppercase tracking-[0.2em]">{w.name}</span>
+                              <div className="flex-1 h-px bg-zinc-900" />
+                              <span className="text-[7px] font-mono text-zinc-700">{weaponSkins.length}</span>
+                            </div>
+                            <div className="flex flex-col gap-1">
+                              {weaponSkins.map((skin) => {
+                                const isOwned = inventoryRef.current.purchasedSkins.includes(skin.id);
+                                const isEquipped = inventoryRef.current.equippedSkins[w.id] === skin.id;
+                                const isSelected = selectedShopSkinId === skin.id;
+                                return (
+                                  <button
+                                    key={skin.id}
+                                    onClick={() => {
+                                      setSelectedShopWeaponId(w.id);
+                                      setSelectedShopSkinId(skin.id);
+                                    }}
+                                    className={`w-full p-2 rounded-lg border text-left flex items-center gap-2.5 relative transition-all cursor-pointer group ${
+                                      isSelected
+                                        ? "border-zinc-700 bg-zinc-900/60"
+                                        : "border-transparent bg-transparent hover:bg-zinc-900/30"
+                                    }`}
+                                  >
+                                    {isSelected && <div className="absolute left-0 top-1 bottom-1 w-0.5 rounded-full" style={{ backgroundColor: skin.themeColor }} />}
+                                    <div className="w-9 h-9 flex items-center justify-center bg-zinc-950/60 rounded-lg border border-zinc-900/40 shrink-0 overflow-hidden">
+                                      <img src={skin.url} className="max-w-[85%] max-h-[85%] object-contain" style={{ imageRendering: "pixelated" }} />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex items-center justify-between gap-1">
+                                        <span className={`text-[9px] font-black tracking-wider uppercase truncate ${isSelected ? "text-white" : "text-zinc-400 group-hover:text-zinc-300"}`}>{skin.name}</span>
+                                        {isEquipped && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />}
+                                      </div>
+                                      <div className="flex items-center gap-1 mt-0.5">
+                                        {isOwned ? (
+                                          <span className="text-[7px] font-mono text-emerald-500/80 font-bold">{isEquipped ? "EQUIPADA" : "POSSUÍDA"}</span>
+                                        ) : (
+                                          <span className="text-[7px] font-mono text-zinc-500 font-bold">{skin.cost} Cr</span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Right: Preview & Actions */}
+                    <div className="col-span-7 flex flex-col border-l border-zinc-900/50 pl-4 h-full relative justify-between">
+                      {(() => {
+                        const skin = WEAPON_SKINS.find(s => s.id === selectedShopSkinId);
+                        if (!skin) {
+                          return (
+                            <div className="flex flex-col items-center justify-center h-full text-center gap-2 opacity-40">
+                              <div className="w-16 h-16 rounded-2xl border border-dashed border-zinc-800 flex items-center justify-center">
+                                <svg className="w-6 h-6 text-zinc-700" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M18 13.5V6.75A2.25 2.25 0 0015.75 4.5h-13.5A2.25 2.25 0 000 6.75v10.5A2.25 2.25 0 002.25 19.5h15.5" /></svg>
+                              </div>
+                              <span className="text-zinc-600 font-mono text-[8px] tracking-widest uppercase">Selecione uma skin</span>
+                            </div>
+                          );
+                        }
+
+                        const wDetails = WEAPONS_DETAILS[skin.weapon];
+                        const isOwned = inventoryRef.current.purchasedSkins.includes(skin.id);
+                        const isEquipped = inventoryRef.current.equippedSkins[skin.weapon] === skin.id;
+                        const skinCost = skin.cost || 120;
+
+                        return (
+                          <div className="flex flex-col h-full">
+                            {/* Preview */}
+                            <div
+                              className="relative w-full h-[200px] bg-black/40 rounded-2xl flex items-center justify-center overflow-hidden cursor-pointer group"
+                              onClick={() => setInspectingItem({ type: "skin", id: skin.id })}
+                            >
+                              <div className="absolute inset-0 opacity-[0.04]" style={{
+                                backgroundImage: `radial-gradient(circle at 50% 50%, ${skin.themeColor} 0%, transparent 65%)`
+                              }} />
+                              <div className="absolute top-2.5 right-2.5 text-[7px] font-mono text-zinc-600 tracking-wider uppercase opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" /></svg>
+                                ZOOM
+                              </div>
+                              <img
+                                src={skin.url}
+                                alt={skin.name}
+                                className="max-h-[80%] max-w-[80%] object-contain transition-transform duration-300 group-hover:scale-110"
+                                style={{ imageRendering: "pixelated", filter: `drop-shadow(0 0 20px ${skin.themeColor}30)` }}
+                              />
+                            </div>
+
+                            {/* Info */}
+                            <div className="flex items-center justify-between mt-3 mb-1">
+                              <div className="flex items-center gap-2">
+                                <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: skin.themeColor }} />
+                                <h4 className="text-[13px] font-black tracking-widest text-white uppercase">{skin.name}</h4>
+                              </div>
+                              <span className="text-[9px] font-mono text-zinc-500 uppercase">{wDetails.name}</span>
+                            </div>
+
+                            {/* Price + Action */}
+                            <div className="flex items-center gap-2 mt-auto pt-2">
+                              {!isOwned && (
+                                <span className="text-[11px] font-mono font-black text-amber-500">{skinCost} Cr</span>
+                              )}
+                              <button
+                                onClick={() => {
+                                  if (!isOwned) {
+                                    if (credits >= skinCost) {
+                                      setCredits(prev => prev - skinCost);
+                                      inventoryRef.current.purchasedSkins.push(skin.id);
+                                      inventoryRef.current.equippedSkins[skin.weapon] = skin.id;
+                                      SoundManager.playSound("click", 1.0);
+                                    } else {
+                                      alert("Créditos insuficientes.");
+                                    }
+                                  } else {
+                                    if (isEquipped) {
+                                      delete inventoryRef.current.equippedSkins[skin.weapon];
+                                    } else {
+                                      inventoryRef.current.equippedSkins[skin.weapon] = skin.id;
+                                    }
+                                  }
+                                  updateInv();
+                                }}
+                                className={`flex-1 py-2.5 font-mono text-[9px] font-black tracking-widest uppercase rounded-lg transition-all cursor-pointer ${
+                                  isEquipped
+                                    ? "bg-zinc-900 border border-zinc-700 text-zinc-400 hover:text-white"
+                                    : !isOwned
+                                      ? "bg-white text-black hover:bg-zinc-200"
+                                      : "bg-zinc-900 border border-zinc-700 text-white hover:bg-zinc-800"
+                                }`}
+                              >
+                                {isEquipped ? "DESEQUIPAR" : !isOwned ? `COMPRAR — ${skinCost} Cr` : "EQUIPAR"}
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
                   </div>
                 )}
               </div>
@@ -8500,55 +12302,264 @@ export default function App() {
           </div>
         )}
 
-        {/* Outfits Overlay */}
-        {isOutfitsOpen && (
-          <div className="absolute inset-0 z-[60] pointer-events-auto flex items-center justify-center bg-black/65 backdrop-blur-md">
-            <div className="bg-zinc-950/98 backdrop-blur-md border border-blue-900/30 rounded-xl p-6 w-[600px] max-w-[90vw] max-h-[90vh] shadow-2xl shadow-black relative flex flex-col">
-              {/* Header */}
-              <div className="flex justify-between items-center mb-3 border-b border-zinc-900 pb-2.5">
-                <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
-                  <span className="text-[10px] font-mono tracking-[0.2em] text-blue-400 font-bold">
-                    SELECIONAR TRAJE TÁTICO
-                  </span>
-                </div>
-                <button
-                  onClick={() => setIsOutfitsOpen(false)}
-                  className="text-white/20 hover:text-white transition-colors p-1"
-                >
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>
-              </div>
+        {/* === FULLSCREEN CHARACTER SHOWCASE === */}
+        {isOutfitsOpen && (() => {
+          const activeId = hoveredCampfireChar || viewingCampfireChar;
+          const activeBio = CAMPFIRE_BIOS[activeId] || CAMPFIRE_BIOS.red;
+          const isEquipped = selectedSkinId === activeBio.skinId;
+          const charOrder = ["red", "purple", "orange", "blue"];
 
-              <div className="grid grid-cols-2 md:grid-cols-2 gap-3 w-full max-h-[400px] overflow-y-auto custom-scrollbar pr-1">
-                 {availableSkins.map((skin) => (
-                  <button
-                    key={skin.id}
-                    onClick={() => setSelectedSkinId(skin.id)}
-                    className={`relative group overflow-hidden h-28 rounded-lg border flex flex-col items-start justify-end p-3 transition-all ${selectedSkinId === skin.id ? "border-blue-500 bg-blue-950/20" : "border-white/5 bg-black/60 hover:bg-white/5 hover:border-white/20"}`}
-                  >
-                    {skin.imgUrl ? (
-                      <img src={skin.imgUrl} className="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:opacity-60 transition-opacity filter grayscale group-hover:grayscale-0" style={{ imageRendering: "pixelated" }} />
-                    ) : null}
-                    <div
-                      className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-2xl transition-opacity -mr-10 -mt-10 ${selectedSkinId === skin.id ? "opacity-40" : "opacity-0 group-hover:opacity-20"}`}
-                      style={{ backgroundColor: skin.colorMain }}
-                    ></div>
-                    {selectedSkinId === skin.id && (
-                      <div className="absolute top-2 right-2 flex items-center justify-center text-blue-500 animate-pulse">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          const charPng = `/lendas/personagens/sem-fundo-${
+            activeId === "red" ? "lider brank" : 
+            activeId === "purple" ? "Sniper mexicano" : 
+            activeId === "orange" ? "nier o bazuqueiro" : 
+            "bluer louco"
+          }.png`;
+
+          const accentColor = 
+            activeId === "red" ? "#ef4444" :
+            activeId === "purple" ? "#a855f7" :
+            activeId === "orange" ? "#f59e0b" :
+            "#3b82f6";
+
+          const accentGlow = 
+            activeId === "red" ? "rgba(239,68,68,0.5)" :
+            activeId === "purple" ? "rgba(168,85,247,0.5)" :
+            activeId === "orange" ? "rgba(245,158,11,0.5)" :
+            "rgba(59,130,246,0.5)";
+
+          return (
+            <div className="fixed inset-0 z-[60] pointer-events-auto animate-in fade-in duration-300" style={{ background: "#050505" }}>
+              
+              {/* Animated background gradient based on character color */}
+              <div className="absolute inset-0 transition-all duration-700" style={{
+                background: `radial-gradient(ellipse at 15% 50%, ${accentGlow} 0%, transparent 60%), radial-gradient(ellipse at 85% 50%, rgba(0,0,0,0.6) 0%, transparent 70%), #050505`
+              }} />
+
+              {/* Subtle scan lines effect */}
+              <div className="absolute inset-0 pointer-events-none opacity-[0.03]" style={{
+                backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.05) 2px, rgba(255,255,255,0.05) 4px)"
+              }} />
+
+              {/* Close Button */}
+              <button
+                onClick={() => {
+                  setIsOutfitsOpen(false);
+                  setHoveredCampfireChar(null);
+                }}
+                className="absolute top-6 right-6 z-50 w-12 h-12 flex items-center justify-center bg-black/60 hover:bg-red-600/80 border border-white/10 hover:border-red-500 rounded-full text-zinc-400 hover:text-white transition-all duration-300 cursor-pointer hover:scale-110 backdrop-blur-sm"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
+
+              {/* Main Content Pane: Left-aligned info + Center character + Right vertical selector */}
+              <div className="absolute inset-0 z-20 flex items-center justify-between pl-12 md:pl-20 pr-12">
+                
+                {/* Left Side: Info Panel (takes 35%) */}
+                <div className="w-[380px] h-full flex flex-col justify-center z-30 relative pointer-events-auto text-left">
+                  <div className="flex flex-col gap-4.5 animate-in fade-in slide-in-from-left-4 duration-500" key={activeBio.skinId}>
+                    
+                    {/* Header dossier details inside the info card */}
+                    <div className="flex items-center gap-3">
+                      <div className="w-1 h-12 rounded-full" style={{ backgroundColor: accentColor, boxShadow: `0 0 12px ${accentColor}` }} />
+                      <div>
+                        <span className="text-[9px] font-mono tracking-[0.4em] text-zinc-500 uppercase block">DOSSIÊ OPERACIONAL</span>
+                        <h1 className="text-3xl font-black uppercase tracking-tight leading-none text-white block mt-0.5">
+                          {activeBio.name}
+                        </h1>
+                        <span className="text-[9px] font-mono uppercase tracking-[0.25em] text-zinc-400 mt-1 block font-bold">{activeBio.role}</span>
                       </div>
-                    )}
-                    <div className="relative z-10 w-full text-left">
-                      <h3 className={`text-xs font-black tracking-widest uppercase mb-0.5 transition-colors ${selectedSkinId === skin.id ? "text-blue-400" : "text-white"}`}>{skin.name}</h3>
-                      <p className="text-[9px] text-white/50 tracking-wider font-mono truncate">{skin.desc}</p>
                     </div>
-                  </button>
-                ))}
+
+                    <div className="h-[1px] bg-gradient-to-r from-white/10 to-transparent w-full" />
+
+                    {/* Bio Paragraph */}
+                    <p className="text-zinc-400 text-[12.5px] leading-relaxed font-semibold font-mono">
+                      {activeBio.lore}
+                    </p>
+
+                    <div className="h-[1px] bg-gradient-to-r from-white/10 to-transparent w-full" />
+
+                    {/* Operational Parameters / Stats */}
+                    <div className="flex flex-col gap-3 font-mono">
+                      <span className="text-[9px] font-mono tracking-[0.3em] text-zinc-500 uppercase font-black">PARÂMETROS DE CAMPO</span>
+                      
+                      <div className="space-y-3">
+                        {/* Resistance */}
+                        <div className="flex items-center justify-between text-[11px]">
+                          <span className="text-zinc-500 font-bold uppercase tracking-wider">RESISTÊNCIA</span>
+                          <span className="text-emerald-400 font-black" style={{ textShadow: "0 0 10px rgba(16,185,129,0.3)" }}>
+                            {activeBio.resistencia}
+                          </span>
+                        </div>
+                        {/* Speed */}
+                        <div className="flex items-center justify-between text-[11px]">
+                          <span className="text-zinc-500 font-bold uppercase tracking-wider">VELOCIDADE</span>
+                          <span className="text-sky-400 font-black" style={{ textShadow: "0 0 10px rgba(56,189,248,0.3)" }}>
+                            {activeBio.velocidade}
+                          </span>
+                        </div>
+                        {/* Damage */}
+                        <div className="flex items-center justify-between text-[11px]">
+                          <span className="text-zinc-500 font-bold uppercase tracking-wider">PODER DE FOGO</span>
+                          <span className="text-amber-400 font-black" style={{ textShadow: "0 0 10px rgba(245,158,11,0.3)" }}>
+                            {activeBio.dano}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="h-[1px] bg-gradient-to-r from-white/10 to-transparent w-full" />
+
+                    {/* Preferred Weapon */}
+                    <div className="flex items-center justify-between py-1">
+                      <span className="text-[9px] font-mono uppercase tracking-widest text-zinc-500 font-black">ARMA PREFERIDA</span>
+                      <span className="text-zinc-200 text-[11px] uppercase tracking-wider font-mono font-black border border-white/10 px-2 py-0.5 rounded bg-white/5">
+                        {activeBio.preferredWeapon}
+                      </span>
+                    </div>
+
+                    <div className="h-[2px] bg-gradient-to-r from-white/10 to-transparent w-full mt-1" />
+
+                    {/* Confirmation Button */}
+                    {isEquipped ? (
+                      <button
+                        onClick={() => {
+                          setIsOutfitsOpen(false);
+                          setHoveredCampfireChar(null);
+                          if (!waveRef.current.mode) return;
+                          startLoadingScreen();
+                        }}
+                        className="w-full py-3.5 bg-zinc-100 hover:bg-white text-black font-black text-center rounded-lg uppercase tracking-widest transition-all cursor-pointer text-xs font-mono shadow-lg hover:shadow-white/10"
+                      >
+                        INICIAR OPERAÇÃO ➔
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          setSelectedSkinId(activeBio.skinId);
+                          const matchingSkin = availableSkins.find(s => s.id === activeBio.skinId);
+                          if (matchingSkin) {
+                            skinRef.current = matchingSkin;
+                          }
+                          SoundManager.playSound("heart", 1.0);
+                        }}
+                        className="w-full py-3.5 bg-zinc-950 hover:bg-zinc-900 border text-zinc-200 font-black text-center rounded-lg uppercase tracking-widest transition-all cursor-pointer text-xs font-mono"
+                        style={{ borderColor: `${accentColor}44`, color: accentColor }}
+                      >
+                        VINCULAR OPERADOR
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Center / Background: Big Character render */}
+                <div className="absolute inset-0 flex items-end justify-center pointer-events-none overflow-hidden z-10">
+                  {/* Ground/Ambient glow */}
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[700px] h-[220px] rounded-full" style={{
+                    background: `radial-gradient(ellipse, ${accentGlow} 0%, transparent 70%)`,
+                    filter: "blur(50px)"
+                  }} />
+                  
+                  {/* Image */}
+                  <img
+                    key={activeId}
+                    src={charPng}
+                    className="relative animate-in fade-in slide-in-from-bottom-6 duration-500"
+                    style={{
+                      height: "100vh",
+                      maxHeight: "100vh",
+                      width: "auto",
+                      objectFit: "contain",
+                      objectPosition: "bottom center",
+                      transform: "scale(1.22) translateY(5%)",
+                      transformOrigin: "bottom center",
+                      filter: `drop-shadow(0 0 50px ${accentGlow}) drop-shadow(0 0 20px ${accentGlow})`,
+                      transition: "filter 0.5s ease, transform 0.5s ease"
+                    }}
+                  />
+                </div>
+
+                {/* Right Side: Vertical Operator Select Cards */}
+                <div className="w-[280px] h-full flex flex-col justify-center items-end z-30 relative pointer-events-auto pr-4 gap-4">
+                  <span className="text-[10px] font-mono tracking-[0.25em] text-zinc-500 uppercase font-black mb-2 block text-right w-full">
+                    SELECIONAR OPERADOR
+                  </span>
+                  <div className="flex flex-col gap-3">
+                    {charOrder.map((id) => {
+                      const isActive = id === activeId;
+                      const thumbPng = `/lendas/personagens/sem-fundo-${
+                        id === "red" ? "lider brank" : 
+                        id === "purple" ? "Sniper mexicano" : 
+                        id === "orange" ? "nier o bazuqueiro" : 
+                        "bluer louco"
+                      }.png`;
+                      const thumbColor = 
+                        id === "red" ? "#ef4444" :
+                        id === "purple" ? "#a855f7" :
+                        id === "orange" ? "#f59e0b" :
+                        "#3b82f6";
+                      const thumbName = CAMPFIRE_BIOS[id]?.name || "";
+                      const thumbRole = CAMPFIRE_BIOS[id]?.role || "";
+
+                      return (
+                        <button
+                          key={id}
+                          onClick={() => {
+                            setViewingCampfireChar(id);
+                            setHoveredCampfireChar(null);
+                            SoundManager.playSound("click", 0.9);
+                          }}
+                          onMouseEnter={() => {
+                            setHoveredCampfireChar(id);
+                            SoundManager.playSound("click", 0.12);
+                          }}
+                          onMouseLeave={() => setHoveredCampfireChar(null)}
+                          className="relative flex items-center justify-between w-[240px] h-[68px] rounded-xl overflow-hidden border transition-all duration-300 cursor-pointer group text-left px-4"
+                          style={{
+                            borderColor: isActive ? thumbColor : "rgba(255,255,255,0.08)",
+                            background: isActive 
+                              ? `linear-gradient(90deg, ${thumbColor}22 0%, rgba(0,0,0,0.85) 100%)` 
+                              : "rgba(0,0,0,0.55)",
+                            transform: isActive ? "translateX(-12px)" : "none",
+                            boxShadow: isActive ? `0 0 25px ${thumbColor}22` : "none"
+                          }}
+                        >
+                          {/* Glow indicator line on the left border */}
+                          {isActive && (
+                            <div className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: thumbColor }} />
+                          )}
+
+                          <div className="flex flex-col gap-0.5">
+                            <span 
+                              className="text-[12px] font-mono uppercase tracking-wider font-bold transition-all duration-300"
+                              style={{ color: isActive ? thumbColor : "rgba(255,255,255,0.6)" }}
+                            >
+                              {thumbName}
+                            </span>
+                            <span className="text-[8px] font-mono text-zinc-500 uppercase tracking-widest">
+                              {thumbRole}
+                            </span>
+                          </div>
+
+                          {/* Small Thumbnail rendering on the right inside card */}
+                          <div className="w-[52px] h-[52px] rounded-lg overflow-hidden flex items-end justify-center bg-black/40 border border-white/5 flex-shrink-0 group-hover:border-white/10 transition-colors">
+                            <img 
+                              src={thumbPng} 
+                              className="h-[95%] w-auto object-contain object-bottom transition-all duration-300"
+                              style={{ filter: isActive ? "none" : "brightness(0.4) grayscale(0.3)" }}
+                            />
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
               </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* Inventory Overlay */}
         {isInventoryOpen && (
@@ -8556,13 +12567,13 @@ export default function App() {
             <div className="bg-gradient-to-br from-gray-900/95 to-black/95 backdrop-blur-xl border border-white/10 rounded-xl p-5 w-[650px] shadow-[0_0_50px_rgba(0,0,0,0.8)] flex flex-col">
               <div className="flex justify-between items-center mb-5 border-b border-white/10 pb-3">
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-emerald-500 animate-pulse rounded-sm" />
+                  <span className="w-2 h-2 bg-amber-500 animate-pulse rounded-sm shadow-[0_0_6px_rgba(245,158,11,0.4)]" />
                   <span className="text-xs font-mono tracking-[0.2em] text-white/50">
                     MOCHILA TÁTICA
                   </span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="text-[10px] font-mono text-emerald-500">
+                  <div className="text-[10px] font-mono text-amber-500">
                     SEGURO
                   </div>
                   <button
@@ -8589,12 +12600,12 @@ export default function App() {
                         onDragStart={(e) => handleDragStart(e, "backpack", i)}
                         onDragOver={handleDragOver}
                         onDrop={(e) => handleDrop(e, "backpack", i)}
-                        className={`aspect-square bg-black/80 border ${selectedBackpackSlot === i ? "border-emerald-500" : "border-white/5"} rounded-lg flex flex-col p-1.5 shadow-inner hover:border-white/20 hover:bg-white/5 transition-colors cursor-pointer relative group`}
+                        className={`aspect-square bg-black/80 border ${selectedBackpackSlot === i ? "border-amber-500" : "border-white/5"} rounded-lg flex flex-col p-1.5 shadow-inner hover:border-white/20 hover:bg-white/5 transition-colors cursor-pointer relative group`}
                       >
                         <div className="absolute top-1 left-1.5 text-[8px] font-mono text-white/20 font-bold">
                           {String(i + 1).padStart(2, "0")}
                         </div>
-                        <div className="absolute top-1.5 right-1.5 w-1 h-1 border border-white/10 group-hover:border-emerald-500/50 transition-colors" />
+                        <div className="absolute top-1.5 right-1.5 w-1 h-1 border border-white/10 group-hover:border-amber-500/30 transition-colors" />
 
                         {item && WEAPONS_DETAILS[item] ? (
                           (() => {
@@ -8649,7 +12660,7 @@ export default function App() {
                       return (
                         <div className="h-full flex flex-col animate-in fade-in slide-in-from-right-2 duration-300">
                           <div className="flex justify-between items-start mb-2">
-                            <span className="text-emerald-400 font-bold text-sm tracking-wide uppercase">
+                            <span className="text-amber-500 font-black text-[16px] tracking-widest uppercase">
                               {stats.name}
                             </span>
                             <button
@@ -8657,22 +12668,22 @@ export default function App() {
                                  e.stopPropagation();
                                  toggleToHotbar(selectedBackpackSlot);
                                }}
-                               className="text-[9px] font-mono font-bold bg-emerald-600 hover:bg-emerald-500 text-black px-2 py-1 rounded transition-colors"
+                               className="text-[10.5px] font-mono font-black bg-zinc-100 hover:bg-white text-black px-2.5 py-1 rounded transition-colors"
                             >
                               EQUIPAR ARMA
                             </button>
                           </div>
-                          <p className="text-[10px] text-white/60 mb-3 leading-relaxed">
+                          <p className="text-[12px] text-zinc-400 font-mono font-medium mb-3 leading-relaxed">
                             {stats.desc}
                           </p>
-                          <div className="grid grid-cols-2 gap-2 text-[10px] font-mono mb-4">
+                          <div className="grid grid-cols-2 gap-2 text-[11.5px] font-mono mb-4">
                             <div className="flex justify-between bg-black/40 px-2 py-1.5 rounded">
                               <span className="text-white/40">DANO</span>
                               <span className="text-white/90">{stats.damage}</span>
                             </div>
                             <div className="flex justify-between bg-black/40 px-2 py-1.5 rounded">
                               <span className="text-white/40">DISP</span>
-                              <span className="text-emerald-400 font-bold">
+                              <span className="text-amber-500 font-bold">
                                 {stats.fireRate}s
                               </span>
                             </div>
@@ -8694,13 +12705,13 @@ export default function App() {
                             if (wSkins.length === 0) return null;
                             const ownedSkins = wSkins.filter(s => inventoryRef.current.purchasedSkins.includes(s.id));
                             if (ownedSkins.length === 0) return (
-                                <div className="border-t border-emerald-500/20 pt-3 flex-1 flex items-center justify-center text-[9px] text-white/30 text-center font-mono">
+                                <div className="border-t border-zinc-800 pt-3 flex-1 flex items-center justify-center text-[9px] text-white/30 text-center font-mono">
                                   NENHUMA SKIN ADQUIRIDA
                                 </div>
                             );
                             return (
-                              <div className="border-t border-emerald-500/20 pt-3 flex-1 flex flex-col">
-                                <span className="text-[9px] font-mono text-emerald-500 mb-2 block font-bold tracking-wider">SKINS ADQUIRIDAS:</span>
+                              <div className="border-t border-zinc-900 pt-3 flex-1 flex flex-col">
+                                <span className="text-[10.5px] font-mono text-zinc-400 mb-2 block font-bold tracking-wider">SKINS ADQUIRIDAS:</span>
                                 <div className="grid grid-cols-2 gap-2 overflow-y-auto custom-scrollbar pr-1 max-h-[160px]">
                                   {ownedSkins.map(skin => {
                                     const isEquipped = inventoryRef.current.equippedSkins[stats.id] === skin.id;
@@ -8740,16 +12751,83 @@ export default function App() {
                     </div>
                   )}
                 </div>
+              {/* Backpack Utility Footer Strip - AI, Loja, Trajes buttons inside backpack */}
+              <div className="flex gap-2.5 mt-4 pt-3.5 border-t border-white/5 items-center justify-end col-span-12 pointer-events-auto">
+                <span className="text-[8px] font-mono text-white/30 mr-auto tracking-widest uppercase">CONTROLES ADICIONAIS:</span>
+                
+                <button
+                  id="btn-toggle-ai"
+                  className="px-3 py-1.5 border border-zinc-800 text-zinc-350 text-[9px] md:text-[10px] font-bold tracking-widest bg-zinc-900/40 hover:bg-zinc-900/80 rounded backdrop-blur-md border-l-[3px] cursor-pointer"
+                >
+                  AI: PATROL
+                </button>
+
+                <button
+                  onClick={() => {
+                    if (waveRef.current.mode && vanState !== "PARKED") {
+                      alert("A Kombi da Loja não está no mapa no momento! Conclua ondas para ela aparecer.");
+                      return;
+                    }
+                    SoundManager.playSound("horn", 0.6);
+                    setIsShopOpen(!isShopOpen);
+                    setIsInventoryOpen(false);
+                    setIsOutfitsOpen(false);
+                  }}
+                  className={`px-3 py-1.5 border text-[9px] md:text-[10px] font-bold tracking-widest rounded backdrop-blur-md border-l-[3px] cursor-pointer transition-colors flex items-center justify-center min-w-[65px] ${
+                    isShopOpen
+                      ? "border-red-500 text-red-400 bg-red-900/40"
+                      : "border-white/20 text-white/60 bg-black/40 hover:bg-white/10 hover:text-white"
+                  }`}
+                >
+                  LOJA
+                </button>
+
+                <button
+                  onClick={() => {
+                    setIsOutfitsOpen(!isOutfitsOpen);
+                    setIsShopOpen(false);
+                    setIsInventoryOpen(false);
+                  }}
+                  className={`px-3 py-1.5 border text-[9px] md:text-[10px] font-bold tracking-widest rounded backdrop-blur-md border-l-[3px] cursor-pointer transition-colors flex items-center justify-center min-w-[65px] ${
+                    isOutfitsOpen
+                      ? "border-blue-500 text-blue-400 bg-blue-900/40"
+                      : "border-white/20 text-white/60 bg-black/40 hover:bg-white/10 hover:text-white"
+                  }`}
+                >
+                  TRAJES
+                </button>
               </div>
             </div>
           </div>
+        </div>
         )}
 
         <div
           id="ui-hotbar"
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 pointer-events-auto transition-opacity duration-300"
+          className={`absolute bottom-6 left-1/2 -translate-x-1/2 z-40 pointer-events-auto transition-all duration-500 flex flex-col items-stretch gap-2 ${isHudHidden ? 'opacity-0 pointer-events-none translate-y-10 scale-95' : 'opacity-100 translate-y-0 scale-100'}`}
         >
-          <div className="flex gap-2">
+          {/* Wave Progress Bar above Hotbar */}
+          {(!cutscene.active) && (
+            <div className="w-[300px] sm:w-[340px] self-center flex flex-col items-stretch font-mono select-none px-1 animate-in fade-in duration-300 mb-2.5">
+              <div className="flex justify-between items-baseline text-[8px] font-black uppercase tracking-widest text-zinc-400">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-ping" />
+                  <span className="text-amber-500">ONDA {waveRef.current.current}</span>
+                </div>
+                <span className="text-red-500 font-extrabold text-[11px] shadow-[0_0_8px_rgba(239,68,68,0.8)] tracking-wide bg-black/40 px-2 py-0.5 rounded border border-red-900/30">
+                  RESTANTES: {waveRemainingZombies} / {waveRef.current.zombiesTotal || 15}
+                </span>
+              </div>
+              <div className="w-full h-1.5 bg-zinc-950 border border-zinc-900 rounded-full overflow-hidden mt-1 p-[1px] relative shadow-inner">
+                <div 
+                  className="h-full rounded-full bg-gradient-to-r from-red-600 via-red-500 to-amber-500 shadow-[0_0_8px_rgba(239,68,68,0.75)] transition-all duration-300 ease-out"
+                  style={{ width: `${Math.max(0, Math.min(100, (waveRemainingZombies / (waveRef.current.zombiesTotal || 15)) * 100))}%` }}
+                />
+              </div>
+            </div>
+          )}
+
+          <div className={`flex gap-2 justify-center transition-all duration-500 ${cutscene.active ? 'opacity-0 pointer-events-none translate-y-10' : 'opacity-100'}`}>
             {inventoryRef.current.hotbar.map((item, i) => {
               const isActive = i === inventoryRef.current.activeSlot;
               const equippedSkinId = item ? inventoryRef.current.equippedSkins[item] : null;
@@ -8852,10 +12930,11 @@ export default function App() {
           </div>
         </div>
 
-        {/* Settings Gear Button beside Radar */}
+        {/* Settings Gear Button */}
         <div
+          id="ui-btn-settings"
           onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-          className="absolute top-[30px] right-[210px] z-[45] pointer-events-auto bg-black/80 border border-white/10 hover:border-emerald-500/50 hover:shadow-[0_0_15px_rgba(16,185,129,0.35)] hover:bg-white/5 h-12 w-12 rounded-lg flex items-center justify-center transition-all cursor-pointer group active:scale-95"
+          className={`absolute top-[30px] right-[210px] z-[45] pointer-events-auto bg-black/80 border border-white/10 hover:border-emerald-500/50 hover:shadow-[0_0_15px_rgba(16,185,129,0.35)] hover:bg-white/5 h-12 w-12 rounded-lg flex items-center justify-center transition-all cursor-pointer group active:scale-95 duration-500 ${isHudHidden ? 'opacity-0 pointer-events-none translate-y-[-10px]' : 'opacity-100'}`}
           title="Configurações de Mira"
         >
           <Settings 
@@ -8863,16 +12942,37 @@ export default function App() {
           />
         </div>
 
-        {/* Sliding Holographic Settings Panel */}
+        {/* Return to Menu option has been moved inside Settings Modal */}
+
+        {/* Tactical Top-Right HUD Panel */}
+        <div id="ui-hud-right-panel" className={`absolute top-[30px] right-[30px] z-[45] pointer-events-none flex flex-col items-end gap-2 transition-all duration-500 ${isHudHidden ? 'opacity-0 translate-y-[-10px]' : 'opacity-100'}`}>
+          {/* Energy - Blue, prominent, in front */}
+          <div className="flex items-center gap-2 bg-black/70 backdrop-blur-sm border border-cyan-500/20 rounded-md px-3 py-1.5 shadow-[0_0_12px_rgba(0,229,255,0.1)]">
+            <span className="text-cyan-400 text-[10px] leading-none">⚡</span>
+            <span id="ui-radar-replacement-stamina" className="text-sm font-mono font-black text-cyan-400 tabular-nums tracking-tight" style={{ textShadow: "0 0 8px rgba(0,229,255,0.4)" }}>
+              100/100
+            </span>
+          </div>
+          {/* Credits - minimalist, just numbers */}
+          <div className="flex items-center gap-1.5 bg-black/50 backdrop-blur-sm border border-white/5 rounded-md px-3 py-1 shadow-inner">
+            <span className="text-[8px] text-amber-500/60 font-mono">$</span>
+            <span className="text-[13px] font-mono font-black text-amber-500 tabular-nums tracking-tight">
+              {credits.toLocaleString()}
+            </span>
+          </div>
+        </div>
+
+        {/* Sliding Holographic Settings Panel -> Centralized Modal */}
         <AnimatePresence>
           {isSettingsOpen && (
-            <motion.div
-              initial={{ opacity: 0, x: 100 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 100 }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="absolute top-[30px] right-[275px] z-[45] pointer-events-auto w-[320px] bg-black/95 backdrop-blur-xl border border-white/10 rounded-xl p-5 shadow-inner shadow-black/80 flex flex-col gap-3.5 max-h-[85vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-250"
-            >
+            <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-md pointer-events-auto">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                className="w-[400px] bg-black/95 border border-emerald-500/30 rounded-xl p-6 shadow-[0_0_40px_rgba(16,185,129,0.1)] flex flex-col gap-4 relative"
+              >
               <div className="flex justify-between items-center border-b border-white/5 pb-3">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 bg-emerald-500 animate-pulse rounded-full shadow-[0_0_8px_#10b981]" />
@@ -9069,97 +13169,101 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="border-t border-white/5 pt-3.5 flex justify-between items-center text-[8px] font-mono text-white/20 tracking-wider">
-                <span>SYSTEM PARAMETERS: REGULAR</span>
-                <span>v1.2-ALPHA</span>
+              {/* Return to Menu Button inside Settings Modal */}
+              <div className="border-t border-white/5 pt-3.5 flex flex-col gap-3">
+                <button
+                  onClick={() => {
+                    if (isWaveMode) {
+                      setCredits(Math.max(0, credits - 500));
+                    }
+                    (window as any).inTrainingMode = false;
+                    (window as any).trainingTransitionActive = false;
+                    setInTrainingMode(false);
+                    setIsSettingsOpen(false);
+                    setGameState("MENU");
+                  }}
+                  className="w-full py-2 bg-red-950/40 hover:bg-red-900/50 border border-red-500/30 text-red-400 font-mono text-[9px] tracking-widest uppercase font-bold rounded-lg cursor-pointer transition-all active:scale-[0.98] text-center"
+                  title={isWaveMode ? "Abandonar Onda (Perde $ e Volta ao Menu)" : "Voltar ao Menu"}
+                >
+                  {isWaveMode ? "Voltar ao Menu (Abandonar)" : "Voltar ao Menu"}
+                </button>
+                
+                <div className="flex justify-between items-center text-[8px] font-mono text-white/25 tracking-wider">
+                  <span>SYSTEM PARAMETERS: REGULAR</span>
+                  <span>v1.2-ALPHA</span>
+                </div>
               </div>
             </motion.div>
+            </div>
           )}
         </AnimatePresence>
 
       {/* Mobile Controls Overlay */}
-      {gameState === "PLAYING" && (isMobile || showMobileControls) && (
+      {gameState === "PLAYING" && (isMobile || showMobileControls) && !cutscene.active && !isHudHidden && (
         <div className="absolute inset-0 z-30 pointer-events-none select-none">
-          {/* Movement Joystick Area (Left Side - Shifted down and scaled) */}
+          {/* Movement Joystick Area (Left Side) */}
           <div 
-            className="absolute bottom-4 left-4 w-28 h-28 bg-black/40 border border-white/10 rounded-full flex items-center justify-center pointer-events-auto backdrop-blur-md relative shadow-[0_0_20px_rgba(255,255,255,0.05)]"
+            className="absolute bottom-8 left-8 w-32 h-32 bg-black/60 border border-white/5 rounded-full flex items-center justify-center pointer-events-auto backdrop-blur-md"
             onTouchStart={handleJoystickStart}
             onTouchMove={handleJoystickMove}
             onTouchEnd={handleJoystickEnd}
           >
-            {/* Tactical Crosshair Tick Marks */}
-            <div className="absolute top-1 w-0.5 h-1.5 bg-white/20" />
-            <div className="absolute bottom-1 w-0.5 h-1.5 bg-white/20" />
-            <div className="absolute left-1 h-0.5 w-1.5 bg-white/20" />
-            <div className="absolute right-1 h-0.5 w-1.5 bg-white/20" />
-            <div className="absolute w-22 h-22 border border-white/5 rounded-full pointer-events-none" />
+            {/* Minimalist Tick Marks */}
+            <div className="absolute top-2 w-0.5 h-1.5 bg-white/10" />
+            <div className="absolute bottom-2 w-0.5 h-1.5 bg-white/10" />
+            <div className="absolute left-2 h-0.5 w-1.5 bg-white/10" />
+            <div className="absolute right-2 h-0.5 w-1.5 bg-white/10" />
+            <div className="absolute w-24 h-24 border border-white/5 rounded-full pointer-events-none" />
 
             {joystickStart && (
               <div 
-                className="absolute w-12 h-12 bg-zinc-900/80 border-2 border-white/30 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(255,255,255,0.15)] pointer-events-none"
+                className="absolute w-12 h-12 bg-zinc-800 border-2 border-white/10 rounded-full flex items-center justify-center pointer-events-none shadow-sm"
                 style={{
                   transform: `translate(${Math.min(30, Math.max(-30, (joystickCurrent?.x ?? 0) - joystickStart.x))}px, ${Math.min(30, Math.max(-30, (joystickCurrent?.y ?? 0) - joystickStart.y))}px)`
                 }}
-              >
-                <div className="w-3.5 h-3.5 bg-white/80 rounded-full shadow-[0_0_8px_white]" />
-              </div>
-            )}
-            {!joystickStart && (
-              <div className="w-10 h-10 border border-white/10 rounded-full flex items-center justify-center relative">
-                <div className="w-2 h-2 bg-white/25 rounded-full animate-pulse" />
-              </div>
+              />
             )}
           </div>
 
           {/* Action Buttons Area (Right Side - Compact and tactical) */}
-          <div className="absolute bottom-4 right-4 flex flex-col gap-3.5 items-end pointer-events-auto">
+          <div className="absolute bottom-8 right-8 flex flex-col gap-4 items-end pointer-events-auto">
             {/* Dodge/Roll Button */}
             <button
               onTouchStart={() => {
                 (window as any).mobileRollTrigger = true;
               }}
-              className="w-14 h-14 rounded-full bg-blue-950/40 border border-blue-500/40 text-blue-400 font-mono text-xs font-black shadow-[0_0_15px_rgba(59,130,246,0.15)] flex flex-col items-center justify-center gap-0.5 backdrop-blur-md active:scale-90 active:bg-blue-900/40 transition-all uppercase tracking-wider select-none pointer-events-auto"
+              className="w-14 h-14 rounded-full bg-black/60 border border-white/10 text-zinc-300 font-mono text-xs font-black flex flex-col items-center justify-center gap-0.5 backdrop-blur-md active:scale-90 active:bg-zinc-800 transition-all select-none pointer-events-auto"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
                 <path d="M20 20A10 10 0 1 0 4 20" />
                 <path d="M20 13V20H13" />
               </svg>
-              <span className="text-[7px] font-bold">ROLL</span>
             </button>
 
-            <div className="flex gap-3 items-end">
+            <div className="flex gap-4 items-end">
               {/* Aim/ADS Joystick Button */}
               <div
                 onTouchStart={handleAdsJoystickStart}
                 onTouchMove={handleAdsJoystickMove}
                 onTouchEnd={handleAdsJoystickEnd}
-                className="w-18 h-18 rounded-full bg-amber-950/40 border border-amber-500/40 flex flex-col items-center justify-center relative shadow-[0_0_20px_rgba(245,158,11,0.15)] active:scale-95 transition-all pointer-events-auto cursor-crosshair select-none backdrop-blur-md"
+                className="w-20 h-20 rounded-full bg-black/60 border border-amber-500/20 flex flex-col items-center justify-center active:scale-95 transition-all pointer-events-auto select-none backdrop-blur-md relative"
               >
                 {/* Tactical Reticle Marks */}
-                <div className="absolute top-1 w-0.5 h-1.5 bg-amber-500/30" />
-                <div className="absolute bottom-1 w-0.5 h-1.5 bg-amber-500/30" />
-                <div className="absolute left-1 h-0.5 w-1.5 bg-amber-500/30" />
-                <div className="absolute right-1 h-0.5 w-1.5 bg-amber-500/30" />
+                <div className="absolute top-1.5 w-0.5 h-1.5 bg-amber-500/20" />
+                <div className="absolute bottom-1.5 w-0.5 h-1.5 bg-amber-500/20" />
+                <div className="absolute left-1.5 h-0.5 w-1.5 bg-amber-500/20" />
+                <div className="absolute right-1.5 h-0.5 w-1.5 bg-amber-500/20" />
 
                 {adsJoystickStart && (
                   <div
-                    className="absolute w-9 h-9 bg-amber-950 border border-amber-500 rounded-full flex items-center justify-center shadow-[0_0_10px_rgba(245,158,11,0.3)] pointer-events-none"
+                    className="absolute w-10 h-10 bg-zinc-800 border border-amber-500/30 rounded-full flex items-center justify-center pointer-events-none"
                     style={{
                       transform: `translate(${Math.min(22, Math.max(-22, (adsJoystickCurrent?.x ?? 0) - adsJoystickStart.x))}px, ${Math.min(22, Math.max(-22, (adsJoystickCurrent?.y ?? 0) - adsJoystickStart.y))}px)`
                     }}
-                  >
-                    <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
-                  </div>
+                  />
                 )}
                 {!adsJoystickStart && (
-                  <>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-amber-500/80 mb-0.5">
-                      <circle cx="12" cy="12" r="10" />
-                      <circle cx="12" cy="12" r="4" />
-                      <path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
-                    </svg>
-                    <span className="text-[7.5px] font-mono font-black text-amber-500/70 tracking-widest uppercase pointer-events-none">AIM</span>
-                  </>
+                  <span className="text-[9px] font-mono font-black text-amber-500/50 tracking-widest uppercase pointer-events-none">MIRA</span>
                 )}
               </div>
 
@@ -9168,33 +13272,125 @@ export default function App() {
                 onTouchStart={handleAimStart}
                 onTouchMove={handleAimMove}
                 onTouchEnd={handleAimEnd}
-                className="w-20 h-20 rounded-full bg-red-950/40 border border-red-500/40 flex flex-col items-center justify-center relative shadow-[0_0_20px_rgba(239,68,68,0.15)] active:scale-95 transition-all pointer-events-auto cursor-crosshair select-none backdrop-blur-md"
+                className="w-24 h-24 rounded-full bg-black/60 border border-red-500/20 flex flex-col items-center justify-center active:scale-95 transition-all pointer-events-auto select-none backdrop-blur-md relative"
               >
                 {/* Tactical Reticle Marks */}
-                <div className="absolute top-1 w-0.5 h-1.5 bg-red-500/30" />
-                <div className="absolute bottom-1 w-0.5 h-1.5 bg-red-500/30" />
-                <div className="absolute left-1 h-0.5 w-1.5 bg-red-500/30" />
-                <div className="absolute right-1 h-0.5 w-1.5 bg-red-500/30" />
+                <div className="absolute top-2 w-0.5 h-2 bg-red-500/20" />
+                <div className="absolute bottom-2 w-0.5 h-2 bg-red-500/20" />
+                <div className="absolute left-2 h-0.5 w-2 bg-red-500/20" />
+                <div className="absolute right-2 h-0.5 w-2 bg-red-500/20" />
 
                 {aimJoystickStart && (
                   <div
-                    className="absolute w-10 h-10 bg-red-950 border border-red-500 rounded-full flex items-center justify-center shadow-[0_0_10px_rgba(239,68,68,0.3)] pointer-events-none"
+                    className="absolute w-12 h-12 bg-zinc-800 border border-red-500/30 rounded-full flex items-center justify-center pointer-events-none"
                     style={{
                       transform: `translate(${Math.min(25, Math.max(-25, (aimJoystickCurrent?.x ?? 0) - aimJoystickStart.x))}px, ${Math.min(25, Math.max(-25, (aimJoystickCurrent?.y ?? 0) - aimJoystickStart.y))}px)`
                     }}
-                  >
-                    <div className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse" />
-                  </div>
+                  />
                 )}
                 {!aimJoystickStart && (
-                  <>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-red-500/80 mb-0.5">
-                      <path d="M12 2v20M9 8c0-3 3-5 3-5s3 2 3 5v8H9V8Z" />
-                    </svg>
-                    <span className="text-[8px] font-mono font-black text-red-500/80 tracking-widest uppercase pointer-events-none">FIRE</span>
-                  </>
+                  <span className="text-[11px] font-mono font-black text-red-500/50 tracking-widest uppercase pointer-events-none">FOGO</span>
                 )}
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Ad Unavailable Warning Alert */}
+      {adAlertOpen && (
+        <div className="absolute inset-0 z-[220] flex items-center justify-center bg-black/75 backdrop-blur-md pointer-events-auto select-none">
+          <div className="bg-zinc-950 border border-zinc-900 p-6 rounded-2xl w-[380px] max-w-[90vw] text-center flex flex-col items-center gap-4 shadow-[0_20px_50px_rgba(0,0,0,0.85)] relative overflow-hidden">
+            <div className="absolute -top-16 -left-16 w-36 h-36 rounded-full blur-[40px] bg-amber-500/10" />
+            <div className="w-12 h-12 rounded-full bg-amber-550/15 border border-amber-500/30 flex items-center justify-center text-xl text-amber-400 z-10">
+              📺
+            </div>
+            <div className="z-10">
+              <h3 className="text-zinc-200 text-xs font-black font-mono tracking-widest uppercase mb-2">VÍDEO INDISPONÍVEL</h3>
+              <p className="text-[9.5px] text-zinc-500 leading-relaxed font-mono">
+                Os anúncios em vídeo estão desabilitados no ambiente de testes local.<br/><br/>
+                Esta funcionalidade estará totalmente integrada com o SDK de anúncios oficial na versão de lançamento da <strong>Google Play Store</strong>.
+              </p>
+            </div>
+            <button 
+              onClick={() => setAdAlertOpen(false)}
+              className="w-full py-2.5 bg-amber-600 hover:bg-amber-500 text-black font-mono text-[9px] font-black tracking-widest uppercase rounded-lg cursor-pointer transition-colors shadow-lg shadow-amber-950/20 active:scale-95"
+            >
+              OK, ENTENDI
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Simulated Ad Player Overlay */}
+      {activeAd && (
+        <div className="absolute inset-0 z-[200] flex items-center justify-center bg-black/85 backdrop-blur-lg select-none pointer-events-auto">
+          <div className="bg-zinc-950 border border-zinc-900 rounded-3xl p-8 w-[450px] max-w-[90vw] shadow-[0_25px_60px_rgba(0,0,0,0.85)] relative overflow-hidden flex flex-col items-center">
+            {/* Animated backdrop light glow */}
+            <div className="absolute -top-24 -left-24 w-60 h-60 rounded-full blur-[90px] bg-gradient-to-br from-amber-500/20 to-transparent animate-pulse" />
+            
+            {/* Ad Header */}
+            <div className="w-full flex justify-between items-center mb-6 z-10 border-b border-zinc-900 pb-3">
+              <span className="text-[9px] font-mono tracking-[0.25em] text-zinc-500 uppercase font-black">
+                ANÚNCIO PATROCINADO
+              </span>
+              <span className="text-[9px] font-mono font-bold text-amber-550 bg-amber-950/40 border border-amber-900/30 px-2 py-0.5 rounded-full">
+                {adFinished ? "CONCLUÍDO" : `CONTINUAR EM: ${adTimer}s`}
+              </span>
+            </div>
+
+            {/* Fake Ad Body Container */}
+            <div className={`w-full bg-gradient-to-b ${FAKE_ADS[fakeAdIndex].bgColor} border border-zinc-900 rounded-2xl p-5 flex flex-col items-center text-center gap-4 relative z-10 min-h-[200px] justify-center`}>
+              {/* Fake logo representation */}
+              <div className="w-16 h-16 rounded-2xl bg-zinc-900/80 border border-zinc-800 flex items-center justify-center text-3xl shadow-lg shadow-black/40 scale-100 transition-all select-none">
+                {fakeAdIndex === 0 ? "💰" : fakeAdIndex === 1 ? "🛡️" : "🐯"}
+              </div>
+
+              <div>
+                <h3 className="text-sm font-black text-white tracking-widest uppercase mb-1">
+                  {FAKE_ADS[fakeAdIndex].title}
+                </h3>
+                <p className="text-[9.5px] text-amber-500 font-bold font-mono tracking-wide uppercase mb-2">
+                  {FAKE_ADS[fakeAdIndex].tagline}
+                </p>
+                <p className="text-[8.5px] text-zinc-400 font-mono tracking-normal leading-relaxed">
+                  {FAKE_ADS[fakeAdIndex].desc}
+                </p>
+              </div>
+
+              <button className="px-5 py-2.5 bg-white text-black font-mono font-bold text-[9px] tracking-widest uppercase rounded-lg hover:scale-105 transition-all shadow-xl active:scale-95 cursor-pointer">
+                {FAKE_ADS[fakeAdIndex].action}
+              </button>
+            </div>
+
+            {/* Ad Footer / Claim Action */}
+            <div className="w-full mt-6 z-10 flex flex-col items-center gap-3">
+              {/* Fake Progress Bar */}
+              {!adFinished && (
+                <div className="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden border border-zinc-800/40">
+                  <div 
+                    className="h-full bg-amber-500 transition-all duration-1000 ease-linear shadow-[0_0_8px_rgba(245,158,11,0.5)]"
+                    style={{ width: `${((4 - adTimer) / 4) * 100}%` }}
+                  />
+                </div>
+              )}
+
+              {adFinished ? (
+                <button
+                  onClick={() => {
+                    const rewardCb = activeAd.onComplete;
+                    setActiveAd(null);
+                    rewardCb();
+                  }}
+                  className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-black font-mono font-black text-[10px] tracking-widest uppercase rounded-xl transition-all shadow-[0_0_25px_rgba(16,185,129,0.35)] active:scale-98 cursor-pointer text-center animate-bounce"
+                >
+                  {activeAd.type === "revive" ? "REVIVER JOGADOR!" : "RESGATAR MELHORIA GRÁTIS!"}
+                </button>
+              ) : (
+                <span className="text-[8.5px] font-mono text-zinc-550 uppercase tracking-widest animate-pulse">
+                  AGUARDE O FIM DO VÍDEO PARA RESGATAR...
+                </span>
+              )}
             </div>
           </div>
         </div>

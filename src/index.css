@@ -2,9 +2,7 @@
 @import "tailwindcss";
 
 .menu-brick-bg {
-  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.2) 20%, rgba(0, 0, 0, 0.95) 90%), url('/cover.jpg');
-  background-size: cover;
-  background-position: center;
+  background: #0a0908;
 }
 
 .menu-title-stencil {
@@ -17,24 +15,24 @@
 .menu-title-survival {
   font-family: 'Oswald', sans-serif;
   letter-spacing: 2px;
-  color: #a80f0f;
-  text-shadow: 1px 1px 0px #fff, -1px -1px 0px #fff, 1px -1px 0px #fff, -1px 1px 0px #fff, 0px 4px 15px rgba(168,15,15,0.4);
+  color: #300000; /* Darker blood red */
+  text-shadow: 2px 2px 0px #000, -2px -2px 0px #000, 2px -2px 0px #000, -2px 2px 0px #000, 0px 6px 20px rgba(0,0,0,1);
 }
 
 .menu-btn-concrete {
-  background: linear-gradient(135deg, #dcdcdc 0%, #b8b8b8 100%);
-  border: 4px solid #5a0a0a;
-  box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+  background: linear-gradient(135deg, #28221d 0%, #15120f 100%);
+  border: 4px solid #3d0a0a;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.6);
   font-family: 'Oswald', sans-serif;
-  color: #111;
+  color: #eee;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .menu-btn-concrete:hover {
   transform: scale(1.03);
-  background: linear-gradient(135deg, #ebebeb 0%, #cccccc 100%);
-  box-shadow: 0 10px 20px rgba(168,15,15,0.3);
-  border-color: #a80f0f;
+  background: linear-gradient(135deg, #383029 0%, #1f1b16 100%);
+  box-shadow: 0 10px 24px rgba(220, 38, 38, 0.25);
+  border-color: #8c1212;
 }
 
 .vignette {
@@ -119,4 +117,21 @@
 
 .animate-flicker {
   animation: hologram-flicker 6s linear infinite;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.custom-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes fade-tip-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-tip-in {
+  animation: fade-tip-in 600ms ease-out forwards;
 }
