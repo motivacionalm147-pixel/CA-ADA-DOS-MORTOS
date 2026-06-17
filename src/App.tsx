@@ -209,17 +209,28 @@ class SoundManagerClass {
   private gameplayMusicSource: MediaElementAudioSourceNode | null = null;
   private musicFilter: BiquadFilterNode | null = null;
 
+  // Custom Track Rotation properties
+  private gameplayTracks: string[] = [
+    "/sounds/alec_koff-heavy-doom-dark-metal-493397.mp3",
+    "/sounds/dragon-studio-dance-with-demons-fight-music-316548.mp3",
+    "/sounds/warbringerghesh-cloud-of-doom-538508.mp3"
+  ];
+  private currentTrackIndex = 0;
+  private maxTrackDuration = 90; // Cut tracks at 90 seconds (1 minute 30 seconds)
+  private trackCheckInterval: any = null;
+  public isMuted = false;
+
   constructor() {
     if (typeof window !== "undefined") {
       this.menuMusic = new Audio("/sounds/musica_menu.mp3");
       this.menuMusic.loop = true;
       this.menuMusic.volume = 0.35;
 
-      this.gameplayMusic = new Audio("/sounds/musica fundo.mp3");
-      this.gameplayMusic.loop = true;
+      // Start with the first gameplay track
+      this.gameplayMusic = new Audio(this.gameplayTracks[0]);
+      this.gameplayMusic.loop = false; // We cycle tracks instead of looping one
       this.gameplayMusic.volume = 0.25;
 
-      // Keep this.music pointing to gameplayMusic so fallback methods work
       this.music = this.gameplayMusic;
 
       this.zombies = new Audio("/sounds/somde zumbis.mp3");
@@ -309,7 +320,6 @@ class SoundManagerClass {
     if (!ctx) return;
     const time = ctx.currentTime;
     
-    // Robust, heavy mechanical click / radio key chirp:
     const osc1 = ctx.createOscillator();
     const gain1 = ctx.createGain();
     osc1.type = "sine";
@@ -339,12 +349,77 @@ class SoundManagerClass {
     osc2.stop(time + 0.09);
   }
 
+  private startTrackCheck() {
+    if (this.trackCheckInterval) clearInterval(this.trackCheckInterval);
+    
+    if (this.gameplayMusic) {
+      this.gameplayMusic.onended = () => {
+        this.playNextGameplayTrack();
+      };
+    }
+
+    this.trackCheckInterval = setInterval(() => {
+      if (this.activeMusicType !== "GAMEPLAY" || !this.gameplayMusic) return;
+      
+      // If the song plays past the limit (90 seconds), fade and switch
+      if (this.gameplayMusic.currentTime >= this.maxTrackDuration) {
+        this.playNextGameplayTrack();
+      }
+    }, 1000);
+  }
+
+  private stopTrackCheck() {
+    if (this.trackCheckInterval) {
+      clearInterval(this.trackCheckInterval);
+      this.trackCheckInterval = null;
+    }
+  }
+
+  private playNextGameplayTrack() {
+    if (!this.gameplayMusic || this.activeMusicType !== "GAMEPLAY") return;
+    
+    this.fadeAudioOut(this.gameplayMusic, 2000);
+    
+    setTimeout(() => {
+      if (this.activeMusicType !== "GAMEPLAY" || !this.gameplayMusic) return;
+      
+      // Advance to next index
+      this.currentTrackIndex = (this.currentTrackIndex + 1) % this.gameplayTracks.length;
+      
+      this.gameplayMusic.src = this.gameplayTracks[this.currentTrackIndex];
+      this.gameplayMusic.load();
+      this.gameplayMusic.volume = 0.01;
+      
+      this.gameplayMusic.play().then(() => {
+        const targetVol = this.isMuted ? 0 : 0.25;
+        this.fadeAudioIn(this.gameplayMusic, targetVol, 1500);
+      }).catch(e => console.log("Next track failed", e));
+    }, 2100);
+  }
+
+  public toggleMute() {
+    this.isMuted = !this.isMuted;
+    if (this.isMuted) {
+      if (this.menuMusic) this.menuMusic.volume = 0;
+      if (this.gameplayMusic) this.gameplayMusic.volume = 0;
+    } else {
+      if (this.activeMusicType === "MENU" && this.menuMusic) {
+        this.menuMusic.volume = 0.35;
+      }
+      if (this.activeMusicType === "GAMEPLAY" && this.gameplayMusic) {
+        this.gameplayMusic.volume = 0.25;
+      }
+    }
+    return this.isMuted;
+  }
+
   public playMenuMusic() {
     this.initContext();
     if (this.activeMusicType === "MENU") return;
     this.activeMusicType = "MENU";
     
     this.clearAllFades();
+    this.stopTrackCheck();
 
     if (this.gameplayMusic) {
       this.fadeAudioOut(this.gameplayMusic, 1200);
@@ -352,7 +427,8 @@ class SoundManagerClass {
     if (this.menuMusic) {
       this.menuMusic.volume = 0.01;
       this.menuMusic.play().then(() => {
-        this.fadeAudioIn(this.menuMusic, 0.35, 1200);
+        const targetVol = this.isMuted ? 0 : 0.35;
+        this.fadeAudioIn(this.menuMusic, targetVol, 1200);
       }).catch(e => console.log("Menu music failed", e));
     }
   }
@@ -368,9 +444,11 @@ class SoundManagerClass {
       this.fadeAudioOut(this.menuMusic, 1200);
     }
     if (this.gameplayMusic) {
+      this.startTrackCheck();
       this.gameplayMusic.volume = 0.01;
       this.gameplayMusic.play().then(() => {
-        this.fadeAudioIn(this.gameplayMusic, 0.25, 1200);
+        const targetVol = this.isMuted ? 0 : 0.25;
+        this.fadeAudioIn(this.gameplayMusic, targetVol, 1200);
       }).catch(e => console.log("Gameplay music failed", e));
     }
   }
@@ -381,10 +459,20 @@ class SoundManagerClass {
   }
 
   public fadeAudioIn(audio: HTMLAudioElement, targetVol: number, durationMs: number) {
+    if (this.isMuted) {
+      audio.volume = 0;
+      return;
+    }
     const steps = 25;
     const stepTime = durationMs / steps;
     let currentStep = 0;
     const interval = setInterval(() => {
+      if (this.isMuted) {
+        audio.volume = 0;
+        clearInterval(interval);
+        this.fadeIntervals.delete(interval);
+        return;
+      }
       currentStep++;
       const ratio = currentStep / steps;
       audio.volume = ratio * targetVol;
@@ -650,7 +738,7 @@ class SoundManagerClass {
 
   public setMotorVolume(vol: number) {
     if (this.motor) {
-      this.motor.volume = Math.max(0, Math.min(0.9, vol));
+      this.motor.volume = Math.max(0, Math.min(1.0, vol));
     }
   }
 
@@ -1652,8 +1740,13 @@ const GAMEPLAY_TIPS = [
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const blurOverlayRef = useRef<HTMLDivElement>(null);
+  const [showInitialTips, setShowInitialTips] = useState(true);
+  const [isLoadingProtocol, setIsLoadingProtocol] = useState(true);
+  const [protocolProgress, setProtocolProgress] = useState(0);
+  const [currentTipIndex, setCurrentTipIndex] = useState(0);
   const [gameState, setGameState] = useState<"MENU" | "PLAYING">("MENU");
   const [hoveredDesc, setHoveredDesc] = useState<string | null>(null);
+  const [musicMuted, setMusicMuted] = useState(false);
   useEffect(() => {
     const handleError = (msg: any, url: any, line: any, col: any, error: any) => {
       const errDiv = document.createElement("div");
@@ -1687,8 +1780,21 @@ export default function App() {
     } else {
       SoundManager.playMenuMusic();
     }
+
+    const handleUserGesture = () => {
+      if (gameState !== "PLAYING") {
+        SoundManager.playMenuMusic();
+      }
+      window.removeEventListener("click", handleUserGesture);
+      window.removeEventListener("keydown", handleUserGesture);
+    };
+    window.addEventListener("click", handleUserGesture);
+    window.addEventListener("keydown", handleUserGesture);
+
     return () => {
       window.onerror = null;
+      window.removeEventListener("click", handleUserGesture);
+      window.removeEventListener("keydown", handleUserGesture);
       SoundManager.stopBGMusic();
     };
   }, [gameState]);
@@ -1713,8 +1819,6 @@ export default function App() {
   const [selectedUpgradeId, setSelectedUpgradeId] = useState<string>("damage");
 
   const [gameplayTipsOpen, setGameplayTipsOpen] = useState(false);
-  const [showInitialTips, setShowInitialTips] = useState(true);
-  const [currentTipIndex, setCurrentTipIndex] = useState(0);
   const [isTypingActive, setIsTypingActive] = useState(false);
   const [typingText, setTypingText] = useState("");
   const [typingTextFade, setTypingTextFade] = useState(false);
@@ -1722,6 +1826,81 @@ export default function App() {
   const [hoveredCampfireChar, setHoveredCampfireChar] = useState<string | null>(null);
   const [viewingCampfireChar, setViewingCampfireChar] = useState<string>("red");
   const [introFadeOut, setIntroFadeOut] = useState(false);
+
+  // Simulated Protocol Loading progress loop with synthesized high-tech audio ticks (~7.5 seconds duration)
+  useEffect(() => {
+    if (!isLoadingProtocol) return;
+
+    let progress = 0;
+    const interval = setInterval(() => {
+      // Small progress steps to lengthen loading to ~7.5 seconds
+      progress += Math.random() < 0.7 ? 2 : 1;
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(interval);
+        setTimeout(() => {
+          setIsLoadingProtocol(false);
+          // Play a dynamic success beep chime
+          try {
+            const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+            const now = audioCtx.currentTime;
+            
+            const osc1 = audioCtx.createOscillator();
+            const gain1 = audioCtx.createGain();
+            osc1.type = "triangle";
+            osc1.frequency.setValueAtTime(880, now);
+            gain1.gain.setValueAtTime(0.02, now);
+            gain1.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+            osc1.connect(gain1);
+            gain1.connect(audioCtx.destination);
+            osc1.start(now);
+            osc1.stop(now + 0.12);
+            
+            const osc2 = audioCtx.createOscillator();
+            const gain2 = audioCtx.createGain();
+            osc2.type = "triangle";
+            osc2.frequency.setValueAtTime(1320, now + 0.08);
+            gain2.gain.setValueAtTime(0.02, now + 0.08);
+            gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+            osc2.connect(gain2);
+            gain2.connect(audioCtx.destination);
+            osc2.start(now + 0.08);
+            osc2.stop(now + 0.22);
+          } catch(e) {}
+
+          // Start the menu music smoothly
+          SoundManager.playMenuMusic();
+        }, 500);
+      }
+      
+      setProtocolProgress(progress);
+      
+      // Play a quick, clean high-tech synth tick on each step
+      if (typeof window !== "undefined" && progress < 100) {
+        try {
+          const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          
+          osc.type = "sine";
+          // Pitch increases slightly as the protocol loading completes
+          osc.frequency.setValueAtTime(500 + progress * 7, audioCtx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(1000 + progress * 4, audioCtx.currentTime + 0.04);
+          
+          gain.gain.setValueAtTime(0.015, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.04);
+          
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.04);
+        } catch (e) {}
+      }
+    }, 130);
+
+    return () => clearInterval(interval);
+  }, [isLoadingProtocol]);
 
   // Dark intro fade - starts dark, fades to reveal menu after 1.5s
   useEffect(() => {
@@ -2312,12 +2491,14 @@ export default function App() {
   };
   useEffect(() => {
     if (gameState !== "MENU") return;
+    // Faster cycles (every 2.2s) during protocol load so 3 wallpapers are shown, slower (4.5s) on standard menu
+    const delay = isLoadingProtocol ? 2200 : 4500;
     const interval = setInterval(() => {
       setPrevBgIndex(currentBgIndex);
       setCurrentBgIndex((prev) => (prev + 1) % menuWallpapers.length);
-    }, 3000);
+    }, delay);
     return () => clearInterval(interval);
-  }, [gameState, currentBgIndex]);
+  }, [gameState, currentBgIndex, isLoadingProtocol]);
 
   const [draggedItem, setDraggedItem] = useState<{ type: "hotbar" | "backpack"; index: number } | null>(null);
 
@@ -3890,13 +4071,13 @@ export default function App() {
 
       // Update Kombi and Zombie ambient sound volumes
       const vanDist = Math.hypot(player.x - VAN_X, player.y - VAN_Y);
-      const vanVolume = Math.max(0, 1 - vanDist / 700) * 0.85;
+      const vanVolume = Math.max(0, 1 - vanDist / 850) * 1.35; // Boosted motor sound volume and audibility range
       SoundManager.setMotorVolume(vanVolume);
 
-      // Trigger horn when player gets close to the van (only once per approach)
+      // Trigger horn when player gets close to the van (disabled per user request to avoid annoying repetition)
       const isNearVan = vanDist < VAN_RADIUS + 80;
       if (isNearVan && !(player as any).wasNearVan && !player.isDead) {
-        SoundManager.playSound("horn", 0.7);
+        // SoundManager.playSound("horn", 0.7); // Disabled proximity honking
       }
       (player as any).wasNearVan = isNearVan;
 
@@ -4200,6 +4381,7 @@ export default function App() {
           if (player.bloodiness > 0) {
             const footOffsetX = player.leftFoot ? -8 : 8;
             const moveAngle = Math.atan2(player.vy, player.vx);
+            const activeColor = skinRef.current ? skinRef.current.colorMain : "#2d4c22";
             pushBloodDecal({
               x: player.x + Math.cos(moveAngle + Math.PI / 2) * footOffsetX,
               y: player.y + Math.sin(moveAngle + Math.PI / 2) * footOffsetX,
@@ -4209,6 +4391,7 @@ export default function App() {
               stretch: 1.5,
               type: "footprint",
               timer: 0,
+              color: activeColor,
             });
             player.bloodiness -= 0.04;
             if (player.bloodiness < 0) player.bloodiness = 0;
@@ -5816,33 +5999,33 @@ export default function App() {
                    }
                 }
 
-                // Extra head explode gore & brain matter!
-                for (let i = 0; i < 40; i++) {
+                // Extra head explode gore & brain matter (massively boosted upward cinematic velocities!)
+                for (let i = 0; i < 45; i++) {
                   pushBloodDrop({
                     x: m.x,
                     y: m.y,
-                    z: 20 + Math.random() * 15,
-                    vx: (Math.random() - 0.5) * 1800,
-                    vy: (Math.random() - 0.5) * 1800,
-                    vz: 350 + Math.random() * 500,
-                    size: 2.5 + Math.random() * 3.5,
-                    color: Math.random() > 0.3 ? "#ff0000" : "#2e0000",
+                    z: 20 + Math.random() * 20,
+                    vx: (Math.random() - 0.5) * 2200,
+                    vy: (Math.random() - 0.5) * 2200,
+                    vz: 700 + Math.random() * 1100, // Launches extremely high up!
+                    size: 3.0 + Math.random() * 4.5,
+                    color: Math.random() > 0.35 ? "#ef4444" : "#7f1d1d",
                   });
                 }
                 
-                // Bone/Skull fragments
-                for (let i = 0; i < 6; i++) {
+                // Bone/Skull/Meat fragments
+                for (let i = 0; i < 9; i++) {
                   pushGib({
                     x: m.x,
                     y: m.y,
                     z: 25,
-                    vx: (Math.random() - 0.5) * 800,
-                    vy: (Math.random() - 0.5) * 800,
-                    vz: 200 + Math.random() * 400,
+                    vx: (Math.random() - 0.5) * 1100,
+                    vy: (Math.random() - 0.5) * 1100,
+                    vz: 500 + Math.random() * 800, // Boosted vertical projection
                     angle: Math.random() * Math.PI * 2,
-                    rotSpeed: (Math.random() - 0.5) * 40,
-                    size: 6 + Math.random() * 8,
-                    life: 2 + Math.random() * 3,
+                    rotSpeed: (Math.random() - 0.5) * 50,
+                    size: 7 + Math.random() * 10,
+                    life: 2.2 + Math.random() * 3.5,
                   });
                 }
                 
@@ -7065,22 +7248,58 @@ export default function App() {
               ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
             }
           } else {
-            // Procedural organic desert sand dunes (sine wave variations) - slightly lighter/clearer
-            const ripple = Math.sin(x * 0.005 + y * 0.0025) * 6;
-            const r = Math.max(18, Math.floor(34 + ripple * 0.5));
-            const g = Math.max(14, Math.floor(27 + ripple * 0.4));
-            const b = Math.max(10, Math.floor(20 + ripple * 0.3));
+            // Procedural organic floor based on the current wave number (cenarios diferentes para cada onda)
+            const wNum = wave || 1;
+            let r = 34, g = 27, b = 20; // Default sand dunes
+            let grainColor = "rgba(220, 180, 110, 0.04)";
             
-            ctx.fillStyle = `rgb(${r}, ${g}, ${b})`; // Slightly lighter desert sand
+            if (wNum === 3 || wNum === 4) {
+              // Toxic Wasteland: Greenish mossy sand
+              const ripple = Math.sin(x * 0.005 + y * 0.0025) * 5;
+              r = Math.max(10, Math.floor(22 + ripple * 0.3));
+              g = Math.max(18, Math.floor(38 + ripple * 0.5));
+              b = Math.max(12, Math.floor(26 + ripple * 0.3));
+              grainColor = "rgba(100, 200, 120, 0.06)";
+            } else if (wNum === 5 || wNum === 6) {
+              // Volcanic Scorched Ash: Dark charcoal grey with heat
+              const ripple = Math.sin(x * 0.005 + y * 0.0025) * 4;
+              r = Math.max(16, Math.floor(22 + ripple * 0.4));
+              g = Math.max(12, Math.floor(18 + ripple * 0.3));
+              b = Math.max(12, Math.floor(18 + ripple * 0.3));
+              grainColor = "rgba(239, 68, 68, 0.05)"; // Red volcanic ash specks
+            } else if (wNum === 7 || wNum === 8) {
+              // Snowy Tundra: Ice-blue snow
+              const ripple = Math.sin(x * 0.005 + y * 0.0025) * 5;
+              r = Math.max(110, Math.floor(130 + ripple * 0.8));
+              g = Math.max(130, Math.floor(150 + ripple * 0.8));
+              b = Math.max(150, Math.floor(175 + ripple * 1.0));
+              grainColor = "rgba(255, 255, 255, 0.09)"; // Pure white snow grains
+            } else if (wNum >= 9) {
+              // Blood Moon Abyss: Dark purple/crimson
+              const ripple = Math.sin(x * 0.005 + y * 0.0025) * 6;
+              r = Math.max(25, Math.floor(38 + ripple * 0.6));
+              g = Math.max(8, Math.floor(14 + ripple * 0.2));
+              b = Math.max(18, Math.floor(28 + ripple * 0.4));
+              grainColor = "rgba(220, 38, 38, 0.07)"; // Blood red speckles
+            } else {
+              // Standard Desert Sand (Wave 1 & 2 or Default)
+              const ripple = Math.sin(x * 0.005 + y * 0.0025) * 6;
+              r = Math.max(18, Math.floor(34 + ripple * 0.5));
+              g = Math.max(14, Math.floor(27 + ripple * 0.4));
+              b = Math.max(10, Math.floor(20 + ripple * 0.3));
+              grainColor = "rgba(220, 180, 110, 0.04)";
+            }
+            
+            ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
             ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
             
             // Draw pseudo-random sand grains that remain fixed to the ground
-            ctx.fillStyle = "rgba(220, 180, 110, 0.04)"; // Desert sand speckles
+            ctx.fillStyle = grainColor;
             const seed = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453;
             const grainCount = 4;
-            for (let g = 0; g < grainCount; g++) {
-               const gx = x + Math.abs(Math.sin(seed + g) * (TILE_SIZE - 4));
-               const gy = y + Math.abs(Math.cos(seed + g * 2.5) * (TILE_SIZE - 4));
+            for (let gIdx = 0; gIdx < grainCount; gIdx++) {
+               const gx = x + Math.abs(Math.sin(seed + gIdx) * (TILE_SIZE - 4));
+               const gy = y + Math.abs(Math.cos(seed + gIdx * 2.5) * (TILE_SIZE - 4));
                ctx.fillRect(gx, gy, 1.2, 1.2);
             }
           }
@@ -7211,7 +7430,7 @@ export default function App() {
           );
           ctx.fill();
         } else if (decal.type === "footprint") {
-          ctx.fillStyle = colorStr;
+          ctx.fillStyle = decal.color || colorStr;
           ctx.beginPath();
           ctx.ellipse(
             0,
@@ -7954,18 +8173,32 @@ export default function App() {
       // --- Draw Gibs ---
       for (const g of gibs) {
         if (g.x < minDrawX || g.x > maxDrawX || g.y < minDrawY || g.y > maxDrawY) continue;
+        
+        // Draw 3D shadow on the ground for gibs
         if (g.z > 0) {
           ctx.save();
-          ctx.translate(g.x, g.y);
-          ctx.fillStyle = "rgba(0,0,0,0.5)";
+          // Shift shadow diagonally based on height (z) to simulate overhead sun light direction
+          ctx.translate(g.x + g.z * 0.18, g.y + g.z * 0.18);
+          // Scale down shadow as the chunk flies higher
+          const shadowScale = Math.max(0.2, 1.0 - g.z / 450);
+          ctx.scale(shadowScale, shadowScale);
+          ctx.fillStyle = "rgba(0, 0, 0, 0.48)";
           ctx.beginPath();
-          ctx.arc(0, 0, g.size * 0.7, 0, Math.PI * 2);
+          ctx.arc(0, 0, g.size * 0.75, 0, Math.PI * 2);
           ctx.fill();
           ctx.restore();
         }
+        
         ctx.save();
         ctx.translate(g.x, g.y - g.z);
         ctx.rotate(g.angle);
+        
+        // Add cinematic bloom/motion glow around flesh chunks in the air
+        if (g.z > 5) {
+          ctx.shadowBlur = 14;
+          ctx.shadowColor = "rgba(220, 20, 20, 0.9)";
+        }
+        
         ctx.fillStyle = "#7a0000";
         ctx.beginPath();
         if (ctx.roundRect) {
@@ -7982,8 +8215,37 @@ export default function App() {
       // --- Draw Blood Drops ---
       for (const d of bloodDrops) {
         if (d.x < minDrawX || d.x > maxDrawX || d.y < minDrawY || d.y > maxDrawY) continue;
+        
+        // Draw 3D shadow on the ground for airborne blood drops
+        if (d.z > 0) {
+          ctx.save();
+          ctx.translate(d.x + d.z * 0.15, d.y + d.z * 0.15);
+          const shadowScale = Math.max(0.15, 1.0 - d.z / 350);
+          ctx.fillStyle = "rgba(0, 0, 0, 0.42)";
+          ctx.beginPath();
+          ctx.arc(0, 0, d.size * 0.7 * shadowScale, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+        
         ctx.save();
         ctx.translate(d.x, d.y - d.z);
+        
+        // Dynamic motion stretch for flying blood drops
+        const speed = Math.hypot(d.vx, d.vy);
+        if (speed > 100) {
+          const moveAngle = Math.atan2(d.vy, d.vx);
+          ctx.rotate(moveAngle);
+          const stretch = 1.0 + speed * 0.0035;
+          ctx.scale(stretch, 1.0);
+        }
+        
+        // Bloom glow
+        if (d.z > 5) {
+          ctx.shadowBlur = 10;
+          ctx.shadowColor = "rgba(255, 30, 30, 0.85)";
+        }
+        
         ctx.fillStyle = d.color;
         ctx.beginPath();
         ctx.arc(0, 0, d.size, 0, Math.PI * 2);
@@ -8094,21 +8356,114 @@ export default function App() {
           }
           
           if (lightAlpha > 0) {
+            // Apply a subtle dynamic flicker (simulating a loose connection / engine alternator vibration)
+            const flicker = 1.0 + Math.sin(Date.now() * 0.06) * 0.06 + (Math.random() - 0.5) * 0.04;
+            lightAlpha *= flicker;
+
+            // Headlight source coordinate offsets based on van orientation
+            const frontDist = 135;
+            const sideDist = 32;
+            const fx = VAN_X + Math.cos(vanAngle) * frontDist;
+            const fy = VAN_Y + Math.sin(vanAngle) * frontDist;
+            const px = Math.cos(vanAngle + Math.PI/2);
+            const py = Math.sin(vanAngle + Math.PI/2);
+
+            // 1. Draw projected volumetric shadow of the player if they stand in the headlight beam
+            const dx = player.x - fx;
+            const dy = player.y - fy;
+            const dist = Math.hypot(dx, dy);
+            if (dist < 420 && dist > 15) {
+              const angleToPlayer = Math.atan2(dy, dx);
+              let diffAngle = Math.abs(angleToPlayer - vanAngle);
+              while (diffAngle > Math.PI) diffAngle = Math.abs(diffAngle - Math.PI * 2);
+
+              if (diffAngle < 0.45) { // within the light cone spread
+                ctx.save();
+                ctx.globalCompositeOperation = "source-over"; // draw shadow on top of light/floor
+
+                const r = 13; // player collision radius
+                const nx = -dy / dist;
+                const ny = dx / dist;
+
+                // Player tangent borders relative to light source
+                const p1x = player.x + nx * r;
+                const p1y = player.y + ny * r;
+                const p2x = player.x - nx * r;
+                const p2y = player.y - ny * r;
+
+                // Extrude shadow points outward away from the headlights
+                const shadowLen = 500;
+                const q1x = p1x + (p1x - fx) / dist * shadowLen;
+                const q1y = p1y + (p1y - fy) / dist * shadowLen;
+                const q2x = p2x + (p2x - fx) / dist * shadowLen;
+                const q2y = p2y + (p2y - fy) / dist * shadowLen;
+
+                // Build soft fading shadow projection
+                const shadowGrad = ctx.createLinearGradient(
+                  player.x,
+                  player.y,
+                  player.x + (player.x - fx) / dist * 300,
+                  player.y + (player.y - fy) / dist * 300
+                );
+                shadowGrad.addColorStop(0, "rgba(0, 0, 0, 0.7)");
+                shadowGrad.addColorStop(0.4, "rgba(0, 0, 0, 0.35)");
+                shadowGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+
+                ctx.fillStyle = shadowGrad;
+                ctx.beginPath();
+                ctx.moveTo(p1x, p1y);
+                ctx.lineTo(p2x, p2y);
+                ctx.lineTo(q2x, q2y);
+                ctx.lineTo(q1x, q1y);
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+              }
+            }
+
+            // 2. Draw Headlight beams (Additive blending)
             ctx.save();
-            ctx.globalCompositeOperation = "screen"; // realistic light addition blend mode
+            ctx.globalCompositeOperation = "screen";
             
             const drawHeadlight = (lx: number, ly: number) => {
-              const beamLength = 400;
-              const grad = ctx.createRadialGradient(lx, ly, 10, lx + Math.cos(vanAngle) * beamLength * 0.7, ly + Math.sin(vanAngle) * beamLength * 0.7, beamLength * 0.55);
-              grad.addColorStop(0, `rgba(255, 253, 225, ${lightAlpha * 0.85})`);
-              grad.addColorStop(0.15, `rgba(255, 248, 205, ${lightAlpha * 0.5})`);
-              grad.addColorStop(0.5, `rgba(255, 240, 190, ${lightAlpha * 0.15})`);
-              grad.addColorStop(1, "rgba(255, 240, 190, 0)");
+              const beamLength = 480;
               
-              ctx.fillStyle = grad;
+              // A. Draw wide, soft volumetric air scattering (illuminating the dusty air)
+              ctx.save();
+              ctx.shadowBlur = 40;
+              ctx.shadowColor = `rgba(255, 248, 205, ${lightAlpha * 0.15})`;
+              const hazeGrad = ctx.createRadialGradient(lx, ly, 20, lx + Math.cos(vanAngle) * beamLength * 0.65, ly + Math.sin(vanAngle) * beamLength * 0.65, beamLength * 0.65);
+              hazeGrad.addColorStop(0, `rgba(255, 248, 205, ${lightAlpha * 0.22})`);
+              hazeGrad.addColorStop(0.25, `rgba(255, 240, 190, ${lightAlpha * 0.10})`);
+              hazeGrad.addColorStop(0.6, `rgba(255, 240, 190, ${lightAlpha * 0.03})`);
+              hazeGrad.addColorStop(1, "rgba(255, 240, 190, 0)");
+              
+              ctx.fillStyle = hazeGrad;
               ctx.beginPath();
               ctx.moveTo(lx, ly);
-              const coneHalfAngle = 0.35; // ~20 degrees spread
+              const hazeHalfAngle = 0.55; // Wide angle for dust scattering
+              ctx.arc(
+                lx,
+                ly,
+                beamLength * 1.1,
+                vanAngle - hazeHalfAngle,
+                vanAngle + hazeHalfAngle
+              );
+              ctx.closePath();
+              ctx.fill();
+              ctx.restore();
+
+              // B. Draw normal medium projection beam
+              const medGrad = ctx.createRadialGradient(lx, ly, 10, lx + Math.cos(vanAngle) * beamLength * 0.7, ly + Math.sin(vanAngle) * beamLength * 0.7, beamLength * 0.5);
+              medGrad.addColorStop(0, `rgba(255, 253, 225, ${lightAlpha * 0.5})`);
+              medGrad.addColorStop(0.2, `rgba(255, 248, 205, ${lightAlpha * 0.3})`);
+              medGrad.addColorStop(0.6, `rgba(255, 240, 190, ${lightAlpha * 0.08})`);
+              medGrad.addColorStop(1, "rgba(255, 240, 190, 0)");
+              
+              ctx.fillStyle = medGrad;
+              ctx.beginPath();
+              ctx.moveTo(lx, ly);
+              const coneHalfAngle = 0.32;
               ctx.arc(
                 lx,
                 ly,
@@ -8118,18 +8473,53 @@ export default function App() {
               );
               ctx.closePath();
               ctx.fill();
+
+              // C. Draw bright narrow core spotlight
+              const coreGrad = ctx.createRadialGradient(lx, ly, 5, lx + Math.cos(vanAngle) * beamLength * 0.4, ly + Math.sin(vanAngle) * beamLength * 0.4, beamLength * 0.3);
+              coreGrad.addColorStop(0, `rgba(255, 255, 240, ${lightAlpha * 0.85})`);
+              coreGrad.addColorStop(0.3, `rgba(255, 253, 225, ${lightAlpha * 0.4})`);
+              coreGrad.addColorStop(1, "rgba(255, 253, 225, 0)");
+              
+              ctx.fillStyle = coreGrad;
+              ctx.beginPath();
+              ctx.moveTo(lx, ly);
+              const coreHalfAngle = 0.16;
+              ctx.arc(
+                lx,
+                ly,
+                beamLength * 0.8,
+                vanAngle - coreHalfAngle,
+                vanAngle + coreHalfAngle
+              );
+              ctx.closePath();
+              ctx.fill();
             };
-            
-            // Adjust headlight source coordinate offset based on van orientation
-            const frontDist = 135;
-            const sideDist = 32;
-            const fx = VAN_X + Math.cos(vanAngle) * frontDist;
-            const fy = VAN_Y + Math.sin(vanAngle) * frontDist;
-            const px = Math.cos(vanAngle + Math.PI/2);
-            const py = Math.sin(vanAngle + Math.PI/2);
             
             drawHeadlight(fx + px * sideDist, fy + py * sideDist);
             drawHeadlight(fx - px * sideDist, fy - py * sideDist);
+
+            // 3. Draw floaty dust specks catching the light beams (Cinematic overlay)
+            ctx.fillStyle = `rgba(255, 254, 230, ${lightAlpha * 0.5})`;
+            for (let d = 0; d < 30; d++) {
+              const angleOffset = (d * 23) % 360;
+              const distOffset = (d * 59) % 340;
+              const timeFactor = Date.now() * 0.0004;
+              
+              // Drift the dust specks slowly using sine/cosine waves
+              const dustAngle = vanAngle + (Math.sin(timeFactor + angleOffset) * 0.28);
+              const dustDist = 30 + distOffset + (Math.cos(timeFactor * 0.7 + d) * 15);
+              
+              const dustX = fx + Math.cos(dustAngle) * dustDist;
+              const dustY = fy + Math.sin(dustAngle) * dustDist;
+              
+              // Oscar-like dust light catching effect
+              const size = (0.6 + Math.abs(Math.sin(timeFactor + d)) * 1.6) * Math.max(0.1, 1 - dustDist / 400);
+              
+              ctx.beginPath();
+              ctx.arc(dustX, dustY, size, 0, Math.PI * 2);
+              ctx.fill();
+            }
+            
             ctx.restore();
           }
         }
@@ -8657,52 +9047,122 @@ export default function App() {
            ctx.restore();
         }
 
-        // Left Shoulder/Arm
-        ctx.fillStyle = sMain;
+        // --- Draw Small Joint Straps on Shoulders ---
+        ctx.save();
+        ctx.fillStyle = "#1e293b";
         ctx.beginPath();
-        ctx.ellipse(shL_X, shL_Y, 14, 9, -Math.PI / 6, 0, Math.PI * 2);
+        ctx.arc(shL_X, shL_Y, 7, 0, Math.PI * 2);
+        ctx.arc(shR_X, shR_Y, 7, 0, Math.PI * 2);
         ctx.fill();
+        ctx.strokeStyle = sDark;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.restore();
 
-        // Right Shoulder/Arm
-        ctx.beginPath();
-        ctx.ellipse(shR_X, shR_Y, 14, 9, Math.PI / 6, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Arms connecting shoulders to hands
+        // --- Draw Thicker Tactical Arms ---
+        ctx.save();
         ctx.strokeStyle = sMain;
-        ctx.lineWidth = 10;
+        ctx.lineWidth = 13; // Thicker arms for better visibility
         ctx.lineCap = "round";
+        ctx.lineJoin = "round";
 
+        // Left Arm
         ctx.beginPath();
         ctx.moveTo(shL_X, shL_Y);
         ctx.lineTo(handL_X, handL_Y);
         ctx.stroke();
+        
+        ctx.strokeStyle = sDark;
+        ctx.lineWidth = 4;
+        ctx.stroke();
 
+        // Right Arm
+        ctx.strokeStyle = sMain;
+        ctx.lineWidth = 13;
         ctx.beginPath();
         ctx.moveTo(shR_X, shR_Y);
         ctx.lineTo(handR_X, handR_Y);
         ctx.stroke();
+        
+        ctx.strokeStyle = sDark;
+        ctx.lineWidth = 4;
+        ctx.stroke();
+        ctx.restore();
 
-        // Body (Torso Vest)
+        // --- Draw Tactical Elbow Pads ---
+        ctx.save();
+        ctx.fillStyle = "#111827"; // Dark tactical pads
+        ctx.strokeStyle = sDark;
+        ctx.lineWidth = 1.5;
+        
+        // Left Elbow Pad (midway)
+        const midLX = (shL_X + handL_X) / 2;
+        const midLY = (shL_Y + handL_Y) / 2;
+        ctx.beginPath();
+        ctx.arc(midLX, midLY, 5.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // Right Elbow Pad
+        const midRX = (shR_X + handR_X) / 2;
+        const midRY = (shR_Y + handR_Y) / 2;
+        ctx.beginPath();
+        ctx.arc(midRX, midRY, 5.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+
+        // Body (Torso Kevlar Vest with realistic details)
+        ctx.save();
         ctx.fillStyle = sDark;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = "rgba(0,0,0,0.5)";
         ctx.beginPath();
         if (ctx.roundRect) {
-          ctx.roundRect(-15, -16, 26, 32, 6);
+          ctx.roundRect(-16, -17, 28, 34, 8);
         } else {
-          ctx.rect(-15, -16, 26, 32);
+          ctx.rect(-16, -17, 28, 34);
+        }
+        ctx.fill();
+        ctx.restore();
+
+        // Tactical Kevlar Ribbing & Straps
+        ctx.strokeStyle = "#1a1a1a";
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(-16, -9); ctx.lineTo(12, -9);
+        ctx.moveTo(-16, -1); ctx.lineTo(12, -1);
+        ctx.moveTo(-16, 7);  ctx.lineTo(12, 7);
+        ctx.stroke();
+
+        // Center Armor Plate Overlay
+        ctx.fillStyle = "#111827";
+        ctx.beginPath();
+        if (ctx.roundRect) {
+          ctx.roundRect(-8, -12, 14, 24, 4);
+        } else {
+          ctx.rect(-8, -12, 14, 24);
         }
         ctx.fill();
 
-        // Tactical Vest Details
-        ctx.fillStyle = "#1a1a1a";
-        ctx.fillRect(-8, -12, 12, 24); // Center plate
-        ctx.fillStyle = "#0a0a0a";
-        ctx.fillRect(-8, -8, 12, 2); // Webbing
-        ctx.fillRect(-8, -2, 12, 2);
-        ctx.fillRect(-8, 4, 12, 2);
+        // Radio antenna and wires on back
+        ctx.strokeStyle = "#09090b";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(-12, 10);
+        ctx.lineTo(-24, 18);
+        ctx.stroke();
+
+        // Tactical Pouches (3D shaded)
         ctx.fillStyle = sMain;
-        ctx.fillRect(-12, -14, 4, 10); // Pouches
-        ctx.fillRect(-12, 4, 4, 10);
+        ctx.fillRect(-14, -13, 5, 8); // Pouch 1
+        ctx.fillStyle = "#111827";
+        ctx.fillRect(-14, -13, 5, 2); // Pouch strap
+        
+        ctx.fillStyle = sMain;
+        ctx.fillRect(-14, 5, 5, 8); // Pouch 2
+        ctx.fillStyle = "#111827";
+        ctx.fillRect(-14, 5, 5, 2); // Pouch strap
 
         // Head / Helmet
         ctx.beginPath();
@@ -9057,67 +9517,115 @@ export default function App() {
             }
           }
 
-          // Left Hand (holding barrel dynamically)
+          // Left Hand (Tactical Glove)
+          ctx.save();
           ctx.beginPath();
-          ctx.arc(gripLeftX, gripLeftY, 5, 0, Math.PI * 2);
-          ctx.fillStyle = sSkin;
+          ctx.arc(gripLeftX, gripLeftY, 5.5, 0, Math.PI * 2);
+          ctx.fillStyle = "#1e293b"; // Dark Kevlar glove
           ctx.fill();
+          // Knuckle reinforcement plate matching sMain theme
+          ctx.beginPath();
+          ctx.arc(gripLeftX, gripLeftY, 3, 0, Math.PI * 2);
+          ctx.fillStyle = sMain;
+          ctx.fill();
+          ctx.restore();
 
-          // Right Hand (on trigger)
+          // Right Hand (Tactical Glove on trigger)
+          ctx.save();
           ctx.beginPath();
-          ctx.arc(10, 8, 5, 0, Math.PI * 2);
-          ctx.fillStyle = sSkin;
+          ctx.arc(10, 8, 5.5, 0, Math.PI * 2);
+          ctx.fillStyle = "#1e293b";
           ctx.fill();
+          ctx.beginPath();
+          ctx.arc(10, 8, 3, 0, Math.PI * 2);
+          ctx.fillStyle = sMain;
+          ctx.fill();
+          ctx.restore();
 
           ctx.restore();
         } else {
-          // Just draw hands swinging
+          // Just draw hands swinging (Tactical Gloves)
+          ctx.save();
           ctx.beginPath();
-          ctx.arc(handL_X, handL_Y, 5, 0, Math.PI * 2);
-          ctx.fillStyle = sSkin;
+          ctx.arc(handL_X, handL_Y, 5.5, 0, Math.PI * 2);
+          ctx.fillStyle = "#1e293b";
           ctx.fill();
+          ctx.beginPath();
+          ctx.arc(handL_X, handL_Y, 3, 0, Math.PI * 2);
+          ctx.fillStyle = sMain;
+          ctx.fill();
+          ctx.restore();
 
+          ctx.save();
           ctx.beginPath();
-          ctx.arc(handR_X, handR_Y, 5, 0, Math.PI * 2);
-          ctx.fillStyle = sSkin;
+          ctx.arc(handR_X, handR_Y, 5.5, 0, Math.PI * 2);
+          ctx.fillStyle = "#1e293b";
           ctx.fill();
+          ctx.beginPath();
+          ctx.arc(handR_X, handR_Y, 3, 0, Math.PI * 2);
+          ctx.fillStyle = sMain;
+          ctx.fill();
+          ctx.restore();
         }
 
-        // Head (Helmet)
+        // --- Draw Premium Spec-Ops Tactical Helmet ---
+        ctx.save();
+        const hBobX = -2 + (player.isMoving ? Math.cos(walkBobTime) * 1.5 : 0);
+        
+        // Helmet Drop Shadow
+        ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
         ctx.beginPath();
-        ctx.arc(
-          -2 + (player.isMoving ? Math.cos(walkBobTime) * 1.5 : 0),
-          0,
-          13,
-          0,
-          Math.PI * 2,
-        );
-        ctx.fillStyle = sMain;
+        ctx.arc(hBobX + 2, 2.5, 14, 0, Math.PI * 2);
         ctx.fill();
-        // Helmet rim
+
+        // 1. Helmet Base Shell (sleek, angular combat helmet shape)
+        ctx.fillStyle = "#1e293b"; // Tactical dark slate
         ctx.beginPath();
-        ctx.arc(
-          -2 + (player.isMoving ? Math.cos(walkBobTime) * 1.5 : 0),
-          0,
-          13,
-          -Math.PI / 2,
-          Math.PI / 2,
-        );
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = sDark;
+        ctx.moveTo(hBobX - 12, -10);
+        ctx.lineTo(hBobX + 8, -10);
+        ctx.lineTo(hBobX + 13, -4);
+        ctx.lineTo(hBobX + 13, 4);
+        ctx.lineTo(hBobX + 8, 10);
+        ctx.lineTo(hBobX - 12, 10);
+        ctx.lineTo(hBobX - 15, 0);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = "#0f172a";
+        ctx.lineWidth = 2.0;
         ctx.stroke();
-        // Goggles
+
+        // 2. Center reinforcement ridge (strip running front-to-back)
+        ctx.fillStyle = sMain;
+        ctx.fillRect(hBobX - 14, -3, 22, 6);
+
+        // 3. Cybernetic Glowing Visor (V-shaped or sleek horizontal bar matching theme color)
         ctx.beginPath();
-        ctx.arc(
-          1 + (player.isMoving ? Math.cos(walkBobTime) * 1.5 : 0),
-          0,
-          11,
-          -Math.PI / 3.5,
-          Math.PI / 3.5,
-        );
-        ctx.lineWidth = 5;
-        ctx.strokeStyle = "#050505";
+        ctx.moveTo(hBobX + 4, -8);
+        ctx.lineTo(hBobX + 12, -4);
+        ctx.lineTo(hBobX + 12, 4);
+        ctx.lineTo(hBobX + 4, 8);
+        ctx.lineTo(hBobX + 6, 0);
+        ctx.closePath();
+        ctx.fillStyle = sMain; // Visor glows with active skin color!
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = sMain;
+        ctx.fill();
+        
+        // Visor glass reflection
+        ctx.beginPath();
+        ctx.moveTo(hBobX + 7, -6);
+        ctx.lineTo(hBobX + 11, -3);
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 1.5;
+        ctx.shadowBlur = 0;
         ctx.stroke();
+
+        // 4. Tactical Side Comms modules
+        ctx.fillStyle = "#0f172a";
+        ctx.fillRect(hBobX - 6, -12, 5, 2);
+        ctx.fillRect(hBobX - 6, 10, 5, 2);
+
+        ctx.restore();
 
         // Player Blood Overlay
         if (player.bloodAmount && player.bloodAmount > 0) {
@@ -10676,54 +11184,106 @@ export default function App() {
           <div className="absolute inset-0 bg-black/35 pointer-events-none z-10" />
 
           {showInitialTips ? (
-            /* Render minimal loading tips view */
-            <div className="relative z-20 w-full max-w-[750px] px-8 flex flex-col items-center justify-between min-h-[420px] select-none">
-              {/* Top simulation status */}
-              <div className="text-center">
-                <h2 className="text-2xl font-black uppercase tracking-[0.25em] text-zinc-300 drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
-                  Lifeless Land
-                </h2>
-                <p className="text-[10px] font-mono tracking-[0.4em] text-red-600 font-bold uppercase mt-1">
-                  INICIALIZANDO SIMULADOR DE COMBATE
-                </p>
-                <div className="h-[2px] w-28 bg-red-600 mx-auto mt-3 shadow-[0_0_8px_#dc2626]" />
+            isLoadingProtocol ? (
+              /* Render premium protocol initialization scanner - transparent floating container */
+              <div className="relative z-20 w-full max-w-[520px] px-10 py-12 flex flex-col items-center justify-center select-none text-center gap-7 animate-in fade-in zoom-in-95 duration-500">
+                {/* Holographic scanner spinner */}
+                <div className="relative w-24 h-24 flex items-center justify-center">
+                  <div className="absolute inset-0 rounded-full border-[4px] border-t-red-500 border-r-transparent border-b-transparent border-l-transparent animate-spin duration-700" />
+                  <div className="absolute inset-2 rounded-full border-[2.5px] border-r-red-400/40 border-t-transparent border-b-transparent border-l-transparent animate-spin-reverse duration-1000" />
+                  <div className="absolute inset-4 rounded-full border border-dashed border-red-500/30 animate-pulse" />
+                  <span className="text-[13px] font-mono font-black text-white drop-shadow-[0_2px_8px_rgba(0,0,0,1)]">{protocolProgress}%</span>
+                </div>
+                
+                <div className="flex flex-col gap-2.5">
+                  <h2 className="text-[15px] font-mono font-black uppercase tracking-[0.35em] text-red-500 drop-shadow-[0_2px_10px_rgba(0,0,0,1)] animate-pulse">
+                    INICIANDO PROTOCOLO
+                  </h2>
+                  <span className="text-[9.5px] font-mono font-black tracking-[0.2em] text-zinc-200 uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,1)]">
+                    ESTABELECENDO CONEXÃO DE ENTRADA SEGURA...
+                  </span>
+                </div>
+                
+                {/* Futuristic mini progress bar */}
+                <div className="w-56 h-[4.5px] bg-black/60 rounded-full overflow-hidden border border-zinc-900/60 shadow-inner">
+                  <div 
+                    className="h-full bg-gradient-to-r from-red-600 to-red-400 shadow-[0_0_10px_rgba(239,68,68,0.9)] transition-all duration-150"
+                    style={{ width: `${protocolProgress}%` }}
+                  />
+                </div>
               </div>
+            ) : (
+              /* Render minimal loading tips view - transparent, floating, no black box behind text! */
+              <div className="relative z-20 w-full max-w-[750px] px-8 flex flex-col items-center justify-between min-h-[420px] select-none">
+                {/* Top simulation status */}
+                <div className="text-center">
+                  <h2 className="text-2xl font-black uppercase tracking-[0.25em] text-zinc-300 drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+                    Lifeless Land
+                  </h2>
+                  <div className="h-[2px] w-28 bg-red-600 mx-auto mt-3 shadow-[0_0_8px_#dc2626]" />
+                </div>
 
-              {/* Game Tip text - styled like a premium holographic dashboard with highly visible font */}
-              <div 
-                key={currentTipIndex}
-                onClick={() => {
-                  setCurrentTipIndex((prev) => (prev + 1) % GAMEPLAY_TIPS.length);
-                  SoundManager.playSound("click", 0.6);
-                }}
-                className="w-full flex flex-col items-center gap-3.5 cursor-pointer animate-tip-in select-none bg-black/60 border border-zinc-800/50 p-6 md:p-8 rounded-xl backdrop-blur-md shadow-[0_4px_30px_rgba(0,0,0,0.4)] hover:border-amber-500/25 transition-all max-w-[720px]"
-              >
-                <span className="text-[10px] font-mono tracking-[0.45em] text-amber-500 font-black uppercase flex items-center gap-1.5 drop-shadow">
-                  💡 DICA DE SOBREVIVÊNCIA
-                </span>
-                <p className="text-white text-[15px] md:text-[17px] font-black tracking-wide text-center leading-relaxed drop-shadow-[0_2px_10px_rgba(0,0,0,1)]">
-                  "{GAMEPLAY_TIPS[currentTipIndex].text}"
-                </p>
-                <span className="text-[8px] font-mono text-zinc-500 uppercase tracking-widest mt-1">
-                  ( clique na caixa para alternar dica )
-                </span>
-              </div>
-
-              {/* Bottom Skip / Enter Button - Minimalist and Clean */}
-              <div className="w-full flex flex-col items-center">
-                <button
-                   onClick={() => {
-                     startTypewriterTransition();
-                   }}
-                   className="py-2.5 px-8 rounded-full border border-white/10 hover:border-white/30 text-white/60 hover:text-white bg-transparent transition-all duration-300 font-mono text-[10.5px] tracking-[0.25em] uppercase cursor-pointer hover:scale-102 flex items-center justify-center gap-2"
+                {/* Game Tip text - styled with high visibility and clean drop shadow, NO solid black background box */}
+                <div 
+                  key={currentTipIndex}
+                  onClick={() => {
+                    setCurrentTipIndex((prev) => (prev + 1) % GAMEPLAY_TIPS.length);
+                    SoundManager.playSound("click", 0.6);
+                  }}
+                  className="w-full flex flex-col items-center gap-3.5 cursor-pointer animate-tip-in select-none p-6 md:p-8 rounded-xl hover:scale-[1.01] transition-transform max-w-[720px]"
                 >
-                   PULAR ➔
-                </button>
+                  <span className="text-[10px] font-mono tracking-[0.45em] text-amber-500 font-black uppercase flex items-center gap-1.5 drop-shadow-[0_1.5px_4px_rgba(0,0,0,1)]">
+                    💡 DICA DE SOBREVIVÊNCIA
+                  </span>
+                  <p className="text-white text-[16px] md:text-[19px] font-black tracking-wide text-center leading-relaxed drop-shadow-[0_2px_12px_rgba(0,0,0,1)] max-w-[620px]">
+                    "{GAMEPLAY_TIPS[currentTipIndex].text}"
+                  </p>
+                  <span className="text-[8.5px] font-mono text-zinc-400/70 uppercase tracking-widest mt-1 drop-shadow-[0_1px_3px_rgba(0,0,0,1)]">
+                    ( clique na tela para alternar dica )
+                  </span>
+                </div>
+
+                {/* Bottom Skip / Enter Button - Minimalist and Clean */}
+                <div className="w-full flex flex-col items-center">
+                  <button
+                     onClick={() => {
+                       startTypewriterTransition();
+                     }}
+                     className="py-2.5 px-8 rounded-full border border-white/10 hover:border-white/30 text-white/60 hover:text-white bg-transparent transition-all duration-300 font-mono text-[10.5px] tracking-[0.25em] uppercase cursor-pointer hover:scale-102 flex items-center justify-center gap-2"
+                  >
+                     PULAR ➔
+                  </button>
+                </div>
               </div>
-            </div>
+            )
           ) : (
             /* Render actual menu content - Sleek Left Aligned Layout */
             <div className="absolute inset-0 z-20 flex items-center justify-start pl-12 md:pl-20 select-none">
+              {/* Music Mute Toggle Button in Top Right */}
+              <button
+                onClick={() => {
+                  const isMutedNow = SoundManager.toggleMute();
+                  setMusicMuted(isMutedNow);
+                  SoundManager.playSound("click", 0.6);
+                }}
+                className="absolute top-8 right-8 z-[60] p-3 rounded-full border border-white/10 hover:border-white/30 bg-black/45 hover:bg-black/75 text-white/70 hover:text-white transition-all cursor-pointer hover:scale-105 flex items-center justify-center shadow-lg"
+                title={musicMuted ? "Ligar música" : "Desligar música"}
+              >
+                {musicMuted ? (
+                  /* Muted Speaker Icon */
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                    <line x1="1" y1="1" x2="23" y2="23" />
+                    <path d="M9 9v6a3 3 0 0 0 3 3h1.586l4.707 4.707A1 1 0 0 0 20 22V4a1 1 0 0 0-1.707-.707L13.586 8H12A3 3 0 0 0 9 9z" />
+                  </svg>
+                ) : (
+                  /* Playing Speaker Icon */
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 animate-pulse">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+                  </svg>
+                )}
+              </button>
               {/* Left Vignette Backdrop for Menu Content legibility */}
               <div className="absolute inset-y-0 left-0 w-[550px] bg-gradient-to-r from-black/95 via-black/80 to-transparent pointer-events-none z-10" />
 
@@ -10759,8 +11319,8 @@ export default function App() {
                       className="group relative w-full py-4 px-6 rounded-lg bg-red-950/20 border border-red-500/20 hover:border-red-500/80 hover:bg-red-500/10 hover:shadow-[0_0_20px_rgba(239,68,68,0.2)] text-left transition-all duration-300 cursor-pointer flex items-center gap-4.5 overflow-hidden"
                    >
                       <div className="absolute inset-0 bg-gradient-to-r from-red-500/0 via-red-500/5 to-red-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
-                      <div className="w-10 h-10 rounded-full border border-red-500/20 flex items-center justify-center bg-black/40 flex-shrink-0 group-hover:border-red-500/60 transition-colors">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-red-500 group-hover:scale-110 transition-transform">
+                      <div className="w-10 h-10 rounded-full border border-red-500/40 flex items-center justify-center bg-black/60 flex-shrink-0 group-hover:border-red-500/80 transition-colors">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-red-400 group-hover:text-red-200 group-hover:scale-110 transition-transform filter drop-shadow-[0_0_3px_rgba(239,68,68,0.5)]">
                           <path d="M12 18v-9m-3 9v-7.5m6 7.5V11m-9 7V13m12 5V14.5" />
                           <path d="M6 11.5a2 2 0 0 1 4 0M9 10.5a2 2 0 0 1 4 0M12 9a2 2 0 0 1 4 0M15 11a2 2 0 0 1 4 0" />
                           <path d="M4 21c2.5-1.5 5.5-1.5 8 0s5.5 1.5 8 0" />
@@ -10771,7 +11331,7 @@ export default function App() {
                         <span className="text-[8px] text-neutral-400 font-mono tracking-wider uppercase">SELECIONAR OPERADOR E SOBREVIVER</span>
                       </div>
                    </button>
-
+ 
                    {/* 2. Free Sandbox Mode Button */}
                    <button
                       onClick={() => {
@@ -10788,7 +11348,7 @@ export default function App() {
                         setUpgrades(JSON.parse(JSON.stringify(upgradesRef.current)));
                         charUpgradesRef.current = initialCharUpgrades();
                         setCharUpgrades(initialCharUpgrades());
-
+ 
                         inventoryRef.current = {
                           hotbar: ["gun", null, null, null, null],
                           hotbarAmmo: [200, 0, 0, 0, 0],
@@ -10798,18 +11358,18 @@ export default function App() {
                           equippedSkins: {},
                           purchasedSkins: [],
                         };
-
+ 
                         setIsShopOpen(false);
                         setIsInventoryOpen(false);
                         setIsOutfitsOpen(false);
                         setCredits(999999999);
-
+ 
                         vanState = "PARKED";
                         VAN_X = 0;
                         VAN_Y = -350;
                         vanTargetX = 0;
                         vanTargetY = -350;
-
+ 
                         waveRef.current.mode = false;
                         setIsWaveMode(false);
                         (window as any).clearZombiesOnStart = true;
@@ -10822,21 +11382,21 @@ export default function App() {
                         SoundManager.playSound("click", 0.12);
                       }}
                       onMouseLeave={() => setHoveredMenuBtn(null)}
-                      className="group relative w-full py-4 px-6 rounded-lg bg-zinc-950/20 border border-zinc-700/20 hover:border-zinc-500 hover:bg-zinc-500/5 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] text-left transition-all duration-300 cursor-pointer flex items-center gap-4.5 overflow-hidden"
+                      className="group relative w-full py-4 px-6 rounded-lg bg-zinc-950/20 border border-zinc-750/30 hover:border-zinc-400 hover:bg-zinc-500/5 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] text-left transition-all duration-300 cursor-pointer flex items-center gap-4.5 overflow-hidden"
                    >
                       <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
-                      <div className="w-10 h-10 rounded-full border border-zinc-700/30 flex items-center justify-center bg-black/40 flex-shrink-0 group-hover:border-zinc-500 transition-colors">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-zinc-400 group-hover:scale-110 transition-transform">
+                      <div className="w-10 h-10 rounded-full border border-zinc-500/40 flex items-center justify-center bg-black/60 flex-shrink-0 group-hover:border-zinc-400 transition-colors">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-zinc-200 group-hover:text-white group-hover:scale-110 transition-transform">
                           <circle cx="12" cy="12" r="9" />
                           <path d="M12 2v20M2 12h20M12 12m-3 0a3 3 0 1 1 6 0 3 3 0 1 1-6 0" />
                         </svg>
                       </div>
                       <div className="flex flex-col items-start leading-tight">
-                        <span className="text-[15px] font-black uppercase tracking-wider text-neutral-300 font-mono">MODO TESTE</span>
-                        <span className="text-[8px] text-zinc-500 font-mono tracking-wider uppercase">TREINO E CRÉDITOS ILIMITADOS</span>
+                        <span className="text-[15px] font-black uppercase tracking-wider text-neutral-200 font-mono">MODO TESTE</span>
+                        <span className="text-[8px] text-zinc-450 font-mono tracking-wider uppercase">TREINO E CRÉDITOS ILIMITADOS</span>
                       </div>
                    </button>
-
+ 
                    {/* 3. Row: Shop and Outfits side-by-side */}
                    <div className="flex gap-3 w-full">
                      {/* Weapon Shop Button (Loja) */}
@@ -10852,10 +11412,10 @@ export default function App() {
                           SoundManager.playSound("click", 0.12);
                         }}
                         onMouseLeave={() => setHoveredMenuBtn(null)}
-                        className="group relative flex-1 py-3 px-4 rounded-lg bg-amber-950/10 border border-amber-500/20 hover:border-amber-500 hover:bg-amber-500/5 hover:shadow-[0_0_15px_rgba(245,158,11,0.15)] transition-all duration-300 flex items-center gap-3 cursor-pointer overflow-hidden"
+                        className="group relative flex-1 py-3 px-4 rounded-lg bg-amber-950/10 border border-amber-500/25 hover:border-amber-500 hover:bg-amber-500/5 hover:shadow-[0_0_15px_rgba(245,158,11,0.15)] transition-all duration-300 flex items-center gap-3 cursor-pointer overflow-hidden"
                      >
-                        <div className="w-8 h-8 rounded-full border border-amber-500/20 flex items-center justify-center bg-black/40 flex-shrink-0 group-hover:border-amber-500 transition-colors">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-amber-500 group-hover:scale-110 transition-transform">
+                        <div className="w-8 h-8 rounded-full border border-amber-500/40 flex items-center justify-center bg-black/60 flex-shrink-0 group-hover:border-amber-450 transition-colors">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-amber-400 group-hover:text-amber-200 group-hover:scale-110 transition-transform">
                             <path d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
                           </svg>
                         </div>
@@ -10864,7 +11424,7 @@ export default function App() {
                           <span className="text-[7.5px] text-neutral-500 font-mono uppercase">ARMAS & SKINS</span>
                         </div>
                      </button>
-
+ 
                      {/* Outfits Button (Trajes) */}
                      <button
                         onClick={() => {
@@ -10877,12 +11437,21 @@ export default function App() {
                           SoundManager.playSound("click", 0.12);
                         }}
                         onMouseLeave={() => setHoveredMenuBtn(null)}
-                        className="group relative flex-1 py-3 px-4 rounded-lg bg-zinc-950/20 border border-zinc-800 hover:border-zinc-500 hover:bg-zinc-500/5 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer overflow-hidden"
+                        className="group relative flex-1 py-3 px-4 rounded-lg bg-zinc-950/20 border border-zinc-800/60 hover:border-zinc-500 hover:bg-zinc-500/5 transition-all duration-300 flex items-center gap-3 cursor-pointer overflow-hidden"
                      >
-                        <span className="text-[13px] font-black uppercase tracking-wider text-neutral-300 font-mono">PERSONAGEM</span>
+                        <div className="w-8 h-8 rounded-full border border-zinc-700/40 flex items-center justify-center bg-black/60 flex-shrink-0 group-hover:border-zinc-400 transition-colors">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-zinc-300 group-hover:text-white group-hover:scale-110 transition-transform">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                          </svg>
+                        </div>
+                        <div className="flex flex-col items-start leading-tight">
+                          <span className="text-[13px] font-black uppercase tracking-wider text-neutral-200 font-mono">PERSONAGEM</span>
+                          <span className="text-[7.5px] text-neutral-500 font-mono uppercase">CUSTOMIZAR</span>
+                        </div>
                      </button>
                    </div>
-
+ 
                    {/* Highlighted Gameplay Tips Button */}
                    <button
                       onClick={() => {
@@ -10894,17 +11463,20 @@ export default function App() {
                         SoundManager.playSound("click", 0.12);
                       }}
                       onMouseLeave={() => setHoveredMenuBtn(null)}
-                      className="group relative w-full py-3 px-5 bg-gradient-to-r from-amber-600/10 to-amber-500/5 border border-amber-500/20 text-amber-200 hover:border-amber-400 hover:from-amber-500/15 hover:to-amber-500/5 hover:shadow-[0_0_15px_rgba(245,158,11,0.15)] transition-all duration-300 rounded-lg flex items-center gap-4 cursor-pointer"
+                      className="group relative w-full py-3 px-5 bg-gradient-to-r from-amber-600/10 to-amber-500/5 border border-amber-500/25 text-amber-200 hover:border-amber-400 hover:from-amber-500/15 hover:to-amber-500/5 hover:shadow-[0_0_15px_rgba(245,158,11,0.15)] transition-all duration-300 rounded-lg flex items-center gap-4 cursor-pointer"
                    >
-                      <div className="w-8 h-8 rounded-full border border-amber-500/20 flex items-center justify-center bg-black/40 flex-shrink-0 group-hover:border-amber-400 transition-colors">
-                        <span className="text-sm leading-none">💡</span>
+                      <div className="w-8 h-8 rounded-full border border-amber-500/40 flex items-center justify-center bg-black/60 flex-shrink-0 group-hover:border-amber-400 transition-colors">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-amber-400 group-hover:text-amber-200 group-hover:scale-110 transition-transform">
+                          <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A5 5 0 0 0 8 8c0 1 .3 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
+                          <path d="M9 18h6M10 22h4" />
+                        </svg>
                       </div>
                       <div className="flex flex-col items-start leading-tight text-left">
                         <span className="text-[13px] font-black uppercase tracking-wider text-amber-400 font-mono">Dicas de Jogabilidade</span>
                         <span className="text-[8px] text-amber-500/60 font-mono uppercase tracking-wider">Como jogar, comprar upgrades e ondas</span>
                       </div>
                    </button>
-
+ 
                    {/* Bestiary Button */}
                    <button
                       onClick={() => {
@@ -10918,8 +11490,8 @@ export default function App() {
                       onMouseLeave={() => setHoveredMenuBtn(null)}
                       className="group relative w-full py-3.5 px-5 bg-zinc-950/20 border border-zinc-800/40 text-zinc-300 hover:border-zinc-500 hover:bg-zinc-500/5 transition-all duration-300 rounded-lg flex items-center gap-4 cursor-pointer"
                    >
-                      <div className="w-8 h-8 rounded-full border border-zinc-800/60 flex items-center justify-center bg-black/50 flex-shrink-0 group-hover:border-zinc-500 transition-colors">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-zinc-500 group-hover:scale-110 transition-transform">
+                      <div className="w-8 h-8 rounded-full border border-zinc-700/50 flex items-center justify-center bg-black/60 flex-shrink-0 group-hover:border-zinc-500 transition-colors">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-zinc-300 group-hover:text-white group-hover:scale-110 transition-transform">
                           <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
                           <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
                         </svg>
