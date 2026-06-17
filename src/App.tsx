@@ -2032,6 +2032,8 @@ export default function App() {
   const [fakeAdIndex, setFakeAdIndex] = useState(0);
   const [adAlertOpen, setAdAlertOpen] = useState(false);
   const [isWavePanelMinimized, setIsWavePanelMinimized] = useState(false);
+  const [isKombiPurchased, setIsKombiPurchased] = useState(false);
+  const isKombiPurchasedRef = useRef(false);
 
   // Fake Ads Database
   const FAKE_ADS = [
@@ -3208,35 +3210,42 @@ export default function App() {
         }
       } catch (e) {}
       
-      const earnedCredits = m.isBoss ? 75 : 15;
+      const isGiant = (m as any).isGiant;
+      const earnedCredits = m.isBoss ? 200 : (isGiant ? 80 : 15);
       setCredits((prev) => prev + earnedCredits);
       if (waveRef.current.mode && waveRef.current.active) {
         waveRef.current.waveCreditsEarned += earnedCredits;
       }
 
       // Spawn upgrade energy orb
-      if (Math.random() < 0.6) {
-        upgradeEnergyOrbs.push({
-          x: m.x,
-          y: m.y,
-          z: 15,
-          vx: (Math.random() - 0.5) * 350,
-          vy: (Math.random() - 0.5) * 350,
-          vz: 150 + Math.random() * 200,
-          bounceCount: 0,
-          life: 30, // Stay around a bit longer
-        });
+      if (Math.random() < 0.6 || isGiant) {
+        const energyCount = isGiant ? 4 : 1;
+        for (let eIdx = 0; eIdx < energyCount; eIdx++) {
+          upgradeEnergyOrbs.push({
+            x: m.x,
+            y: m.y,
+            z: 15,
+            vx: (Math.random() - 0.5) * 350,
+            vy: (Math.random() - 0.5) * 350,
+            vz: 150 + Math.random() * 200,
+            bounceCount: 0,
+            life: 30, // Stay around a bit longer
+          });
+        }
       }
 
       // Spawn health orb
-      if (player.kills % 3 === 0 || player.hp < player.maxHp * 0.3) {
-        healthOrbs.push({
-          x: m.x,
-          y: m.y,
-          vx: (Math.random() - 0.5) * 150,
-          vy: (Math.random() - 0.5) * 150,
-          life: 20,
-        });
+      if (player.kills % 3 === 0 || player.hp < player.maxHp * 0.3 || isGiant) {
+        const orbCount = isGiant ? 3 : 1;
+        for (let oIdx = 0; oIdx < orbCount; oIdx++) {
+          healthOrbs.push({
+            x: m.x,
+            y: m.y,
+            vx: (Math.random() - 0.5) * 150,
+            vy: (Math.random() - 0.5) * 150,
+            life: 20,
+          });
+        }
       }
 
       // Spawn fury soul
@@ -3279,9 +3288,9 @@ export default function App() {
           waveRef.current.intervalTimer = 6.0;
           setWaveIntervalTime(6);
 
-          // Spawning the Kombi (arrives on wave 3, 6, 9 completion)
+          // Spawning the Kombi (arrives on wave 3, 6, 9 completion or if purchased at wave 7+)
           const completedWave = waveRef.current.current;
-          if (completedWave === 3 || completedWave === 6 || completedWave === 9) {
+          if (completedWave === 3 || completedWave === 6 || completedWave === 9 || (completedWave >= 7 && isKombiPurchasedRef.current)) {
             vanState = "ENTERING";
             const spawnAngle = Math.random() * Math.PI * 2;
             VAN_X = player.x + Math.cos(spawnAngle) * 1200;
@@ -3290,6 +3299,8 @@ export default function App() {
             vanTargetY = player.y - 120; // park near the player
             SoundManager.setMotorVolume(0.4);
             SoundManager.playSound("horn", 0.7); // HONK!
+            isKombiPurchasedRef.current = false;
+            setIsKombiPurchased(false);
           }
         }
       }
@@ -3924,15 +3935,17 @@ export default function App() {
             waveRef.current.intervalTimer = 6.0;
             setWaveIntervalTime(6);
 
-            // Spawning the Kombi (arrives on wave 3, 6, 9 completion)
+            // Spawning the Kombi (arrives on wave 3, 6, 9 completion or if purchased at wave 7+)
             const completedWave = waveRef.current.current;
-            if (completedWave === 3 || completedWave === 6 || completedWave === 9) {
+            if (completedWave === 3 || completedWave === 6 || completedWave === 9 || (completedWave >= 7 && isKombiPurchasedRef.current)) {
               vanState = "ENTERING";
               VAN_X = -1500;
               VAN_Y = -350;
               vanTargetX = 0;
               vanTargetY = -350;
               vanAngle = 0;
+              isKombiPurchasedRef.current = false;
+              setIsKombiPurchased(false);
             }
           }
         }
@@ -4060,7 +4073,7 @@ export default function App() {
               deadZombie.x = player.x + Math.cos(spawnAngle) * spawnDist;
               deadZombie.y = player.y + Math.sin(spawnAngle) * spawnDist;
               
-              let hpMult = 1.0;
+               let hpMult = 1.0;
               let speedMult = 1.0;
               
               let profile: "AGRESSIVO" | "FLANQUEADOR" | "CERCO" | "SALTADOR" | "LENTO" | "ATIRADOR" | "DASHER" = "AGRESSIVO";
@@ -4074,9 +4087,8 @@ export default function App() {
                   profile = r < 0.8 ? "AGRESSIVO" : "LENTO";
                 }
                 hpMult = 0.6 + wNum * 0.15;
-                speedMult = 1.45 + wNum * 0.06; // Faster base speeds for early waves!
-              } else if (wNum <= 7) {
-                // Wave 4 to 7: Integrate SALTADOR (jumping zombie)
+                speedMult = 1.45 + wNum * 0.06;
+              } else if (wNum <= 5) {
                 if (r < 0.25) profile = "AGRESSIVO";
                 else if (r < 0.42) profile = "FLANQUEADOR";
                 else if (r < 0.55) profile = "CERCO";
@@ -4087,15 +4099,25 @@ export default function App() {
                 hpMult = 1.0 + wNum * 0.12;
                 speedMult = 1.30 + wNum * 0.04;
               } else {
-                if (r < 0.20) profile = "AGRESSIVO";
-                else if (r < 0.38) profile = "FLANQUEADOR";
-                else if (r < 0.53) profile = "CERCO";
-                else if (r < 0.65) profile = "ATIRADOR";
-                else if (r < 0.76) profile = "DASHER";
+                // Waves 6-10: Dificuldade crescente conforme aproxima da onda 10.
+                if (r < 0.15) profile = "AGRESSIVO";
+                else if (r < 0.30) profile = "FLANQUEADOR";
+                else if (r < 0.45) profile = "CERCO";
+                else if (r < 0.60) profile = "ATIRADOR";
+                else if (r < 0.75) profile = "DASHER";
                 else if (r < 0.90) profile = "SALTADOR";
                 else profile = "LENTO";
-                hpMult = 1.2 + wNum * 0.15;
-                speedMult = 1.25 + wNum * 0.04;
+
+                if (wNum === 10) {
+                  // Extreme wave 10 difficulty!
+                  hpMult = 3.6;
+                  speedMult = 2.45;
+                } else {
+                  // Progressive speed and hp scaling from wave 6 to 9
+                  const progress = (wNum - 6) / 3; // 0 to 1
+                  hpMult = 1.8 + progress * 1.2;
+                  speedMult = 1.6 + progress * 0.6;
+                }
               }
 
               // Extra speed boost from wave 5+
@@ -4109,7 +4131,16 @@ export default function App() {
               else if (profile === "ATIRADOR") baseHp = 80;
               else if (profile === "DASHER") baseHp = 90;
 
-              deadZombie.maxHp = Math.floor(baseHp * hpMult);
+              // Spawn Elite Giant zombies starting from Wave 5
+              const isGiant = wNum >= 5 && Math.random() < 0.15;
+              (deadZombie as any).isGiant = isGiant;
+
+              let finalHpMult = hpMult;
+              if (isGiant) {
+                finalHpMult *= 2.5; // 2.5x health
+              }
+
+              deadZombie.maxHp = Math.floor(baseHp * finalHpMult);
               deadZombie.hp = deadZombie.maxHp;
               (deadZombie as any).emergeTimer = 1.8;
               (deadZombie as any).emergeDuration = 1.8;
@@ -4144,7 +4175,7 @@ export default function App() {
               waveRef.current.current++;
               setWave(waveRef.current.current);
               
-              const totalZombiesMap = [15, 20, 25, 30, 40, 50, 60, 75, 90, 110];
+              const totalZombiesMap = [15, 20, 25, 30, 45, 60, 80, 100, 130, 200];
               const total = totalZombiesMap[waveRef.current.current - 1] || 30;
               
               waveRef.current.zombiesTotal = total;
@@ -5527,29 +5558,34 @@ export default function App() {
             let finalDashAngle = angleToP;
             let isEvade = false;
 
-            // Evade bullets approaching DASHER (much faster reaction)
+            // Evade bullets approaching DASHER (only when shot towards them)
             if ((m as any).dashCooldown <= 0) {
               for (const b of bullets) {
                 if (!b.isEnemyBullet && b.dmgMult > 0.1) {
                   const distToBullet = Math.hypot(m.x - b.x, m.y - b.y);
-                  if (distToBullet < 550) { // Increased awareness radius
-                    const bulletAngle = Math.atan2(b.vy, b.vx);
-                    const dodgeDir = Math.random() > 0.5 ? 1 : -1;
-                    finalDashAngle = bulletAngle + (Math.PI / 2) * dodgeDir;
-                    shouldDash = true;
-                    isEvade = true;
-                    (m as any).dashCooldown = 0.05; // extremely agile dodge rate, almost spamming
-                    break;
+                  if (distToBullet < 550) {
+                    const dx = m.x - b.x;
+                    const dy = m.y - b.y;
+                    const bulletSpeed = Math.hypot(b.vx, b.vy);
+                    if (bulletSpeed > 0.01) {
+                      const ux = b.vx / bulletSpeed;
+                      const uy = b.vy / bulletSpeed;
+                      const proj = dx * ux + dy * uy; // Forward projection distance
+                      const perpDist = Math.abs(dx * uy - dy * ux); // Perpendicular distance to trajectory
+                      
+                      if (proj > 0 && proj < 500 && perpDist < 90) {
+                        // Bullet is coming directly towards this zombie! Trigger dodge
+                        const dodgeDir = Math.random() > 0.5 ? 1 : -1;
+                        finalDashAngle = Math.atan2(b.vy, b.vx) + (Math.PI / 2) * dodgeDir;
+                        shouldDash = true;
+                        isEvade = true;
+                        (m as any).dashCooldown = 0.05; // extremely agile dodge rate
+                        break;
+                      }
+                    }
                   }
                 }
               }
-            }
-
-            // Standard target dash toward player
-            if (!shouldDash && (m as any).dashCooldown <= 0 && distToP > 100 && distToP < 550 && !player.isDead) {
-              shouldDash = true;
-              finalDashAngle = angleToP;
-              (m as any).dashCooldown = 1.8 + Math.random() * 1.0;
             }
 
             if (shouldDash) {
@@ -6449,8 +6485,8 @@ export default function App() {
             angle: sd.angle,
             rotSpeed: (Math.random() - 0.5) * 50,
             life: sd.isBazooka ? 7.0 : 3.5, // slightly shorter life after kick
-            isBazooka: sd.isBazooka,
             themeColor: sd.themeColor,
+            isBazooka: sd.isBazooka,
             isKicked: true,
           });
           shellDecals.splice(i, 1);
@@ -7931,7 +7967,7 @@ export default function App() {
         const isEmerging = (m as any).emergeTimer !== undefined && (m as any).emergeTimer > 0;
         const emergeProgress = isEmerging ? 1 - ((m as any).emergeTimer / ((m as any).emergeDuration || 1.8)) : 1.0;
 
-        const baseScale = (m as any).isBigDummy ? 1.6 : (m.isBoss ? 1.6 : m.profile === "LENTO" ? 1.25 : m.profile === "SALTADOR" ? (isJumping ? 0.82 * (1.0 + jumpHeight / 90) : 0.82) : 1.0);
+        const baseScale = (m as any).isBigDummy ? 1.6 : ((m as any).isGiant ? 2.1 : (m.isBoss ? 1.6 : m.profile === "LENTO" ? 1.25 : m.profile === "SALTADOR" ? (isJumping ? 0.82 * (1.0 + jumpHeight / 90) : 0.82) : 1.0));
         const scale = baseScale * (isEmerging ? emergeProgress : 1.0);
 
         const trembleX = m.hitTime > 0 ? (Math.random() - 0.5) * 10 : 0;
@@ -13460,6 +13496,31 @@ export default function App() {
           id="ui-hotbar"
           className={`absolute bottom-6 left-1/2 -translate-x-1/2 z-40 pointer-events-auto transition-all duration-500 flex flex-col items-stretch gap-2 ${isHudHidden ? 'opacity-0 pointer-events-none translate-y-10 scale-95' : 'opacity-100 translate-y-0 scale-100'}`}
         >
+           {/* Purchase Kombi support button starting from Wave 7 */}
+          {waveRef.current.mode && waveRef.current.active && waveRef.current.current >= 7 && !isKombiPurchased && !cutscene.active && (
+            <button
+              onClick={() => {
+                if (credits >= 1000) {
+                  setCredits(prev => prev - 1000);
+                  isKombiPurchasedRef.current = true;
+                  setIsKombiPurchased(true);
+                  SoundManager.playSound("click", 1.0);
+                  SoundManager.playSound("horn", 0.45);
+                } else {
+                  SoundManager.playSound("click", 0.5);
+                }
+              }}
+              className="w-[300px] sm:w-[340px] py-2.5 mb-1.5 self-center bg-gradient-to-r from-amber-700/80 to-amber-600/80 hover:from-amber-600 hover:to-amber-500 text-black font-black text-[9px] tracking-[0.2em] uppercase rounded-xl border border-amber-500/30 hover:border-amber-400 cursor-pointer shadow-lg active:scale-95 transition-all duration-300 flex items-center justify-center gap-2"
+            >
+              <span>🚐 COMPRAR SUPORTE DA KOMBI ($1000)</span>
+            </button>
+          )}
+          {isKombiPurchased && waveRef.current.mode && waveRef.current.active && waveRef.current.current >= 7 && !cutscene.active && (
+            <div className="w-[300px] sm:w-[340px] py-2 mb-1.5 self-center bg-emerald-950/45 border border-emerald-500/20 text-emerald-400 font-bold text-[8.5px] tracking-widest uppercase rounded-xl text-center select-none animate-pulse">
+              🚐 SUPORTE DA KOMBI ATIVO (CHEGA NO FIM)
+            </div>
+          )}
+
           {/* Wave Progress Bar above Hotbar */}
           {(!cutscene.active) && (
             <div className="w-[300px] sm:w-[340px] self-center flex flex-col items-stretch font-mono select-none px-1 animate-in fade-in duration-300 mb-2.5">
