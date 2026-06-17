@@ -3284,9 +3284,11 @@ export default function App() {
           waveRef.current.waveHeadshots = 0;
           waveRef.current.waveCreditsEarned = 0;
 
-          // Enter 6s countdown interval
-          waveRef.current.intervalTimer = 6.0;
-          setWaveIntervalTime(6);
+          // Enter wave interval cooldown (20s for early waves, 30s from Wave 5 onwards)
+          const isAdvancedWave = waveRef.current.current >= 5;
+          const intervalTime = isAdvancedWave ? 30.0 : 20.0;
+          waveRef.current.intervalTimer = intervalTime;
+          setWaveIntervalTime(intervalTime);
 
           // Spawning the Kombi (arrives on wave 3, 6, 9 completion or if purchased at wave 7+)
           const completedWave = waveRef.current.current;
@@ -3931,9 +3933,11 @@ export default function App() {
             waveRef.current.waveHeadshots = 0;
             waveRef.current.waveCreditsEarned = 0;
 
-            // Enter 6s countdown interval (fast automatic close)
-            waveRef.current.intervalTimer = 6.0;
-            setWaveIntervalTime(6);
+            // Enter wave interval cooldown (20s for early waves, 30s from Wave 5 onwards)
+            const isAdvancedWave = waveRef.current.current >= 5;
+            const intervalTime = isAdvancedWave ? 30.0 : 20.0;
+            waveRef.current.intervalTimer = intervalTime;
+            setWaveIntervalTime(intervalTime);
 
             // Spawning the Kombi (arrives on wave 3, 6, 9 completion or if purchased at wave 7+)
             const completedWave = waveRef.current.current;
@@ -11917,44 +11921,44 @@ export default function App() {
             </div>
           ) : (
             /* Expanded Sleek Central Panel - Minimalist Floating Holographic Report */
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none select-none flex flex-col items-center justify-center gap-6 text-center w-[360px] text-zinc-400 font-mono transition-all duration-700 animate-[fadeIn_0.5s_ease-out]">
-              <span className="text-zinc-500 font-bold tracking-[0.5em] text-[9px] uppercase animate-pulse">RELATÓRIO DE COMBATE</span>
-              <span className="text-2xl font-black text-zinc-300 tracking-[0.3em] uppercase border-y border-zinc-800/40 py-2.5 w-full text-center">ONDA {waveRef.current.current}</span>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none select-none flex flex-col items-center justify-center gap-7 text-center w-[410px] text-zinc-300 font-mono transition-all duration-700 animate-[fadeIn_0.5s_ease-out]">
+              <span className="text-zinc-400 font-extrabold tracking-[0.55em] text-[11px] uppercase animate-pulse">RELATÓRIO DE COMBATE</span>
+              <span className="text-4xl font-black text-zinc-100 tracking-[0.4em] uppercase border-y border-zinc-800/50 py-3.5 w-full text-center">ONDA {waveRef.current.current}</span>
               
-              <div className="flex flex-col gap-1.5 w-full mt-2 text-[10px] tracking-wider text-zinc-500">
-                <div className="flex justify-between items-center py-0.5 border-b border-zinc-900/30">
+              <div className="flex flex-col gap-2.5 w-full mt-3 text-[12.5px] tracking-widest text-zinc-400">
+                <div className="flex justify-between items-center py-1.5 border-b border-zinc-900/40">
                   <span>TEMPO ONDA:</span>
-                  <span className="text-zinc-400 font-bold">{waveRef.current.lastWaveTime.toFixed(1)}s</span>
+                  <span className="text-zinc-100 font-extrabold">{waveRef.current.lastWaveTime.toFixed(1)}s</span>
                 </div>
-                <div className="flex justify-between items-center py-0.5 border-b border-zinc-900/30">
+                <div className="flex justify-between items-center py-1.5 border-b border-zinc-900/40">
                   <span>DANO CAUSADO:</span>
-                  <span className="text-zinc-400 font-bold">{waveRef.current.lastWaveDamage} HP</span>
+                  <span className="text-zinc-100 font-extrabold">{waveRef.current.lastWaveDamage} HP</span>
                 </div>
-                <div className="flex justify-between items-center py-0.5 border-b border-zinc-900/30">
+                <div className="flex justify-between items-center py-1.5 border-b border-zinc-900/40">
                   <span>DISPAROS EFETUADOS:</span>
-                  <span className="text-zinc-400 font-bold">{waveRef.current.lastWaveShots}</span>
+                  <span className="text-zinc-100 font-extrabold">{waveRef.current.lastWaveShots}</span>
                 </div>
-                <div className="flex justify-between items-center py-0.5 border-b border-zinc-900/30">
+                <div className="flex justify-between items-center py-1.5 border-b border-zinc-900/40">
                   <span>PRECISÃO TÁTICA:</span>
-                  <span className="text-zinc-400 font-bold">
+                  <span className="text-zinc-100 font-extrabold">
                     {waveRef.current.lastWaveShots > 0 
                       ? Math.round((waveRef.current.lastWaveHits / waveRef.current.lastWaveShots) * 100) 
                       : 0}%
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-0.5 border-b border-zinc-900/30">
+                <div className="flex justify-between items-center py-1.5 border-b border-zinc-900/40">
                   <span>ACERTOS NA CABEÇA:</span>
-                  <span className="text-zinc-400 font-bold">{waveRef.current.lastWaveHeadshots}</span>
+                  <span className="text-zinc-100 font-extrabold">{waveRef.current.lastWaveHeadshots}</span>
                 </div>
-                <div className="flex justify-between items-center py-0.5 border-b border-zinc-900/30">
+                <div className="flex justify-between items-center py-1.5 border-b border-zinc-900/40">
                   <span>CRÉDITOS RECEBIDOS:</span>
-                  <span className="text-amber-600/80 font-bold">+${waveRef.current.lastWaveCreditsEarned}</span>
+                  <span className="text-amber-500 font-extrabold shadow-[0_0_10px_rgba(245,158,11,0.25)]">+${waveRef.current.lastWaveCreditsEarned}</span>
                 </div>
               </div>
               
-              <div className="flex flex-col items-center gap-1 mt-4">
-                <span className="text-[7.5px] text-zinc-650 uppercase tracking-widest font-black">Próxima Onda em</span>
-                <span className="text-lg font-black text-zinc-400 animate-pulse">{waveIntervalTime}s</span>
+              <div className="flex flex-col items-center gap-1.5 mt-5">
+                <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-black">Próxima Onda em</span>
+                <span className="text-2xl font-black text-zinc-200 animate-pulse">{waveIntervalTime}s</span>
               </div>
             </div>
           )
