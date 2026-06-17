@@ -3275,9 +3275,9 @@ export default function App() {
           waveRef.current.waveHeadshots = 0;
           waveRef.current.waveCreditsEarned = 0;
 
-          // Enter 30s countdown interval
-          waveRef.current.intervalTimer = 30.0;
-          setWaveIntervalTime(30);
+          // Enter 6s countdown interval
+          waveRef.current.intervalTimer = 6.0;
+          setWaveIntervalTime(6);
 
           // Spawning the Kombi (arrives on wave 3, 6, 9 completion)
           const completedWave = waveRef.current.current;
@@ -3892,6 +3892,49 @@ export default function App() {
       if (waveRef.current.mode) {
         if (waveRef.current.active) {
           waveRef.current.waveTime += dt;
+
+          // Wave completion fail-safe: if all zombies are spawned and active zombies on screen is 0
+          const activeZombiesCount = mannequins.filter(m => m.hp > 0).length;
+          const allZombiesSpawned = waveRef.current.zombiesSpawned >= waveRef.current.zombiesTotal;
+          if (allZombiesSpawned && activeZombiesCount === 0) {
+            // Force wave completion
+            waveRef.current.zombiesKilled = waveRef.current.zombiesTotal;
+            setWaveRemainingZombies(0);
+            
+            waveRef.current.active = false;
+            setWaveActive(false);
+
+            // Save wave stats
+            waveRef.current.lastWaveTime = waveRef.current.waveTime;
+            waveRef.current.lastWaveDamage = waveRef.current.waveDamage;
+            waveRef.current.lastWaveShots = waveRef.current.waveShots;
+            waveRef.current.lastWaveHits = waveRef.current.waveHits;
+            waveRef.current.lastWaveHeadshots = waveRef.current.waveHeadshots;
+            waveRef.current.lastWaveCreditsEarned = waveRef.current.waveCreditsEarned;
+
+            // Reset stats
+            waveRef.current.waveTime = 0;
+            waveRef.current.waveDamage = 0;
+            waveRef.current.waveShots = 0;
+            waveRef.current.waveHits = 0;
+            waveRef.current.waveHeadshots = 0;
+            waveRef.current.waveCreditsEarned = 0;
+
+            // Enter 6s countdown interval (fast automatic close)
+            waveRef.current.intervalTimer = 6.0;
+            setWaveIntervalTime(6);
+
+            // Spawning the Kombi (arrives on wave 3, 6, 9 completion)
+            const completedWave = waveRef.current.current;
+            if (completedWave === 3 || completedWave === 6 || completedWave === 9) {
+              vanState = "ENTERING";
+              VAN_X = -1500;
+              VAN_Y = -350;
+              vanTargetX = 0;
+              vanTargetY = -350;
+              vanAngle = 0;
+            }
+          }
         }
         // Handle Kombi movement
         if (vanState === "ENTERING") {
@@ -5321,6 +5364,13 @@ export default function App() {
             if (m.x > avoidanceLimit) avoidX -= 600;
             if (m.y < -avoidanceLimit) avoidY += 600;
             if (m.y > avoidanceLimit) avoidY -= 600;
+
+            // Strict boundary clamp constraint to prevent zombies getting stuck in outer voids
+            const hardMapLimit = avoidanceLimit + 45;
+            if (m.x < -hardMapLimit) { m.x = -hardMapLimit; m.vx = 0; }
+            if (m.x > hardMapLimit) { m.x = hardMapLimit; m.vx = 0; }
+            if (m.y < -hardMapLimit) { m.y = -hardMapLimit; m.vy = 0; }
+            if (m.y > hardMapLimit) { m.y = hardMapLimit; m.vy = 0; }
 
             const dx = tx - m.x;
             const dy = ty - m.y;
@@ -11830,84 +11880,45 @@ export default function App() {
               <span className="text-[7.5px] text-zinc-550 underline font-bold uppercase tracking-widest pl-2 border-l border-zinc-900 hover:text-zinc-300">DETALHES</span>
             </div>
           ) : (
-            /* Expanded Sleek Central Panel */
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-auto flex flex-col items-center justify-center gap-4 bg-zinc-950/80 backdrop-blur-md border border-zinc-800/60 p-8 rounded-xl shadow-[0_0_80px_rgba(0,0,0,0.95)] text-center w-[400px] text-white font-mono transition-all duration-700 animate-[fadeIn_0.5s_ease-out] select-none">
-              <div className="w-full flex justify-between items-start absolute top-4 px-6">
-                <span className="text-emerald-500 font-black tracking-[0.4em] text-[11px] uppercase animate-pulse">ONDA CONCLUÍDA</span>
-                <button 
-                  onClick={() => setIsWavePanelMinimized(true)}
-                  className="text-[7.5px] text-zinc-500 hover:text-white border border-zinc-900 hover:border-zinc-700 bg-black/50 px-2 py-0.5 rounded cursor-pointer transition-all"
-                >
-                  MINIMIZAR ⇣
-                </button>
-              </div>
-              <span className="text-5xl font-black text-amber-500 tracking-tighter drop-shadow-[0_0_15px_rgba(245,158,11,0.5)] mt-4">ONDA {waveRef.current.current}</span>
+            /* Expanded Sleek Central Panel - Minimalist Floating Holographic Report */
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none select-none flex flex-col items-center justify-center gap-6 text-center w-[360px] text-zinc-400 font-mono transition-all duration-700 animate-[fadeIn_0.5s_ease-out]">
+              <span className="text-zinc-500 font-bold tracking-[0.5em] text-[9px] uppercase animate-pulse">RELATÓRIO DE COMBATE</span>
+              <span className="text-2xl font-black text-zinc-300 tracking-[0.3em] uppercase border-y border-zinc-800/40 py-2.5 w-full text-center">ONDA {waveRef.current.current}</span>
               
-              <div className="flex flex-col gap-2 w-full mt-4 bg-black/40 border border-zinc-900 rounded-lg p-4">
-                <div className="flex justify-between items-center py-0.5">
+              <div className="flex flex-col gap-1.5 w-full mt-2 text-[10px] tracking-wider text-zinc-500">
+                <div className="flex justify-between items-center py-0.5 border-b border-zinc-900/30">
                   <span>TEMPO ONDA:</span>
-                  <span className="text-zinc-300 font-bold">{waveRef.current.lastWaveTime.toFixed(1)}s</span>
+                  <span className="text-zinc-400 font-bold">{waveRef.current.lastWaveTime.toFixed(1)}s</span>
                 </div>
-                <div className="flex justify-between items-center py-0.5">
+                <div className="flex justify-between items-center py-0.5 border-b border-zinc-900/30">
                   <span>DANO CAUSADO:</span>
-                  <span className="text-zinc-300 font-bold">{waveRef.current.lastWaveDamage} HP</span>
+                  <span className="text-zinc-400 font-bold">{waveRef.current.lastWaveDamage} HP</span>
                 </div>
-                <div className="flex justify-between items-center py-0.5">
+                <div className="flex justify-between items-center py-0.5 border-b border-zinc-900/30">
                   <span>DISPAROS EFETUADOS:</span>
-                  <span className="text-zinc-300 font-bold">{waveRef.current.lastWaveShots}</span>
+                  <span className="text-zinc-400 font-bold">{waveRef.current.lastWaveShots}</span>
                 </div>
-                <div className="flex justify-between items-center py-0.5">
+                <div className="flex justify-between items-center py-0.5 border-b border-zinc-900/30">
                   <span>PRECISÃO TÁTICA:</span>
-                  <span className="text-zinc-300 font-bold">
+                  <span className="text-zinc-400 font-bold">
                     {waveRef.current.lastWaveShots > 0 
                       ? Math.round((waveRef.current.lastWaveHits / waveRef.current.lastWaveShots) * 100) 
                       : 0}%
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-0.5">
+                <div className="flex justify-between items-center py-0.5 border-b border-zinc-900/30">
                   <span>ACERTOS NA CABEÇA:</span>
-                  <span className="text-zinc-300 font-bold">{waveRef.current.lastWaveHeadshots}</span>
+                  <span className="text-zinc-400 font-bold">{waveRef.current.lastWaveHeadshots}</span>
                 </div>
-                <div className="flex justify-between items-center py-0.5">
+                <div className="flex justify-between items-center py-0.5 border-b border-zinc-900/30">
                   <span>CRÉDITOS RECEBIDOS:</span>
-                  <span className="text-emerald-450 font-bold">+${waveRef.current.lastWaveCreditsEarned}</span>
+                  <span className="text-amber-600/80 font-bold">+${waveRef.current.lastWaveCreditsEarned}</span>
                 </div>
               </div>
               
-              <div className="w-full h-[1px] bg-zinc-900" />
-              
-              <div className="flex justify-between items-center w-full bg-zinc-950 border border-zinc-800 rounded-lg p-3 shadow-inner mt-2">
-                <span className="text-[8.5px] text-zinc-500 uppercase tracking-widest font-black">Próxima Onda</span>
-                <span className="text-xl font-black text-amber-500">{waveIntervalTime}s</span>
-              </div>
-              
-              <div className="flex flex-col gap-2 w-full mt-1">
-                <button
-                  onClick={skipInterval}
-                  className="w-full py-2 bg-amber-600 hover:bg-amber-500 text-black font-black text-[9px] tracking-widest uppercase rounded-xl transition-all cursor-pointer shadow-lg shadow-amber-950/20 active:scale-95 flex items-center justify-center gap-1.5"
-                >
-                  PULAR INTERVALO ➔
-                </button>
-                <button
-                  onClick={() => {
-                    if ((window as any).clearDecalsAndShells) {
-                      (window as any).clearDecalsAndShells();
-                      const btn = document.getElementById("btn-clear-scene");
-                      if (btn) {
-                        btn.innerText = "CENÁRIO LIMPO!";
-                        btn.style.color = "#10b981";
-                        setTimeout(() => { 
-                          btn.innerText = "LIMPAR SANGUE E CÁPSULAS"; 
-                          btn.style.color = "#fecaca";
-                        }, 1500);
-                      }
-                    }
-                  }}
-                  id="btn-clear-scene"
-                  className="w-full py-2 bg-red-950/20 hover:bg-red-900/30 border border-red-750/15 text-red-350 font-bold tracking-widest uppercase rounded-xl transition-all cursor-pointer text-center text-[8px]"
-                >
-                  LIMPAR SANGUE E CÁPSULAS
-                </button>
+              <div className="flex flex-col items-center gap-1 mt-4">
+                <span className="text-[7.5px] text-zinc-650 uppercase tracking-widest font-black">Próxima Onda em</span>
+                <span className="text-lg font-black text-zinc-400 animate-pulse">{waveIntervalTime}s</span>
               </div>
             </div>
           )
