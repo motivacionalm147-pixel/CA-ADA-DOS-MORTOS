@@ -504,12 +504,57 @@ class SoundManagerClass {
     this.fadeIntervals.add(interval);
   }
 
-  public updateCinematicFilter(active: boolean) {
+   public updateCinematicFilter(active: boolean) {
     this.initContext();
     if (this.ctx && this.musicFilter) {
       const targetFreq = active ? 800 : 22000;
       this.musicFilter.frequency.setTargetAtTime(targetFreq, this.ctx.currentTime, 0.3);
     }
+  }
+
+  public playReloadSound() {
+    const ctx = this.initContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    
+    // Slide/Insert clip (clack 1)
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.type = "triangle";
+    osc1.frequency.setValueAtTime(240, now);
+    osc1.frequency.linearRampToValueAtTime(120, now + 0.12);
+    gain1.gain.setValueAtTime(this.isMuted ? 0 : 0.22, now);
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+    osc1.connect(gain1);
+    gain1.connect(ctx.destination);
+    osc1.start(now);
+    osc1.stop(now + 0.13);
+
+    // Pull bolt back (sharp click at 0.22s)
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.type = "sine";
+    osc2.frequency.setValueAtTime(850, now + 0.22);
+    osc2.frequency.exponentialRampToValueAtTime(350, now + 0.28);
+    gain2.gain.setValueAtTime(this.isMuted ? 0 : 0.18, now + 0.22);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+    osc2.connect(gain2);
+    gain2.connect(ctx.destination);
+    osc2.start(now + 0.22);
+    osc2.stop(now + 0.29);
+    
+    // Lock bolt forward (metallic chamber lock snap at 0.38s)
+    const osc3 = ctx.createOscillator();
+    const gain3 = ctx.createGain();
+    osc3.type = "triangle";
+    osc3.frequency.setValueAtTime(650, now + 0.38);
+    osc3.frequency.exponentialRampToValueAtTime(180, now + 0.45);
+    gain3.gain.setValueAtTime(this.isMuted ? 0 : 0.28, now + 0.38);
+    gain3.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+    osc3.connect(gain3);
+    gain3.connect(ctx.destination);
+    osc3.start(now + 0.38);
+    osc3.stop(now + 0.46);
   }
 
   public playSound(name: string, volume: number = 0.5) {
@@ -1740,6 +1785,8 @@ const GAMEPLAY_TIPS = [
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const blurOverlayRef = useRef<HTMLDivElement>(null);
+  const topBlurRef = useRef<HTMLDivElement>(null);
+  const bottomBlurRef = useRef<HTMLDivElement>(null);
   const [showInitialTips, setShowInitialTips] = useState(true);
   const [isLoadingProtocol, setIsLoadingProtocol] = useState(true);
   const [protocolProgress, setProtocolProgress] = useState(0);
@@ -1936,7 +1983,7 @@ export default function App() {
     setTypingTextFade(false);
     setTypingScreenFade(false);
     
-    const targetText = "ANO 2049. APENAS 4 LENDAS VIVAS RESTARAM PARA CONTAR HISTÓRIA...";
+    const targetText = "ANO 2049. A TERRA SE TORNOU UM CEMITÉRIO TÓXICO... ENTRE AS CINZAS DA CIVILIZAÇÃO, APENAS 4 LENDAS RESTARAM PARA ENFRENTAR O SUBMUNDO.";
     let index = 0;
     
     setTimeout(() => {
@@ -2386,17 +2433,21 @@ export default function App() {
   const [prevBgIndex, setPrevBgIndex] = useState(-1);
   const [cutscene, setCutscene] = useState({
     active: false,
-    phase: "NONE" as "NONE" | "INTRO_FADE" | "KOMBI_ARRIVING" | "PLAYER_JUMPING" | "KOMBI_LEAVING",
+    phase: "NONE" as "NONE" | "INTRO_FADE" | "KOMBI_ARRIVING" | "PLAYER_DESCENDING" | "PLAYER_LOADING_WEAPON" | "INTRO_SCREEN_FADE" | "FADING_GAME_IN",
     timer: 0,
     playerJumpProgress: 0,
     overlayAlpha: 0,
+    hornTriggered: false,
+    reloadTriggered: false,
   });
   const cutsceneRef = useRef({
     active: false,
-    phase: "NONE" as "NONE" | "INTRO_FADE" | "KOMBI_ARRIVING" | "PLAYER_JUMPING" | "KOMBI_LEAVING",
+    phase: "NONE" as "NONE" | "INTRO_FADE" | "KOMBI_ARRIVING" | "PLAYER_DESCENDING" | "PLAYER_LOADING_WEAPON" | "INTRO_SCREEN_FADE" | "FADING_GAME_IN",
     timer: 0,
     playerJumpProgress: 0,
     overlayAlpha: 0,
+    hornTriggered: false,
+    reloadTriggered: false,
   });
 
   const [loadingProgress, setLoadingProgress] = useState(0);
@@ -2442,6 +2493,8 @@ export default function App() {
       timer: 1.5,
       playerJumpProgress: 0,
       overlayAlpha: 1.0,
+      hornTriggered: false,
+      reloadTriggered: false,
     };
     setCutscene({ ...cutsceneRef.current });
     
@@ -3494,7 +3547,7 @@ export default function App() {
     };
     const handleWheel = (e: WheelEvent) => {
       camera.baseZoom -= e.deltaY * 0.001;
-      if (camera.baseZoom < 0.3) camera.baseZoom = 0.3;
+      if (camera.baseZoom < 0.6) camera.baseZoom = 0.6;
       if (camera.baseZoom > 2.0) camera.baseZoom = 2.0;
     };
 
@@ -3548,7 +3601,7 @@ export default function App() {
         );
         const factor = dist / initialTouchDist;
         camera.baseZoom = initialZoom * factor;
-        if (camera.baseZoom < 0.3) camera.baseZoom = 0.3;
+        if (camera.baseZoom < 0.6) camera.baseZoom = 0.6;
         if (camera.baseZoom > 2.0) camera.baseZoom = 2.0;
       }
     };
@@ -3715,15 +3768,16 @@ export default function App() {
           }
         } else if (cs.phase === "KOMBI_ARRIVING") {
           if (vanState === "PARKED" || Math.hypot(VAN_X - vanTargetX, VAN_Y - vanTargetY) < 10) {
-            cs.phase = "PLAYER_JUMPING";
-            cs.timer = 1.2;
+            cs.phase = "PLAYER_DESCENDING";
+            cs.timer = 1.5;
             cs.playerJumpProgress = 0;
+            cs.hornTriggered = false;
+            cs.reloadTriggered = false;
             setCutscene({ ...cs });
-            SoundManager.playSound("heart", 0.8);
           }
-        } else if (cs.phase === "PLAYER_JUMPING") {
+        } else if (cs.phase === "PLAYER_DESCENDING") {
           cs.timer -= dt;
-          const progress = 1.0 - Math.max(0, cs.timer / 1.2);
+          const progress = 1.0 - Math.max(0, cs.timer / 1.5);
           cs.playerJumpProgress = progress;
           setCutscene({ ...cs });
           
@@ -3733,73 +3787,78 @@ export default function App() {
           const endY = -250;
           
           player.x = startX + (endX - startX) * progress;
-          const heightArc = Math.sin(progress * Math.PI) * -100;
-          player.y = startY + (endY - startY) * progress + heightArc;
+          player.y = startY + (endY - startY) * progress; // Walking straight down, no jumping height arc!
           player.angle = Math.PI / 2;
+
+          // Kombi honks dynamically at 30% progress
+          if (progress >= 0.3 && !cs.hornTriggered) {
+            cs.hornTriggered = true;
+            SoundManager.playSound("horn", 0.85);
+          }
           
           if (progress >= 1.0) {
-            // Landing: Transition to Speech and camera Zoom focus
-            cs.phase = "PLAYER_SPEECH";
-            cs.timer = 1.8; // Duration of the close-up zoom and speech
+            cs.phase = "PLAYER_LOADING_WEAPON";
+            cs.timer = 1.8;
             setCutscene({ ...cs });
             
             player.x = 60;
             player.y = -250;
-            player.speechText = "Vamos lá!!!";
-            player.speechTimer = 1.8;
-            
-            // Spawn sand dust particles that expand and dissipate properly
-            for (let i = 0; i < 35; i++) {
-              const pAngle = Math.random() * Math.PI * 2;
-              const speed = 60 + Math.random() * 140;
-              dustParticles.push({
-                x: player.x,
-                y: player.y,
-                vx: Math.cos(pAngle) * speed,
-                vy: Math.sin(pAngle) * speed * 0.5, // spread flatter on ground
-                life: 1.2 + Math.random() * 0.8,
-                maxLife: 2.0,
-                size: 8 + Math.random() * 12,
-              });
-            }
-            SoundManager.playFootstepSound(1.0);
-            SoundManager.playSound("click", 0.85); // Cinematic focus audio cue
           }
-        } else if (cs.phase === "PLAYER_SPEECH") {
+        } else if (cs.phase === "PLAYER_LOADING_WEAPON") {
           cs.timer -= dt;
           setCutscene({ ...cs });
           
           player.x = 60;
           player.y = -250;
           
+          if (!cs.reloadTriggered) {
+            cs.reloadTriggered = true;
+            SoundManager.playReloadSound();
+            player.speechText = "*CLACK* PREPARAR PARA O COMBATE!";
+            player.speechTimer = 1.8;
+          }
+          
           if (cs.timer <= 0) {
-            // Once speech completes, Kombi starts departing
-            cs.phase = "KOMBI_LEAVING";
-            cs.timer = 2.2;
+            cs.phase = "INTRO_SCREEN_FADE";
+            cs.timer = 1.5;
             setCutscene({ ...cs });
-            
-            SoundManager.playSound("horn", 0.6);
+          }
+        } else if (cs.phase === "INTRO_SCREEN_FADE") {
+          cs.timer -= dt;
+          cs.overlayAlpha = 1.0 - Math.max(0, cs.timer / 1.5); // Fades screen smoothly to absolute black
+          setCutscene({ ...cs });
+          
+          player.x = 60;
+          player.y = -250;
+          
+          if (cs.timer <= 0) {
+            // Screen is solid black. Start departures and gameplay in background
             vanState = "LEAVING";
             vanTargetX = 1500;
             vanTargetY = -350;
-          }
-        } else if (cs.phase === "KOMBI_LEAVING") {
-          cs.timer -= dt;
-          setCutscene({ ...cs });
-          
-          player.x = 60;
-          player.y = -250;
-          
-          if (cs.timer <= 0) {
-            cs.active = false;
-            cs.phase = "NONE";
-            setCutscene({ ...cs });
+            SoundManager.playSound("horn", 0.4);
             
             waveRef.current.introTimer = 3.0;
             waveRef.current.introText = "PRIMEIRA ONDA";
             setWaveIntroText("PRIMEIRA ONDA");
             setWaveActive(false);
             setWaveRemainingZombies(15);
+            
+            cs.phase = "FADING_GAME_IN";
+            cs.timer = 1.5;
+            cs.overlayAlpha = 1.0;
+            setCutscene({ ...cs });
+          }
+        } else if (cs.phase === "FADING_GAME_IN") {
+          cs.timer -= dt;
+          cs.overlayAlpha = Math.max(0, cs.timer / 1.5); // Fade black overlay out to reveal playing field
+          setCutscene({ ...cs });
+          
+          if (cs.timer <= 0) {
+            cs.active = false;
+            cs.phase = "NONE";
+            cs.overlayAlpha = 0;
+            setCutscene({ ...cs });
           }
         }
       }
@@ -4552,14 +4611,18 @@ export default function App() {
       if (cutsceneRef.current.active) {
         targetCamX = VAN_X;
         targetCamY = VAN_Y;
-        if (cutsceneRef.current.phase === "PLAYER_JUMPING") {
+        if (cutsceneRef.current.phase === "PLAYER_DESCENDING") {
           targetZoom = 1.4;
           targetCamX = VAN_X + (60 - VAN_X) * cutsceneRef.current.playerJumpProgress;
           targetCamY = VAN_Y + (-250 - VAN_Y) * cutsceneRef.current.playerJumpProgress;
-        } else if (cutsceneRef.current.phase === "PLAYER_SPEECH") {
+        } else if (cutsceneRef.current.phase === "PLAYER_LOADING_WEAPON") {
           targetCamX = 60;
           targetCamY = -250;
-          targetZoom = 1.95; // Close cinematic zoom on player landing!
+          targetZoom = 1.95; // Close cinematic zoom on player racking weapon!
+        } else if (cutsceneRef.current.phase === "INTRO_SCREEN_FADE" || cutsceneRef.current.phase === "FADING_GAME_IN") {
+          targetCamX = 60;
+          targetCamY = -250;
+          targetZoom = 1.25;
         } else if (cutsceneRef.current.phase === "KOMBI_LEAVING") {
           targetCamX = 60;
           targetCamY = -250;
@@ -4595,8 +4658,8 @@ export default function App() {
         } else {
           targetZoom =
             activeWeapon === "rifle"
-              ? Math.max(0.40, camera.baseZoom - 0.2 - zoomOutAmount)
-              : Math.max(0.50, Math.min(2.5, camera.baseZoom + 0.4) - zoomOutAmount);
+              ? Math.max(0.60, camera.baseZoom - 0.2 - zoomOutAmount)
+              : Math.max(0.60, Math.min(2.5, camera.baseZoom + 0.4) - zoomOutAmount);
         }
         
         recoilRecoveryAmount = 2.0 * dt; // recovers faster
@@ -4684,6 +4747,23 @@ export default function App() {
       camera.x += (targetCamX - camera.x) * camLerpSpeed * dt;
       camera.y += (targetCamY - camera.y) * camLerpSpeed * dt;
       camera.zoom += (targetZoom - camera.zoom) * (cinematicModeRef.current ? 3.0 : 5.0) * dt;
+
+      // Update dynamic cinematic blur style overlays (tilt-shift)
+      if (topBlurRef.current && bottomBlurRef.current) {
+        const zoomVal = camera.zoom;
+        const targetHeight = `${Math.max(8, 24 - (zoomVal * 12))}vh`;
+        const targetBlur = `blur(${Math.max(0, 4 - (zoomVal * 2.5))}px)`;
+        
+        topBlurRef.current.style.height = targetHeight;
+        topBlurRef.current.style.backdropFilter = targetBlur;
+        topBlurRef.current.style.webkitBackdropFilter = targetBlur;
+        topBlurRef.current.style.opacity = gameState === "PLAYING" ? "1" : "0";
+        
+        bottomBlurRef.current.style.height = targetHeight;
+        bottomBlurRef.current.style.backdropFilter = targetBlur;
+        bottomBlurRef.current.style.webkitBackdropFilter = targetBlur;
+        bottomBlurRef.current.style.opacity = gameState === "PLAYING" ? "1" : "0";
+      }
 
       // 3. Update Aiming Angle
       const screenCenterX = logicalWidth / 2;
@@ -8347,9 +8427,9 @@ export default function App() {
           let lightAlpha = 0.85;
           if (vanState === "PARKED") {
             if (cutsceneRef.current.active) {
-              if (cutsceneRef.current.phase === "PLAYER_JUMPING") {
+              if (cutsceneRef.current.phase === "PLAYER_DESCENDING") {
                 lightAlpha = Math.max(0, 0.85 - cutsceneRef.current.playerJumpProgress);
-              } else if (cutsceneRef.current.phase === "PLAYER_SPEECH" || cutsceneRef.current.phase === "KOMBI_LEAVING") {
+              } else if (cutsceneRef.current.phase === "PLAYER_LOADING_WEAPON" || cutsceneRef.current.phase === "INTRO_SCREEN_FADE" || cutsceneRef.current.phase === "FADING_GAME_IN" || cutsceneRef.current.phase === "KOMBI_LEAVING") {
                 lightAlpha = 0.0;
               }
             }
@@ -8791,15 +8871,13 @@ export default function App() {
         ctx.save();
         for (const dp of dustParticles) {
           const lifeRatio = dp.life / dp.maxLife;
-          ctx.globalAlpha = lifeRatio * 0.7; // Mais visivel
-          // Cores mistas: se a size for pequena e rocha escura, se for grande e fumaca
+          ctx.globalAlpha = lifeRatio * 0.7;
           if (dp.size < 5) {
-             ctx.fillStyle = "rgba(40, 30, 20, 0.9)"; // Pedrinhas/Sujeira escura
+             ctx.fillStyle = "rgba(40, 30, 20, 0.9)";
           } else {
-             ctx.fillStyle = `rgba(130, 115, 95, ${0.4 + lifeRatio * 0.4})`; // Fumaca/Poeira
+             ctx.fillStyle = `rgba(130, 115, 95, ${0.4 + lifeRatio * 0.4})`;
           }
           ctx.beginPath();
-          // Expande com o tempo se for poeira, diminui se for pedra
           const renderSize = dp.size < 5 ? dp.size : dp.size * (2 - lifeRatio);
           ctx.arc(dp.x, dp.y, renderSize, 0, Math.PI * 2);
           ctx.fill();
@@ -8808,39 +8886,21 @@ export default function App() {
       }
 
       // --- Draw Player ---
-      if (!player.isDead && (!cutsceneRef.current.active || cutsceneRef.current.phase === "PLAYER_JUMPING" || cutsceneRef.current.phase === "KOMBI_LEAVING")) {
+      if (!player.isDead && (!cutsceneRef.current.active || 
+          cutsceneRef.current.phase === "PLAYER_DESCENDING" || 
+          cutsceneRef.current.phase === "PLAYER_LOADING_WEAPON" || 
+          cutsceneRef.current.phase === "INTRO_SCREEN_FADE" || 
+          cutsceneRef.current.phase === "FADING_GAME_IN" || 
+          cutsceneRef.current.phase === "KOMBI_LEAVING")) {
         ctx.save();
         ctx.translate(player.x, player.y);
         ctx.rotate(player.angle);
 
-        // Cinematic Cutscene Jump Scaling & Drop Shadow
-        if (cutsceneRef.current.active && cutsceneRef.current.phase === "PLAYER_JUMPING") {
+        // Cinematic Cutscene Descending body bobbing (no spin jump)
+        if (cutsceneRef.current.active && cutsceneRef.current.phase === "PLAYER_DESCENDING") {
           const progress = cutsceneRef.current.playerJumpProgress;
-          const jumpArc = Math.sin(progress * Math.PI);
-          
-          // Tactical Dash / Roll Jump
-          // Translate aggressively forward based on progress
-          ctx.translate(progress * 45, 0);
-          
-          // Fast spinning motion for a tactical flip/roll
-          ctx.rotate(progress * Math.PI * 4); // 2 full spins
-
-          // Squeeze effect during the flip
-          const squeeze = 1.0 - jumpArc * 0.3;
-          ctx.scale(1.0, squeeze);
-          
-          // Motion Blur trail - removed green glow
-          ctx.shadowBlur = 0;
-          
-          // Ground shadow
-          ctx.save();
-          ctx.rotate(-progress * Math.PI * 4);
-          ctx.beginPath();
-          ctx.arc(0, jumpArc * 60, 16 - jumpArc * 6, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(0, 0, 0, ${0.4 - jumpArc * 0.25})`;
-          ctx.shadowBlur = 0;
-          ctx.fill();
-          ctx.restore();
+          const bob = Math.sin(progress * Math.PI * 6) * 1.5;
+          ctx.translate(0, bob);
         }
 
         // Draw blue shield bubble if invincibility shield is active
@@ -11041,6 +11101,17 @@ export default function App() {
 
   return (
     <div style={{ touchAction: "none", userSelect: "none" }} className={`fixed inset-0 w-full h-full bg-black overflow-hidden font-['Helvetica_Neue',Arial,sans-serif] text-white ${isAnyMenuOpen ? 'cursor-default' : 'cursor-none'}`}>
+      {/* Cinematic Tilt-Shift Blur Viewport Borders */}
+      <div 
+        ref={topBlurRef} 
+        className="absolute top-0 left-0 right-0 z-[5] pointer-events-none transition-all duration-300 ease-out" 
+        style={{ height: '0vh', backdropFilter: 'blur(0px)', WebkitBackdropFilter: 'blur(0px)', maskImage: 'linear-gradient(to bottom, black 40%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 40%, transparent 100%)' }}
+      />
+      <div 
+        ref={bottomBlurRef} 
+        className="absolute bottom-0 left-0 right-0 z-[5] pointer-events-none transition-all duration-300 ease-out" 
+        style={{ height: '0vh', backdropFilter: 'blur(0px)', WebkitBackdropFilter: 'blur(0px)', maskImage: 'linear-gradient(to top, black 40%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to top, black 40%, transparent 100%)' }}
+      />
       <canvas
         ref={canvasRef}
         className="block absolute inset-0 z-0 h-full w-full transition-all duration-700 ease-in-out"
@@ -11505,7 +11576,7 @@ export default function App() {
               </div>
 
               {/* Right Side Hover Info Panel */}
-              <div className="absolute top-1/2 right-12 md:right-24 -translate-y-1/2 z-20 w-[320px] md:w-[380px] pointer-events-none select-none text-left flex flex-col gap-4 animate-in fade-in slide-in-from-right-8 duration-300">
+              <div className="absolute top-1/2 right-12 md:right-24 -translate-y-1/2 z-20 w-[340px] md:w-[410px] pointer-events-none select-none text-left flex flex-col gap-4 animate-in fade-in slide-in-from-right-8 duration-300 bg-black/75 border border-zinc-900/60 p-6 rounded-2xl backdrop-blur-md shadow-[0_15px_40px_rgba(0,0,0,0.85)]">
                 {hoveredMenuBtn ? (
                   <>
                     <div className="flex items-center gap-2">
